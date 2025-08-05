@@ -1,0 +1,16 @@
+C:\Users\NITRO\source\repos\BaiTapGK\BaiTapGK\bin\Debug\net9.0-windows\BaiTapGK.exe
+C:\Users\NITRO\source\repos\BaiTapGK\BaiTapGK\bin\Debug\net9.0-windows\BaiTapGK.deps.json
+C:\Users\NITRO\source\repos\BaiTapGK\BaiTapGK\bin\Debug\net9.0-windows\BaiTapGK.runtimeconfig.json
+C:\Users\NITRO\source\repos\BaiTapGK\BaiTapGK\bin\Debug\net9.0-windows\BaiTapGK.dll
+C:\Users\NITRO\source\repos\BaiTapGK\BaiTapGK\bin\Debug\net9.0-windows\BaiTapGK.pdb
+C:\Users\NITRO\source\repos\BaiTapGK\BaiTapGK\obj\Debug\net9.0-windows\BaiTapGK.Form1.resources
+C:\Users\NITRO\source\repos\BaiTapGK\BaiTapGK\obj\Debug\net9.0-windows\BaiTapGK.csproj.GenerateResource.cache
+C:\Users\NITRO\source\repos\BaiTapGK\BaiTapGK\obj\Debug\net9.0-windows\BaiTapGK.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\NITRO\source\repos\BaiTapGK\BaiTapGK\obj\Debug\net9.0-windows\BaiTapGK.AssemblyInfoInputs.cache
+C:\Users\NITRO\source\repos\BaiTapGK\BaiTapGK\obj\Debug\net9.0-windows\BaiTapGK.AssemblyInfo.cs
+C:\Users\NITRO\source\repos\BaiTapGK\BaiTapGK\obj\Debug\net9.0-windows\BaiTapGK.csproj.CoreCompileInputs.cache
+C:\Users\NITRO\source\repos\BaiTapGK\BaiTapGK\obj\Debug\net9.0-windows\BaiTapGK.dll
+C:\Users\NITRO\source\repos\BaiTapGK\BaiTapGK\obj\Debug\net9.0-windows\refint\BaiTapGK.dll
+C:\Users\NITRO\source\repos\BaiTapGK\BaiTapGK\obj\Debug\net9.0-windows\BaiTapGK.pdb
+C:\Users\NITRO\source\repos\BaiTapGK\BaiTapGK\obj\Debug\net9.0-windows\BaiTapGK.genruntimeconfig.cache
+C:\Users\NITRO\source\repos\BaiTapGK\BaiTapGK\obj\Debug\net9.0-windows\ref\BaiTapGK.dll
