@@ -1,0 +1,247 @@
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace BaiTapGK
+{
+    /// <summary>
+    /// Manager class cho fullscreen functionality
+    /// </summary>
+    public static class FullscreenManager
+    {
+        private static Form? currentForm;
+        private static FormBorderStyle originalBorderStyle;
+        private static FormWindowState originalWindowState;
+        private static Size originalSize;
+        private static Point originalLocation;
+        private static bool originalMaximizeBox;
+        private static bool originalMinimizeBox;
+        private static bool isFullscreen = false;
+
+        /// <summary>
+        /// Toggle fullscreen mode cho form
+        /// </summary>
+        public static void ToggleFullscreen(Form form)
+        {
+            if (form == null) return;
+
+            if (!isFullscreen)
+            {
+                EnterFullscreen(form);
+            }
+            else
+            {
+                ExitFullscreen(form);
+            }
+        }
+
+        /// <summary>
+        /// Vao che do fullscreen
+        /// </summary>
+        public static void EnterFullscreen(Form form)
+        {
+            if (form == null || isFullscreen) return;
+
+            currentForm = form;
+            
+            // Luu trang thai hien tai
+            originalBorderStyle = form.FormBorderStyle;
+            originalWindowState = form.WindowState;
+            originalSize = form.Size;
+            originalLocation = form.Location;
+            originalMaximizeBox = form.MaximizeBox;
+            originalMinimizeBox = form.MinimizeBox;
+
+            // Chuyen sang fullscreen
+            form.FormBorderStyle = FormBorderStyle.None;
+            form.WindowState = FormWindowState.Maximized;
+            form.TopMost = true;
+            
+            isFullscreen = true;
+            
+            // Notify form about fullscreen change
+            if (form is IFullscreenAware fullscreenAware)
+            {
+                fullscreenAware.OnFullscreenEntered();
+            }
+        }
+
+        /// <summary>
+        /// Thoat che do fullscreen
+        /// </summary>
+        public static void ExitFullscreen(Form form)
+        {
+            if (form == null || !isFullscreen) return;
+
+            // Khoi phuc trang thai ban Dau
+            form.TopMost = false;
+            form.FormBorderStyle = originalBorderStyle;
+            form.WindowState = originalWindowState;
+            form.Size = originalSize;
+            form.Location = originalLocation;
+            form.MaximizeBox = originalMaximizeBox;
+            form.MinimizeBox = originalMinimizeBox;
+
+            isFullscreen = false;
+            currentForm = null;
+
+            // Notify form about fullscreen change
+            if (form is IFullscreenAware fullscreenAware)
+            {
+                fullscreenAware.OnFullscreenExited();
+            }
+        }
+
+        /// <summary>
+        /// Kiem tra xem co dang fullscreen khong
+        /// </summary>
+        public static bool IsFullscreen => isFullscreen;
+
+        /// <summary>
+        /// Xu ly phim tat F11
+        /// </summary>
+        public static bool HandleKeyPress(Form form, Keys key)
+        {
+            if (key == Keys.F11)
+            {
+                ToggleFullscreen(form);
+                return true; // Key da duoc xu ly
+            }
+            return false; // Key khong duoc xu ly
+        }
+    }
+
+    /// <summary>
+    /// Interface cho cac form ho tro fullscreen
+    /// </summary>
+    public interface IFullscreenAware
+    {
+        void OnFullscreenEntered();
+        void OnFullscreenExited();
+    }
+
+    /// <summary>
+    /// Base class cho cac form co fullscreen support
+    /// </summary>
+    public class FullscreenSupportForm : Form, IFullscreenAware
+    {
+        private Label? fullscreenHint;
+        private System.Windows.Forms.Timer? hintTimer;
+
+        public FullscreenSupportForm()
+        {
+            this.KeyPreview = true; // Cho phep form nhan key events
+            
+            // Setup fullscreen hint
+            SetupFullscreenHint();
+        }
+
+        private void SetupFullscreenHint()
+        {
+            fullscreenHint = new Label
+            {
+                Text = "Nhan F11 de chuyen che do toan man hinh",
+                Font = new Font("Microsoft Sans Serif", 8, FontStyle.Italic),
+                ForeColor = Color.Gray,
+                BackColor = Color.Transparent,
+                AutoSize = true,
+                Visible = false
+            };
+
+            this.Controls.Add(fullscreenHint);
+            
+            // Position hint at bottom right
+            this.Resize += (s, e) => PositionFullscreenHint();
+            PositionFullscreenHint();
+
+            // Show hint for 3 seconds when form loads
+            this.Load += (s, e) => ShowFullscreenHint();
+        }
+
+        private void PositionFullscreenHint()
+        {
+            if (fullscreenHint != null)
+            {
+                fullscreenHint.Location = new Point(
+                    this.ClientSize.Width - fullscreenHint.Width - 10,
+                    this.ClientSize.Height - fullscreenHint.Height - 10
+                );
+                fullscreenHint.BringToFront();
+            }
+        }
+
+        private void ShowFullscreenHint()
+        {
+            if (fullscreenHint == null || FullscreenManager.IsFullscreen) return;
+
+            fullscreenHint.Visible = true;
+            
+            // Auto hide after 3 seconds
+            hintTimer = new System.Windows.Forms.Timer();
+            hintTimer.Interval = 3000;
+            hintTimer.Tick += (s, e) =>
+            {
+                fullscreenHint.Visible = false;
+                hintTimer.Stop();
+                hintTimer.Dispose();
+                hintTimer = null;
+            };
+            hintTimer.Start();
+        }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            // Xu ly F11 key
+            if (FullscreenManager.HandleKeyPress(this, keyData))
+            {
+                return true;
+            }
+
+            // Xu ly ESC key de thoat fullscreen
+            if (keyData == Keys.Escape && FullscreenManager.IsFullscreen)
+            {
+                FullscreenManager.ExitFullscreen(this);
+                return true;
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        public virtual void OnFullscreenEntered()
+        {
+            // Hide fullscreen hint khi vao fullscreen
+            if (fullscreenHint != null)
+            {
+                fullscreenHint.Visible = false;
+            }
+
+            // Co the override trong derived classes
+            AdjustLayoutForFullscreen(true);
+        }
+
+        public virtual void OnFullscreenExited()
+        {
+            // Co the override trong derived classes
+            AdjustLayoutForFullscreen(false);
+        }
+
+        /// <summary>
+        /// Dieu chinh layout khi chuyen che do fullscreen
+        /// </summary>
+        protected virtual void AdjustLayoutForFullscreen(bool isFullscreen)
+        {
+            // Override trong cac derived classes de custom layout
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                hintTimer?.Stop();
+                hintTimer?.Dispose();
+                fullscreenHint?.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+    }
+}

@@ -261,7 +261,7 @@ namespace BaiTapGK
             this.AutoScaleDimensions = new SizeF(7F, 15F);
             this.AutoScaleMode = AutoScaleMode.Font;
             this.BackColor = Color.LightCyan;
-            this.ClientSize = new Size(520, 530);
+            this.ClientSize = new Size(520, 580);
             this.Controls.Add(this.btnWiresharkHelp);
             this.Controls.Add(this.btnBack);
             this.Controls.Add(this.lblScore);

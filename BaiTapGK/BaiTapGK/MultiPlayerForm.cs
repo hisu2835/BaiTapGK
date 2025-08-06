@@ -10,21 +10,24 @@ using System.IO;
 
 namespace BaiTapGK
 {
-    public partial class MultiPlayerForm : Form
+    public partial class MultiPlayerForm : FullscreenSupportForm
     {
         private string playerName;
         private bool isHost = false;
-        private TcpListener tcpListener;
-        private TcpClient tcpClient;
-        private NetworkStream stream;
-        private Thread tcpListenerThread;
-        private Thread tcpClientThread;
+        private TcpListener? tcpListener;
+        private TcpClient? tcpClient;
+        private NetworkStream? stream;
+        private Thread? tcpListenerThread;
+        private Thread? tcpClientThread;
         private string roomId;
         private bool gameStarted = false;
         private string playerChoice = "";
         private string opponentChoice = "";
         private int playerScore = 0;
         private int opponentScore = 0;
+        private HandGestureAnimationControl? playerGestureControl;
+        private HandGestureAnimationControl? opponentGestureControl;
+        private BattleResultControl? battleResultControl;
 
         public MultiPlayerForm(string playerName)
         {
@@ -32,8 +35,12 @@ namespace BaiTapGK
             this.playerName = playerName;
             lblPlayerName.Text = $"Nguoi choi: {playerName}";
             this.StartPosition = FormStartPosition.CenterScreen;
-            this.FormBorderStyle = FormBorderStyle.FixedDialog;
-            this.MaximizeBox = false;
+            this.FormBorderStyle = FormBorderStyle.Sizable; // Cho phep resize
+            this.MaximizeBox = true; // Cho phep maximize
+            this.MinimizeBox = true;
+            
+            // Set minimum size
+            this.MinimumSize = new Size(540, 600);
             
             // Tao Room ID ngau nhien
             roomId = GenerateRoomId();
@@ -43,6 +50,553 @@ namespace BaiTapGK
             
             // Hien thi thong tin IP local
             ShowLocalIPInfo();
+            
+            // Thiet lap hover effects cho cac button
+            SetupButtonEffects();
+        }
+
+        private void SetupButtonEffects()
+        {
+            // Thiet lap hover effects
+            ButtonAnimationHelper.SetupButtonHoverEffects(btnRock);
+            ButtonAnimationHelper.SetupButtonHoverEffects(btnPaper);
+            ButtonAnimationHelper.SetupButtonHoverEffects(btnScissors);
+            
+            // Thiet lap mau sac ban dau
+            btnRock.BackColor = GameConfig.ROCK_COLOR;
+            btnPaper.BackColor = GameConfig.PAPER_COLOR;
+            btnScissors.BackColor = GameConfig.SCISSORS_COLOR;
+            
+            // Thiet lap gesture controls
+            SetupGestureControls();
+        }
+
+        private void SetupGestureControls()
+        {
+            // Player gesture control
+            playerGestureControl = new HandGestureAnimationControl();
+            playerGestureControl.Location = new Point(50, 360);
+            playerGestureControl.Size = new Size(100, 100);
+            this.Controls.Add(playerGestureControl);
+
+            // Opponent gesture control  
+            opponentGestureControl = new HandGestureAnimationControl();
+            opponentGestureControl.Location = new Point(370, 360);
+            opponentGestureControl.Size = new Size(100, 100);
+            this.Controls.Add(opponentGestureControl);
+
+            // Battle result control
+            battleResultControl = new BattleResultControl();
+            this.Controls.Add(battleResultControl);
+            battleResultControl.CenterOnParent();
+
+            // Bring gesture controls to front
+            playerGestureControl.BringToFront();
+            opponentGestureControl.BringToFront();
+            
+            // Battle result should be on top of everything
+            battleResultControl.BringToFront();
+        }
+
+        protected override void AdjustLayoutForFullscreen(bool isFullscreen)
+        {
+            // Dieu chinh layout khi fullscreen cho multiplayer
+            if (isFullscreen)
+            {
+                AdjustMultiplayerLayoutForFullscreen(true);
+            }
+            else
+            {
+                AdjustMultiplayerLayoutForFullscreen(false);
+            }
+        }
+
+        private void AdjustMultiplayerLayoutForFullscreen(bool isFullscreen)
+        {
+            if (isFullscreen)
+            {
+                ApplyFullscreenMultiplayerLayout();
+            }
+            else
+            {
+                RestoreWindowedMultiplayerLayout();
+            }
+        }
+
+        private void ApplyFullscreenMultiplayerLayout()
+        {
+            SuspendLayout();
+
+            // Calculate optimal scale factor
+            float baseWidth = 540f;
+            float baseHeight = 600f;
+            
+            float widthScale = this.ClientSize.Width / baseWidth;
+            float heightScale = this.ClientSize.Height / baseHeight;
+            
+            float scaleFactor = Math.Min(widthScale, heightScale) * 0.75f; // More conservative scaling
+            scaleFactor = Math.Max(scaleFactor, 1.2f);
+            scaleFactor = Math.Min(scaleFactor, 2.0f);
+
+            int centerX = this.ClientSize.Width / 2;
+            int topMargin = (int)(30 * scaleFactor);
+
+            // Top section - player info and connection status
+            if (lblPlayerName != null)
+            {
+                lblPlayerName.Font = new Font(lblPlayerName.Font.FontFamily, lblPlayerName.Font.Size * scaleFactor, FontStyle.Bold);
+                lblPlayerName.AutoSize = true;
+                lblPlayerName.Location = new Point(centerX - lblPlayerName.PreferredSize.Width / 2, topMargin);
+            }
+
+            if (lblStatus != null)
+            {
+                lblStatus.Font = new Font(lblStatus.Font.FontFamily, lblStatus.Font.Size * scaleFactor);
+                lblStatus.AutoSize = true;
+                lblStatus.Location = new Point(centerX - lblStatus.PreferredSize.Width / 2, topMargin + (int)(35 * scaleFactor));
+            }
+
+            // Network controls section - centered layout
+            int networkY = topMargin + (int)(80 * scaleFactor);
+            int controlWidth = (int)(150 * scaleFactor);
+            int controlHeight = (int)(30 * scaleFactor);
+            int controlSpacing = (int)(20 * scaleFactor);
+
+            // Arrange network controls in a more organized manner
+            var networkControls = new[]
+            {
+                new { Control = txtServerIP as Control, Label = "Server IP:" },
+                new { Control = txtPort as Control, Label = "Port:" },
+                new { Control = txtRoomId as Control, Label = "Room ID:" }
+            };
+
+            int networkStartX = centerX - (controlWidth * 3 + controlSpacing * 2) / 2;
+            
+            for (int i = 0; i < networkControls.Length; i++)
+            {
+                if (networkControls[i].Control != null)
+                {
+                    networkControls[i].Control.Size = new Size(controlWidth, controlHeight);
+                    networkControls[i].Control.Location = new Point(
+                        networkStartX + (i * (controlWidth + controlSpacing)),
+                        networkY
+                    );
+                    
+                    if (networkControls[i].Control is TextBox textBox)
+                    {
+                        textBox.Font = new Font(textBox.Font.FontFamily, Math.Max(textBox.Font.Size * scaleFactor, 9));
+                    }
+                }
+            }
+
+            // Network buttons - centered below text boxes
+            var networkButtons = new[] { btnCreateRoom, btnJoinRoom };
+            var validNetworkButtons = networkButtons.Where(b => b != null).ToArray();
+            
+            if (validNetworkButtons.Length > 0)
+            {
+                int networkButtonWidth = (int)(140 * scaleFactor);
+                int networkButtonHeight = (int)(40 * scaleFactor);
+                int networkButtonSpacing = (int)(30 * scaleFactor);
+                int totalNetworkButtonWidth = (validNetworkButtons.Length * networkButtonWidth) + ((validNetworkButtons.Length - 1) * networkButtonSpacing);
+                int networkButtonStartX = centerX - totalNetworkButtonWidth / 2;
+                int networkButtonY = networkY + controlHeight + (int)(20 * scaleFactor);
+
+                for (int i = 0; i < validNetworkButtons.Length; i++)
+                {
+                    var button = validNetworkButtons[i];
+                    button.Size = new Size(networkButtonWidth, networkButtonHeight);
+                    button.Location = new Point(
+                        networkButtonStartX + (i * (networkButtonWidth + networkButtonSpacing)),
+                        networkButtonY
+                    );
+                    button.Font = new Font(button.Font.FontFamily, Math.Max(button.Font.Size * scaleFactor, 9));
+                }
+            }
+
+            // Game buttons section - centered horizontally
+            int gameButtonY = networkY + (int)(140 * scaleFactor);
+            var gameButtons = new[] { btnRock, btnPaper, btnScissors };
+            var validGameButtons = gameButtons.Where(b => b != null).ToArray();
+            
+            if (validGameButtons.Length > 0)
+            {
+                int gameButtonSize = (int)(70 * scaleFactor);
+                int gameButtonSpacing = (int)(40 * scaleFactor);
+                int totalGameButtonWidth = (validGameButtons.Length * gameButtonSize) + ((validGameButtons.Length - 1) * gameButtonSpacing);
+                int gameButtonStartX = centerX - totalGameButtonWidth / 2;
+
+                for (int i = 0; i < validGameButtons.Length; i++)
+                {
+                    var button = validGameButtons[i];
+                    button.Size = new Size(gameButtonSize, gameButtonSize);
+                    button.Location = new Point(
+                        gameButtonStartX + (i * (gameButtonSize + gameButtonSpacing)),
+                        gameButtonY
+                    );
+                    button.Font = new Font(button.Font.FontFamily, Math.Max(button.Font.Size * scaleFactor, 9));
+                }
+            }
+
+            // Gesture controls - symmetric positioning
+            int gestureY = gameButtonY + (int)(100 * scaleFactor);
+            int gestureSize = (int)(120 * scaleFactor);
+            int gestureSpacing = this.ClientSize.Width / 4;
+
+            if (playerGestureControl != null)
+            {
+                playerGestureControl.Size = new Size(gestureSize, gestureSize);
+                playerGestureControl.Location = new Point(
+                    gestureSpacing - gestureSize / 2,
+                    gestureY
+                );
+            }
+
+            if (opponentGestureControl != null)
+            {
+                opponentGestureControl.Size = new Size(gestureSize, gestureSize);
+                opponentGestureControl.Location = new Point(
+                    this.ClientSize.Width - gestureSpacing - gestureSize / 2,
+                    gestureY
+                );
+            }
+
+            // Player choice labels
+            int choiceLabelY = gestureY + gestureSize + (int)(15 * scaleFactor);
+            
+            if (lblPlayerChoice != null)
+            {
+                lblPlayerChoice.Font = new Font(lblPlayerChoice.Font.FontFamily, lblPlayerChoice.Font.Size * scaleFactor);
+                lblPlayerChoice.AutoSize = true;
+                lblPlayerChoice.Location = new Point(
+                    gestureSpacing - lblPlayerChoice.PreferredSize.Width / 2,
+                    choiceLabelY
+                );
+            }
+
+            if (lblOpponentChoice != null)
+            {
+                lblOpponentChoice.Font = new Font(lblOpponentChoice.Font.FontFamily, lblOpponentChoice.Font.Size * scaleFactor);
+                lblOpponentChoice.AutoSize = true;
+                lblOpponentChoice.Location = new Point(
+                    this.ClientSize.Width - gestureSpacing - lblOpponentChoice.PreferredSize.Width / 2,
+                    choiceLabelY
+                );
+            }
+
+            // Game result and score - centered
+            if (lblGameResult != null)
+            {
+                lblGameResult.Font = new Font(lblGameResult.Font.FontFamily, lblGameResult.Font.Size * scaleFactor, FontStyle.Bold);
+                lblGameResult.AutoSize = true;
+                lblGameResult.Location = new Point(
+                    centerX - lblGameResult.PreferredSize.Width / 2,
+                    choiceLabelY + (int)(40 * scaleFactor)
+                );
+            }
+
+            if (lblScore != null)
+            {
+                lblScore.Font = new Font(lblScore.Font.FontFamily, lblScore.Font.Size * scaleFactor, FontStyle.Bold);
+                lblScore.AutoSize = true;
+                lblScore.Location = new Point(
+                    centerX - lblScore.PreferredSize.Width / 2,
+                    choiceLabelY + (int)(70 * scaleFactor)
+                );
+            }
+
+            // Control buttons at bottom
+            var controlButtons = new[] { btnBack };
+            if (controlButtons[0] != null)
+            {
+                int controlButtonWidth = (int)(120 * scaleFactor);
+                int controlButtonHeight = (int)(40 * scaleFactor);
+                controlButtons[0].Size = new Size(controlButtonWidth, controlButtonHeight);
+                controlButtons[0].Location = new Point(
+                    centerX - controlButtonWidth / 2,
+                    this.ClientSize.Height - (int)(60 * scaleFactor)
+                );
+                controlButtons[0].Font = new Font(controlButtons[0].Font.FontFamily, Math.Max(controlButtons[0].Font.Size * scaleFactor, 9));
+            }
+
+            // Wireshark buttons - position near network controls
+            var wiresharkButtons = new[] { btnOpenWireshark, btnWiresharkHelp };
+            var validWiresharkButtons = wiresharkButtons.Where(b => b != null).ToArray();
+            
+            if (validWiresharkButtons.Length > 0)
+            {
+                int wiresharkButtonWidth = (int)(100 * scaleFactor);
+                int wiresharkButtonHeight = (int)(30 * scaleFactor);
+                int wiresharkButtonSpacing = (int)(15 * scaleFactor);
+                int totalWiresharkWidth = (validWiresharkButtons.Length * wiresharkButtonWidth) + ((validWiresharkButtons.Length - 1) * wiresharkButtonSpacing);
+                int wiresharkStartX = centerX - totalWiresharkWidth / 2;
+                int wiresharkY = networkY + controlHeight + (int)(70 * scaleFactor);
+
+                for (int i = 0; i < validWiresharkButtons.Length; i++)
+                {
+                    var button = validWiresharkButtons[i];
+                    button.Size = new Size(wiresharkButtonWidth, wiresharkButtonHeight);
+                    button.Location = new Point(
+                        wiresharkStartX + (i * (wiresharkButtonWidth + wiresharkButtonSpacing)),
+                        wiresharkY
+                    );
+                    button.Font = new Font(button.Font.FontFamily, Math.Max(button.Font.Size * scaleFactor, 8));
+                }
+            }
+
+            // Scale battle result control
+            if (battleResultControl != null)
+            {
+                battleResultControl.ScaleForFullscreen(scaleFactor);
+            }
+
+            ResumeLayout(true);
+        }
+
+        private void RestoreWindowedMultiplayerLayout()
+        {
+            SuspendLayout();
+
+            // Restore approximate original positions
+            if (lblPlayerName != null)
+            {
+                lblPlayerName.Font = new Font(lblPlayerName.Font.FontFamily, 10, FontStyle.Bold);
+                lblPlayerName.Location = new Point(20, 20);
+            }
+
+            if (lblStatus != null)
+            {
+                lblStatus.Font = new Font(lblStatus.Font.FontFamily, 9);
+                lblStatus.Location = new Point(20, 50);
+            }
+
+            // Restore network controls
+            if (txtServerIP != null)
+            {
+                txtServerIP.Size = new Size(120, 25);
+                txtServerIP.Location = new Point(20, 80);
+                txtServerIP.Font = new Font(txtServerIP.Font.FontFamily, 9);
+            }
+
+            if (txtPort != null)
+            {
+                txtPort.Size = new Size(80, 25);
+                txtPort.Location = new Point(160, 80);
+                txtPort.Font = new Font(txtPort.Font.FontFamily, 9);
+            }
+
+            if (txtRoomId != null)
+            {
+                txtRoomId.Size = new Size(100, 25);
+                txtRoomId.Location = new Point(260, 80);
+                txtRoomId.Font = new Font(txtRoomId.Font.FontFamily, 9);
+            }
+
+            // Restore network buttons
+            if (btnCreateRoom != null)
+            {
+                btnCreateRoom.Size = new Size(100, 30);
+                btnCreateRoom.Location = new Point(20, 120);
+                btnCreateRoom.Font = new Font(btnCreateRoom.Font.FontFamily, 9);
+            }
+
+            if (btnJoinRoom != null)
+            {
+                btnJoinRoom.Size = new Size(100, 30);
+                btnJoinRoom.Location = new Point(140, 120);
+                btnJoinRoom.Font = new Font(btnJoinRoom.Font.FontFamily, 9);
+            }
+
+            // Restore game buttons
+            var gameButtons = new[] { btnRock, btnPaper, btnScissors };
+            int[] buttonXPositions = { 50, 180, 310 };
+            
+            for (int i = 0; i < gameButtons.Length && i < buttonXPositions.Length; i++)
+            {
+                if (gameButtons[i] != null)
+                {
+                    gameButtons[i].Size = new Size(70, 70);
+                    gameButtons[i].Location = new Point(buttonXPositions[i], 180);
+                    gameButtons[i].Font = new Font(gameButtons[i].Font.FontFamily, 9);
+                }
+            }
+
+            // Restore gesture controls
+            if (playerGestureControl != null)
+            {
+                playerGestureControl.Size = new Size(100, 100);
+                playerGestureControl.Location = new Point(50, 360);
+            }
+
+            if (opponentGestureControl != null)
+            {
+                opponentGestureControl.Size = new Size(100, 100);
+                opponentGestureControl.Location = new Point(370, 360);
+            }
+
+            // Restore labels
+            if (lblPlayerChoice != null)
+            {
+                lblPlayerChoice.Font = new Font(lblPlayerChoice.Font.FontFamily, 9);
+                lblPlayerChoice.Location = new Point(50, 470);
+            }
+
+            if (lblOpponentChoice != null)
+            {
+                lblOpponentChoice.Font = new Font(lblOpponentChoice.Font.FontFamily, 9);
+                lblOpponentChoice.Location = new Point(370, 470);
+            }
+
+            if (lblGameResult != null)
+            {
+                lblGameResult.Font = new Font(lblGameResult.Font.FontFamily, 11, FontStyle.Bold);
+                lblGameResult.Location = new Point(200, 500);
+            }
+
+            if (lblScore != null)
+            {
+                lblScore.Font = new Font(lblScore.Font.FontFamily, 10, FontStyle.Bold);
+                lblScore.Location = new Point(150, 530);
+            }
+
+            if (btnBack != null)
+            {
+                btnBack.Size = new Size(100, 35);
+                btnBack.Location = new Point(220, 560);
+                btnBack.Font = new Font(btnBack.Font.FontFamily, 9);
+            }
+
+            // Restore Wireshark buttons
+            if (btnOpenWireshark != null)
+            {
+                btnOpenWireshark.Size = new Size(80, 25);
+                btnOpenWireshark.Location = new Point(270, 120);
+                btnOpenWireshark.Font = new Font(btnOpenWireshark.Font.FontFamily, 8);
+            }
+
+            if (btnWiresharkHelp != null)
+            {
+                btnWiresharkHelp.Size = new Size(80, 25);
+                btnWiresharkHelp.Location = new Point(360, 120);
+                btnWiresharkHelp.Font = new Font(btnWiresharkHelp.Font.FontFamily, 8);
+            }
+
+            // Restore battle result control
+            if (battleResultControl != null)
+            {
+                battleResultControl.ScaleForFullscreen(1.0f);
+            }
+
+            ResumeLayout(true);
+        }
+
+        private void AdjustGestureControlsForFullscreen(float scaleFactor)
+        {
+            if (playerGestureControl != null)
+            {
+                playerGestureControl.Size = new Size(
+                    (int)(100 * scaleFactor),
+                    (int)(100 * scaleFactor)
+                );
+                
+                if (scaleFactor > 1.0f)
+                {
+                    playerGestureControl.Location = new Point(
+                        (int)(this.ClientSize.Width * 0.25f - playerGestureControl.Width / 2),
+                        (int)(this.ClientSize.Height * 0.75f)
+                    );
+                }
+                else
+                {
+                    playerGestureControl.Location = new Point(50, 360);
+                }
+            }
+
+            if (opponentGestureControl != null)
+            {
+                opponentGestureControl.Size = new Size(
+                    (int)(100 * scaleFactor),
+                    (int)(100 * scaleFactor)
+                );
+                
+                if (scaleFactor > 1.0f)
+                {
+                    opponentGestureControl.Location = new Point(
+                        (int)(this.ClientSize.Width * 0.75f - opponentGestureControl.Width / 2),
+                        (int)(this.ClientSize.Height * 0.75f)
+                    );
+                }
+                else
+                {
+                    opponentGestureControl.Location = new Point(370, 360);
+                }
+            }
+        }
+
+        private void AdjustGameButtonsForFullscreen(float scaleFactor)
+        {
+            AdjustButtonForFullscreen(btnRock, scaleFactor);
+            AdjustButtonForFullscreen(btnPaper, scaleFactor);
+            AdjustButtonForFullscreen(btnScissors, scaleFactor);
+            AdjustButtonForFullscreen(btnBack, scaleFactor);
+        }
+
+        private void AdjustNetworkControlsForFullscreen(float scaleFactor)
+        {
+            AdjustButtonForFullscreen(btnCreateRoom, scaleFactor);
+            AdjustButtonForFullscreen(btnJoinRoom, scaleFactor);
+            AdjustButtonForFullscreen(btnOpenWireshark, scaleFactor);
+            AdjustButtonForFullscreen(btnWiresharkHelp, scaleFactor);
+            
+            // Adjust text boxes if needed
+            if (scaleFactor > 1.0f)
+            {
+                AdjustTextBoxForFullscreen(txtServerIP, scaleFactor);
+                AdjustTextBoxForFullscreen(txtPort, scaleFactor);
+                AdjustTextBoxForFullscreen(txtRoomId, scaleFactor);
+            }
+        }
+
+        private void AdjustButtonForFullscreen(Button? button, float scaleFactor)
+        {
+            if (button == null) return;
+            
+            // Store original size in Tag if not already stored
+            if (button.Tag == null)
+            {
+                button.Tag = new Size(button.Width, button.Height);
+            }
+            
+            Size originalSize = (Size)button.Tag;
+            button.Size = new Size(
+                (int)(originalSize.Width * scaleFactor),
+                (int)(originalSize.Height * scaleFactor)
+            );
+            
+            // Adjust font
+            float fontSize = button.Font.Size * scaleFactor;
+            button.Font = new Font(button.Font.FontFamily, fontSize, button.Font.Style);
+        }
+
+        private void AdjustTextBoxForFullscreen(TextBox? textBox, float scaleFactor)
+        {
+            if (textBox == null) return;
+            
+            // Store original size in Tag if not already stored
+            if (textBox.Tag == null)
+            {
+                textBox.Tag = new Size(textBox.Width, textBox.Height);
+            }
+            
+            Size originalSize = (Size)textBox.Tag;
+            textBox.Size = new Size(
+                (int)(originalSize.Width * scaleFactor),
+                (int)(originalSize.Height * scaleFactor)
+            );
+            
+            // Adjust font
+            float fontSize = textBox.Font.Size * scaleFactor;
+            textBox.Font = new Font(textBox.Font.FontFamily, fontSize, textBox.Font.Style);
         }
 
         private void ShowLocalIPInfo()
@@ -351,17 +905,56 @@ namespace BaiTapGK
 
         private void btnRock_Click(object sender, EventArgs e)
         {
-            MakeChoice("Da");
+            // Animation cho button click
+            ButtonAnimationHelper.AnimateButtonClick(btnRock, () => {
+                MakeChoiceWithAnimation("Da");
+            });
         }
 
         private void btnPaper_Click(object sender, EventArgs e)
         {
-            MakeChoice("Giay");
+            // Animation cho button click
+            ButtonAnimationHelper.AnimateButtonClick(btnPaper, () => {
+                MakeChoiceWithAnimation("Giay");
+            });
         }
 
         private void btnScissors_Click(object sender, EventArgs e)
         {
-            MakeChoice("Keo");
+            // Animation cho button click
+            ButtonAnimationHelper.AnimateButtonClick(btnScissors, () => {
+                MakeChoiceWithAnimation("Keo");
+            });
+        }
+
+        private void MakeChoiceWithAnimation(string choice)
+        {
+            // Disable buttons va animate
+            EnableGameButtonsWithAnimation(false);
+            
+            // Hien thi choice confirmation
+            Button? chosenButton = GetButtonByChoice(choice);
+            if (chosenButton != null)
+            {
+                ButtonAnimationHelper.AnimateChoiceConfirmation(chosenButton);
+            }
+            
+            // Reset gesture controls safely
+            playerGestureControl?.Reset();
+            opponentGestureControl?.Reset();
+            
+            // Start countdown animation for multiplayer
+            CountdownAnimationHelper.StartCountdown(this, () =>
+            {
+                // Start player gesture animation
+                playerGestureControl?.StartShakeAnimation(choice, (playerChoice) =>
+                {
+                    lblPlayerChoice.Text = $"Ban chon: {playerChoice}";
+                    
+                    // Send choice to opponent after animation
+                    MakeChoice(choice);
+                });
+            });
         }
 
         private void MakeChoice(string choice)
@@ -380,45 +973,161 @@ namespace BaiTapGK
         {
             if (!string.IsNullOrEmpty(playerChoice) && !string.IsNullOrEmpty(opponentChoice))
             {
-                lblOpponentChoice.Text = $"Doi thu chon: {opponentChoice}";
-                
-                string result = GetGameResult(playerChoice, opponentChoice);
-                lblGameResult.Text = result;
-                
-                if (result.Contains("Ban thang"))
+                // Start opponent gesture animation when we receive their choice
+                opponentGestureControl?.StartShakeAnimation(opponentChoice, (oppChoice) =>
                 {
-                    playerScore++;
-                    lblGameResult.ForeColor = Color.Green;
+                    lblOpponentChoice.Text = $"Doi thu chon: {oppChoice}";
+                    
+                    // Show final result after opponent animation
+                    ShowFinalMultiplayerResult();
+                });
+            }
+        }
+
+        private void ShowFinalMultiplayerResult()
+        {
+            string result = GetGameResult(playerChoice, opponentChoice);
+            
+            // Get opponent name from label
+            string opponentName = lblOpponent.Text.Replace("Doi thu: ", "").Trim();
+            if (string.IsNullOrEmpty(opponentName) || opponentName == "---")
+            {
+                opponentName = "DOI THU";
+            }
+            
+            // Show battle result with new control
+            battleResultControl?.ShowBattleResult(playerChoice, opponentChoice, result, playerName, opponentName);
+            
+            if (result.Contains("Ban thang"))
+            {
+                playerScore++;
+                // Win celebration is handled by BattleResultControl
+            }
+            else if (result.Contains("Ban thua"))
+            {
+                opponentScore++;
+                // Lose sound is handled by BattleResultControl
+            }
+            
+            UpdateScoreWithAnimation();
+            
+            // Reset cho van tiep theo sau 4 giay
+            System.Windows.Forms.Timer resetTimer = new System.Windows.Forms.Timer();
+            resetTimer.Interval = 4000; // Longer to see battle result
+            resetTimer.Tick += (s, e) =>
+            {
+                ResetRoundWithAnimation();
+                resetTimer.Stop();
+                resetTimer.Dispose();
+            };
+            resetTimer.Start();
+        }
+
+        private void ShowResultWithAnimation()
+        {
+            // Tao hieu ung fade-in cho opponent choice
+            lblOpponentChoice.ForeColor = Color.Transparent;
+            
+            System.Windows.Forms.Timer fadeTimer = new System.Windows.Forms.Timer();
+            fadeTimer.Interval = 50;
+            int fadeStep = 0;
+            
+            fadeTimer.Tick += (sender, e) =>
+            {
+                fadeStep++;
+                double progress = Math.Min(fadeStep / 10.0, 1.0);
+                
+                int alpha = (int)(255 * progress);
+                lblOpponentChoice.ForeColor = Color.FromArgb(alpha, Color.Black);
+                
+                if (fadeStep >= 10)
+                {
+                    lblOpponentChoice.ForeColor = Color.Black;
+                    fadeTimer.Stop();
+                    fadeTimer.Dispose();
                 }
-                else if (result.Contains("Ban thua"))
+            };
+            fadeTimer.Start();
+        }
+
+        private void UpdateScoreWithAnimation()
+        {
+            UpdateScore();
+            
+            // Animate score update
+            System.Windows.Forms.Timer pulseTimer = new System.Windows.Forms.Timer();
+            pulseTimer.Interval = 100;
+            int pulseStep = 0;
+            Font originalFont = lblScore.Font;
+            
+            pulseTimer.Tick += (sender, e) =>
+            {
+                pulseStep++;
+                
+                if (pulseStep <= 3)
                 {
-                    opponentScore++;
-                    lblGameResult.ForeColor = Color.Red;
+                    // Phong to
+                    lblScore.Font = new Font(originalFont.FontFamily, originalFont.Size + 2, FontStyle.Bold);
+                    lblScore.ForeColor = Color.DarkBlue;
                 }
                 else
                 {
-                    lblGameResult.ForeColor = Color.Orange;
+                    // Thu nho ve ban dau
+                    lblScore.Font = originalFont;
+                    lblScore.ForeColor = Color.DarkGreen;
                 }
                 
-                UpdateScore();
-                
-                // Reset cho van tiep theo
-                System.Windows.Forms.Timer resetTimer = new System.Windows.Forms.Timer();
-                resetTimer.Interval = 3000; // 3 giay
-                resetTimer.Tick += (s, e) =>
+                if (pulseStep >= 6)
                 {
-                    playerChoice = "";
-                    opponentChoice = "";
-                    lblPlayerChoice.Text = "Ban chon: ---";
-                    lblOpponentChoice.Text = "Doi thu chon: ---";
-                    lblGameResult.Text = "Chon lua chon cua ban";
-                    lblGameResult.ForeColor = Color.Black;
-                    EnableGameButtons(true);
-                    resetTimer.Stop();
-                    resetTimer.Dispose();
-                };
-                resetTimer.Start();
-            }
+                    pulseTimer.Stop();
+                    pulseTimer.Dispose();
+                }
+            };
+            pulseTimer.Start();
+        }
+
+        private void ResetRoundWithAnimation()
+        {
+            // Reset gesture controls safely
+            playerGestureControl?.Reset();
+            opponentGestureControl?.Reset();
+            
+            // Animate reset process
+            System.Windows.Forms.Timer resetTimer = new System.Windows.Forms.Timer();
+            resetTimer.Interval = 150;
+            int resetStep = 0;
+            
+            resetTimer.Tick += (sender, e) =>
+            {
+                resetStep++;
+                
+                switch (resetStep)
+                {
+                    case 1:
+                        playerChoice = "";
+                        lblPlayerChoice.Text = "Ban chon: ---";
+                        lblPlayerChoice.ForeColor = Color.Gray;
+                        break;
+                    case 2:
+                        opponentChoice = "";
+                        lblOpponentChoice.Text = "Doi thu chon: ---";
+                        lblOpponentChoice.ForeColor = Color.Gray;
+                        break;
+                    case 3:
+                        lblGameResult.Text = "Chon lua chon cua ban";
+                        lblGameResult.ForeColor = Color.Black;
+                        break;
+                    case 4:
+                        // Khoi phuc mau sac ban dau
+                        lblPlayerChoice.ForeColor = Color.Black;
+                        lblOpponentChoice.ForeColor = Color.Black;
+                        EnableGameButtonsWithAnimation(true);
+                        resetTimer.Stop();
+                        resetTimer.Dispose();
+                        break;
+                }
+            };
+            resetTimer.Start();
         }
 
         private string GetGameResult(string player, string opponent)
@@ -445,13 +1154,41 @@ namespace BaiTapGK
 
         private void EnableGameButtons(bool enabled)
         {
+            EnableGameButtonsWithAnimation(enabled);
+        }
+
+        private void EnableGameButtonsWithAnimation(bool enabled)
+        {
             btnRock.Enabled = enabled;
             btnPaper.Enabled = enabled;
             btnScissors.Enabled = enabled;
+            
+            if (enabled)
+            {
+                ButtonAnimationHelper.AnimateButtonEnable(btnRock);
+                ButtonAnimationHelper.AnimateButtonEnable(btnPaper);
+                ButtonAnimationHelper.AnimateButtonEnable(btnScissors);
+            }
+            else
+            {
+                ButtonAnimationHelper.AnimateButtonDisable(btnRock);
+                ButtonAnimationHelper.AnimateButtonDisable(btnPaper);
+                ButtonAnimationHelper.AnimateButtonDisable(btnScissors);
+            }
         }
 
         private void btnBack_Click(object sender, EventArgs e)
         {
+            // Stop animations before closing
+            ButtonAnimationHelper.StopCurrentAnimation();
+            
+            // Stop gesture animations
+            playerGestureControl?.StopAnimation();
+            opponentGestureControl?.StopAnimation();
+            
+            // Hide battle result
+            battleResultControl?.HideBattleResult();
+            
             // Dong ket noi
             try
             {
@@ -470,6 +1207,16 @@ namespace BaiTapGK
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
+            // Stop animations before closing
+            ButtonAnimationHelper.StopCurrentAnimation();
+            
+            // Stop gesture animations
+            playerGestureControl?.StopAnimation();
+            opponentGestureControl?.StopAnimation();
+            
+            // Hide battle result
+            battleResultControl?.HideBattleResult();
+            
             // Dong ket noi khi dong form
             try
             {
@@ -519,6 +1266,17 @@ namespace BaiTapGK
             {
                 MessageBox.Show($"Loi: {ex.Message}", "Loi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private Button? GetButtonByChoice(string choice)
+        {
+            return choice switch
+            {
+                "Da" => btnRock,
+                "Giay" => btnPaper,
+                "Keo" => btnScissors,
+                _ => null
+            };
         }
     }
 }

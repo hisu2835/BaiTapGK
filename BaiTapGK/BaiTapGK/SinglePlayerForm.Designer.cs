@@ -154,7 +154,7 @@ namespace BaiTapGK
             this.AutoScaleDimensions = new SizeF(7F, 15F);
             this.AutoScaleMode = AutoScaleMode.Font;
             this.BackColor = Color.LightGreen;
-            this.ClientSize = new Size(500, 450);
+            this.ClientSize = new Size(500, 500);
             this.Controls.Add(this.btnBack);
             this.Controls.Add(this.btnReset);
             this.Controls.Add(this.lblResult);

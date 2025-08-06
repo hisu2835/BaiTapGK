@@ -14,9 +14,20 @@
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null))
+            if (disposing)
             {
-                components.Dispose();
+                // Cleanup custom resources
+                try
+                {
+                    CleanupCustomResources();
+                }
+                catch { }
+                
+                // Cleanup components
+                if (components != null)
+                {
+                    components.Dispose();
+                }
             }
             base.Dispose(disposing);
         }

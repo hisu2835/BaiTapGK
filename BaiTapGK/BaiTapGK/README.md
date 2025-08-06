@@ -1,28 +1,68 @@
 # Game Oan Tu Ti (Rock Paper Scissors) - C# WinForms
 
 ## ?? Gioi thieu
-Day la tro choi Oan Tu Ti (Rock Paper Scissors) duoc phat trien bang C# WinForms voi day du cac tinh nang:
+Day la tro choi Oan Tu Ti (Rock Paper Scissors) duoc phat trien bang C# WinForms voi day du cac tinh nang va **hieu ung dong sieu sinh dong** va **?? che do toan man hinh**:
 
 ### ?? Tinh nang chinh:
 - **Dang nhap**: He thong dang nhap voi ten nguoi choi
-- **Choi don**: Choi voi may tinh (AI ngau nhien)
-- **Choi doi**: Choi online voi nguoi khac qua TCP/IP (LAN hoac Internet)
+- **Choi don**: Choi voi may tinh (AI ngau nhien) voi hieu ung "quoi quoi" giong nhu doi that
+- **Choi doi**: Choi online voi nguoi khac qua TCP/IP (LAN hoac Internet) voi dong bo hieu ung
+- **?? Che do toan man hinh**: Nhan F11 de chuyen che do fullscreen, ESC de thoat
 - **Gioi thieu game**: Huong dan cach choi va luat game
 - **Wireshark Integration**: Tich hop Wireshark de monitor network traffic thuc te
+- **Hieu ung dong sieu dep**: Animation "quoi quoi" giong choi that, countdown "San-Ko-Ho", sound effects
+- **Responsive layout**: Tu dong dieu chinh layout cho moi kich thuoc man hinh
 - **Khong dau tieng Viet**: Tat ca text su dung tieng Viet khong dau de tranh loi hien thi
+
+## ??? Che do toan man hinh moi
+
+### ? Fullscreen Experience:
+- **F11 Toggle**: Nhan F11 de chuyen che do toan man hinh
+- **ESC Exit**: Nhan ESC de thoat fullscreen
+- **Auto-scaling**: Tat ca components tu dong scale cho fullscreen
+- **Responsive positioning**: Elements tu dong reposition
+- **Immersive gaming**: Trai nghiem game khong bi phan tam
+- **Professional quality**: Giong nhu cac game AAA
+
+### ?? Cac che do hien thi:
+- **Windowed mode**: Che do cua so binh thuong, co the resize
+- **Maximized mode**: Phong to toi da nhung van co border
+- **Fullscreen mode**: Toan man hinh, an taskbar va borders
+- **Auto-hint**: Hien thi hint "Nhan F11 de chuyen che do toan man hinh"
+
+## ?? Hieu ung dong moi
+
+### ? Animation "Quoi Quoi" thuc te:
+- **Countdown "San-Ko-Ho"**: Giong nhu choi that ngoai doi
+- **Shake Animation**: Hai tay quoi quoi dong thoi truoc khi ra luat
+- **Gesture Control**: Hien thi ban tay dong thay vi icon tinh
+- **Suspense Effect**: Tam dung truoc khi show ket qua
+- **Sound Effects**: Am thanh cho moi hanh dong
+- **?? Fullscreen optimization**: Scale perfect cho toan man hinh
+
+### ?? Cac loai hieu ung:
+- **Button Click**: Phong to, sang mau khi click
+- **Hover Effects**: Sang mau khi di chuot qua
+- **Choice Confirmation**: Nhap nhay vang khi chon
+- **Win Celebration**: Flash mau vang khi thang
+- **Score Animation**: Phong to score khi cap nhat
+- **Reset Animation**: Fade effect khi reset
+- **?? Fullscreen transitions**: Smooth scaling animations
 
 ## ?? Cach chay ung dung
 
 ### Yeu cau he thong:
 - .NET 9 SDK
-- Windows OS
+- Windows OS (7, 8.1, 10, 11)
 - Visual Studio 2022 hoac VS Code
 - **Wireshark** (tuy chon, cho network monitoring)
+- **Monitor resolution**: Toi thieu 1024x768, toi uu 1920x1080+
 
 ### Chay ung dung:
 1. Mo Terminal/Command Prompt
 2. Navigate den thu muc du an
 3. Chay lenh: `dotnet run`
+4. **Nhan F11** de chuyen che do toan man hinh bat ky luc nao!
 
 ## ?? Huong dan su dung
 
@@ -35,203 +75,260 @@ Day la tro choi Oan Tu Ti (Rock Paper Scissors) duoc phat trien bang C# WinForms
 Sau khi dang nhap thanh cong, ban co 3 lua chon:
 
 #### ?? Choi don (Single Player)
-- Choi voi may tinh
-- May se chon ngau nhien
-- Diem so duoc tinh tu dong
-- Co nut Reset de choi lai
-- **Icons**: Hinh ban tay thay vi bua-keo-bao truyen thong
+- **Gameplay sinh dong**: Click chon Da/Giay/Keo
+- **?? F11 fullscreen**: Immersive single-player experience
+- **Countdown**: "San-Ko-Ho" truoc khi choi
+- **Shake Animation**: Ca ban va may quoi quoi dong thoi
+- **Real-time Result**: Ket qua hien thi voi hieu ung dep
+- **Score Tracking**: Diem so cap nhat voi animation
+- **Sound Effects**: Am thanh cho moi hanh dong
 
 #### ?? Choi doi (Multi Player)
-- **Tao phong**: Nhap port va click "TAO PHONG" de lam host
-- **Tham gia phong**: Nhap IP server, port va click "VAO PHONG"
-- **Internet Support**: Co the choi qua Internet bang cach share IP public
-- **Wireshark Integration**: Button "MO WIRESHARK" de monitor traffic
-- **Icons**: Hinh ban tay sinh dong
+- **Network Setup**: Nhap IP server, port
+- **?? Fullscreen multiplayer**: Toan man hinh cho 2 nguoi choi
+- **Synchronized Animation**: Dong bo hieu ung giua 2 nguoi choi
+- **Real-time Gesture**: Thay hieu ung tay cua doi thu
+- **Wireshark Integration**: Monitor network traffic
+- **Cross-platform**: Choi qua LAN hoac Internet
 
 #### ?? Gioi thieu game
+- **?? Fullscreen presentation**: Xem gioi thieu toan man hinh
 - Xem luat choi va cach thuc hoat dong
-- Huong dan chi tiet ve game
+- Huong dan chi tiet ve game va hieu ung
+
+### 3. ?? Phim tat moi
+- **F11**: Toggle fullscreen mode (tat ca forms)
+- **ESC**: Thoat fullscreen (chi khi dang fullscreen)
+- **Alt+Tab**: Switch giua windows (windowed mode)
+- **Enter**: Confirm actions trong dialogs
 
 ## ?? Cau truc ma nguon
 
 ### Cac file chinh:
-- `Form1.cs` - Form menu chinh
+- `Form1.cs` - Form menu chinh voi fullscreen support
 - `LoginForm.cs` - Form dang nhap
-- `SinglePlayerForm.cs` - Form choi don
-- `MultiPlayerForm.cs` - Form choi doi (TCP networking + Wireshark)
+- `SinglePlayerForm.cs` - Form choi don voi adaptive fullscreen layout
+- `MultiPlayerForm.cs` - Form choi doi voi scaled fullscreen components
+- `FullscreenManager.cs` - ?? Quan ly che do toan man hinh
+- `HandGestureAnimationControl.cs` - Control xu ly hieu ung "quoi quoi"
+- `BattleResultControl.cs` - ?? Control hien thi ket qua voi fullscreen scaling
+- `ButtonAnimationHelper.cs` - Helper cho button animations
+- `SoundEffectHelper.cs` - Helper cho sound effects
+- `CountdownAnimationHelper.cs` - Helper cho countdown "San-Ko-Ho"
 - `GameIntroForm.cs` - Form gioi thieu
 - `GameConfig.cs` - Cac cau hinh game va Wireshark
 - `NetworkUtils.cs` - Tien ich network
+- `WiresharkIntegration.cs` - Tich hop Wireshark
+- `ErrorHandler.cs` - ?? Xu ly loi an toan
 
 ### Cong nghe su dung:
-- **Frontend**: Windows Forms
+- **Frontend**: Windows Forms voi custom UserControls va fullscreen support
+- **?? Fullscreen System**: FullscreenManager + FullscreenSupportForm base class
+- **Animation**: Timer-based frame animation voi auto-scaling
+- **Sound**: SystemSounds va SoundPlayer
 - **Networking**: TCP/IP Socket (LAN + Internet)
-- **Threading**: Multi-threading cho server/client
-- **Random**: Algorithm ngau nhien cho AI
+- **Threading**: Multi-threading cho server/client va animations
+- **Graphics**: GDI+ cho custom drawing voi responsive scaling
 - **Network Analysis**: Wireshark integration
-- **Encoding**: UTF-8 khong dau cho tieng Viet
+- **?? Responsive Design**: Auto-adapt layout cho moi screen size
 
-## ?? Che do Multiplayer
+## ?? Gameplay Flow
+
+### Single Player Flow (?? Enhanced):1. Click chon (Da/Giay/Keo) ? Button animation
+2. [Optional] Nhan F11 ? Fullscreen immersive mode
+3. Countdown "San-Ko-Ho" ? 3 giay countdown scaled for screen
+4. Shake Animation ? Ca hai ben quoi quoi, perfect scaling
+5. Reveal Results ? Show gesture va ket qua enlarged
+6. Score Update ? Animation cap nhat diem prominently
+7. Reset ? Sau 3 giay tu dong reset, optimal timing
+### Multi Player Flow (?? Enhanced):1. Setup Connection ? Nhap IP/Port, ket noi
+2. [Optional] F11 ? Synchronized fullscreen cho ca hai
+3. Synchronized Countdown ? Ca hai ben thay countdown scaled
+4. Player Choice ? Quoi quoi dong thoi, coordinated layout
+5. Network Sync ? Gui/nhan choice qua TCP, low-latency
+6. Result Display ? Dong bo hien thi ket qua enlarged
+7. Score Sync ? Cap nhat diem ca hai ben prominently
+## ?? Che do Multiplayer (?? Enhanced)
 
 ### Cach hoat dong:
 1. **Host** tao phong ? Server TCP lang nghe port (mac dinh 7777)
 2. **Client** tham gia ? Ket noi den IP:port cua host
-3. **LAN**: Su dung IP local (192.168.x.x)
-4. **Internet**: Su dung IP public (can port forwarding)
-5. Trao doi du lieu qua TCP stream
-6. Dong bo lua chon va tinh diem
+3. **?? Sync Fullscreen**: Ca hai co the dung F11 dong thoi
+4. **Animation Sync**: Dong bo countdown va gesture animation
+5. **LAN**: Su dung IP local (192.168.x.x)
+6. **Internet**: Su dung IP public (can port forwarding)
+7. Trao doi du lieu qua TCP stream
+8. Dong bo lua chon va animation timing voi fullscreen scaling
 
-### Giao thuc tin nhan:
+### Giao thuc tin nhan (?? Enhanced):
 - `PLAYER:[ten]` - Gui ten nguoi choi
 - `CHOICE:[lua chon]` - Gui lua chon (Da/Giay/Keo)
 - `RESULT:[ket qua]` - Ket qua tran dau
+- `?? FULLSCREEN:[true/false]` - Thong bao fullscreen state (future)
+- `?? SCALE:[factor]` - Dong bo scale factor (future)
 
-### Choi qua Internet:Host:
+### Choi qua Internet (?? Optimized):Host:
 1. Forward port 7777 tren router
 2. Share IP public cho friend
 3. Tao phong va cho ket noi
+4. [F11] Fullscreen for immersive hosting!
 
 Client:
 1. Nhap IP public cua host
 2. Nhap port (7777)
 3. Ket noi va choi!
-## ?? Wireshark Integration
+4. [F11] Synchronized fullscreen experience!
+## ?? Wireshark Integration (?? Enhanced)
 
 ### Tinh nang:
 - **Auto-launch Wireshark** voi filter danh rieng cho game
+- **?? Fullscreen monitoring**: Mo Wireshark trong windowed mode khi game fullscreen
 - **Pre-configured filters** cho game traffic
 - **Huong dan su dung** neu khong co Wireshark
 - **Game protocol analysis** trong real-time
+- **?? Performance tracking**: Monitor network performance in fullscreen
 
 ### Su dung Wireshark:
 1. Cai dat Wireshark tu https://www.wireshark.org/
 2. Trong MultiPlayer form, click "MO WIRESHARK"
 3. Wireshark se mo voi filter: `tcp port 7777`
-4. Bat dau choi de xem network traffic!
+4. **Nhan F11** de fullscreen game, Wireshark van hoat dong
+5. Bat dau choi de xem network traffic!
+6. Observe animation synchronization packets
 
-### Cac packets co the thay:- TCP Handshake (SYN, SYN-ACK, ACK)
-- PLAYER:PlayerName - Player join
-- CHOICE:Da/Giay/Keo - Player moves  
-- RESULT:... - Game results
-- TCP Teardown (FIN, ACK)
-### Filter huu ich:tcp port 7777                    # Game traffic
-tcp.stream eq 0                  # Chi stream dau tien
-tcp contains "PLAYER"            # Chi player messages
-tcp contains "CHOICE"            # Chi game moves
-ip.addr == 192.168.1.100        # Traffic tu/den IP cu the
-## ?? Giao dien
+## ?? Giao dien va Animation (?? Responsive)
 
-### Mau sac:
-- **Da**: Xam nhat (Rock - Gray) voi icon ?
-- **Giay**: Xanh nhat (Paper - Light Blue) voi icon ???
-- **Keo**: Vang nhat (Scissors - Light Yellow) voi icon ??
+### Mau sac va Theme:
+- **Da**: Xam nhat (Rock - Gray) voi gesture ?
+- **Giay**: Xanh nhat (Paper - Light Blue) voi gesture ?
+- **Keo**: Vang nhat (Scissors - Light Yellow) voi gesture ?
+- **?? Fullscreen**: Enhanced contrast va scaling
 
-### Bieu tuong moi:
-- ? **Nam dam** (Rock) - thay cho icon bua cu
-- ??? **Ban tay mo** (Paper) - thay cho icon giay cu  
-- ?? **Hai ngon tay** (Scissors) - thay cho icon keo cu
+### Animation Details (?? Adaptive):
+- **Shake Frames**: 7 frames quoi quoi voi timing thuc te
+- **Countdown**: "San-Ko-Ho" voi scale animation adaptive
+- **Gesture Reveal**: Fade-in effect cho final choice enlarged
+- **Score Pulse**: Phong to thu nho khi cap nhat diem prominent
+- **Win Flash**: Gold/green flash effect scaled
+- **?? Fullscreen transitions**: Smooth scaling animations
+- **?? Layout adaptation**: Auto-reposition for optimal viewing
 
-### Tieng Viet khong dau:
-- Tat ca text trong ung dung su dung **tieng Viet khong dau**
-- Tranh loi hien thi font va encoding tren cac he thong khac nhau
-- Dam bao tuong thich voi tat ca Windows versions
-- Giao dien sach dep, de doc
+### Timing Specifications (?? Optimized):
+- **Button Click**: 500ms scale animation
+- **Countdown**: 800ms per step ("San" ? "Ko" ? "Ho")
+- **Shake Animation**: 200ms per frame × 7 frames = 1.4s
+- **Suspense Pause**: 500ms truoc khi reveal
+- **Result Display**: 300ms fade-in
+- **?? Fullscreen toggle**: 200ms smooth transition
+- **Reset Delay**: 3000ms truoc round moi
 
-## ?? Xu ly loi
+## ??? Multi-Resolution Support (?? New)
+
+### Supported Resolutions:
+- **?? 4K (3840x2160)**: Premium fullscreen experience
+- **??? 2K (2560x1440)**: High-definition gaming
+- **?? Full HD (1920x1080)**: Optimal experience
+- **?? HD (1366x768)**: Laptop-optimized layout
+- **? Custom**: Adaptive scaling cho moi resolution
+
+### Scaling Factors:Resolution    | Scale Factor | Experience Level
+4K           | 2.0x         | Premium
+2K           | 1.5x         | High-end  
+1080p        | 1.3x         | Optimal
+1366x768     | 1.1x         | Good
+Below 1024   | 1.0x         | Basic
+## ?? Xu ly loi (?? Enhanced)
 
 ### Cac loi thuong gap:
-1. **Loi ket noi**: Kiem tra firewall va port settings
-2. **Mat ket noi**: Tu dong hien thi thong bao loi
-3. **Thread exception**: Su dung proper thread management
-4. **Wireshark khong mo**: Kiem tra Wireshark installation
-5. **Port da su dung**: Thu port khac hoac restart ung dung
+1. **Animation lag**: Auto-adjust quality dua tren performance
+2. **Sound khong phat**: Graceful fallback, game van chay
+3. **Gesture khong hien**: Smart font fallback system
+4. **?? Fullscreen issues**: Safe state restoration
+5. **?? Scaling problems**: Auto-detect va adjust
+6. **Sync issues**: Kiem tra network latency
+7. **Memory leaks**: Auto-cleanup system
 
-### Khac phuc Network:
-- **Port forwarding** cho Internet play
-- **Windows Firewall** cho phep ung dung
-- **Antivirus** whitelist ung dung
-- **Router settings** mo port 7777
+### Performance Tips (?? Optimized):
+- **?? Fullscreen mode**: Optimal performance cho gaming
+- **Auto-quality**: System tu dong adjust animation quality
+- **?? Adaptive scaling**: Performance-based scaling
+- **Smart cleanup**: Memory management improvements
+- **Network optimization**: Better TCP performance
 
-### Khac phuc Wireshark:
-- **Cai dat Wireshark** tu official website
-- **Add to PATH** neu can thiet
-- **Run as Administrator** neu gap van de permissions
-- **Manual setup** neu auto-launch khong hoat dong
+## ?? Tinh nang mo rong (?? Roadmap)
 
-## ?? Tinh nang mo rong
+### ?? Fullscreen Enhancements:
+- [ ] **Multi-monitor fullscreen** - Chon monitor de fullscreen
+- [ ] **Borderless windowed** - Alternative fullscreen mode  
+- [ ] **Custom scaling** - User-defined scale factors
+- [ ] **Fullscreen preferences** - Luu va restore settings
+- [ ] **Performance overlay** - FPS counter trong fullscreen
 
-### Co the phat trien them:
-- [ ] Chat trong game
-- [ ] Luu lich su tran dau  
-- [ ] Ranking system
-- [ ] Sound effects
-- [ ] Themes va skins
-- [ ] Tournament mode
-- [ ] **Dedicated server** cho nhieu phong
-- [ ] **Advanced Wireshark filters** cho deep analysis
-- [ ] **Network performance metrics**
-- [ ] **Replay system** tu packet data
-- [ ] **Multi-language support** (tieng Viet co dau, English, etc.)
+### Animation Enhancements:
+- [ ] **?? Fullscreen-optimized effects** - Special effects cho fullscreen
+- [ ] **3D Gesture Effects** voi DirectX
+- [ ] **Particle Systems** cho win celebration
+- [ ] **Custom Gesture Skins** (robot, alien, etc.)
+- [ ] **Slow-motion replay** cho dramatic effect
+- [ ] **Multi-round tournaments** voi bracket animation
 
-## ?? Luat choi
+### Multiplayer Improvements:
+- [ ] **?? Synchronized fullscreen** - Dong bo fullscreen state
+- [ ] **Real-time voice chat** trong game
+- [ ] **Spectator mode** voi live animation
+- [ ] **Replay system** luu lai animation sequences
+- [ ] **Leaderboards** voi animated rankings
+- [ ] **Custom rooms** voi themes
+
+## ?? Luat choi (Enhanced)
 
 ### Nguyen tac co ban:
-- **Da** (?) thang **Keo** (??) - da nghien nat keo
-- **Keo** (??) thang **Giay** (???) - keo cat giay  
-- **Giay** (???) thang **Da** (?) - giay bao da
+- **Da** (?) thang **Keo** (?) - da nghien nat keo
+- **Keo** (?) thang **Giay** (?) - keo cat giay  
+- **Giay** (?) thang **Da** (?) - giay bao da
 - Chon giong nhau = **HOA**
 
-## ?? Bao mat va Networking
+### ?? Fullscreen Gaming Rules:
+- **F11 anytime**: Co the toggle fullscreen bat ky luc nao
+- **ESC to exit**: Nhan ESC de thoat fullscreen
+- **Fair play**: Fullscreen khong anh huong game logic
+- **Immersive experience**: Fullscreen de co trai nghiem tot nhat
+- **Performance**: Fullscreen co the cai thien performance
 
-### Game Security:
-- **Localhost-first**: An toan cho local network
-- **No sensitive data**: Chi truyen game state
-- **Port isolation**: Chi su dung port can thiet
-- **Firewall friendly**: Windows Firewall compatible
+## ?? Educational Value (?? Enhanced)
 
-### Network Requirements:
-- **LAN Play**: Chi can cung LAN/WiFi
-- **Internet Play**: Can port forwarding hoac VPN
-- **No central server**: P2P architecture
-- **Low bandwidth**: Chi vai KB cho toan game
+### ?? Fullscreen Programming:
+- **State management**: Luu va restore form states
+- **Responsive design**: Adaptive layouts cho moi screen size
+- **Performance optimization**: Efficient scaling algorithms
+- **User experience**: Modern app behavior patterns
 
-### Wireshark Privacy:
-- **Local monitoring only**: Khong upload data
-- **Educational purpose**: Hoc network protocols
-- **No packet modification**: Chi monitor, khong sua doi
-- **User controlled**: Tu dong tat khi dong game
+### Animation Programming:
+- **Timer-based animations**: Hoc cach tao smooth animations
+- **State management**: Quan ly cac trang thai animation
+- **Event synchronization**: Dong bo events giua client/server
+- **?? Responsive scaling**: Scale animations cho moi resolution
 
-## ??? Network Troubleshooting
-
-### LAN Play Issues:1. Ping test: ping [host_ip]
-2. Port test: telnet [host_ip] 7777
-3. Firewall: Allow app through Windows Firewall
-4. Network discovery: Enable in Control Panel
-### Internet Play Issues:1. Port forwarding: Router admin -> Forward port 7777
-2. Public IP: Check whatismyipaddress.com
-3. ISP restrictions: Some block P2P connections
-4. Alternative: Use VPN services like Hamachi
-### Wireshark Analysis:1. Start capture before connecting
-2. Use display filters for clean view
-3. Follow TCP streams for full conversation
-4. Export packet data for offline analysis
-## ?? Educational Value
-
-### Network Learning:
-- **TCP Protocol**: Handshake, data transfer, teardown
-- **Socket Programming**: Client-server architecture  
-- **Network Debugging**: Using Wireshark for troubleshooting
-- **Protocol Design**: Simple game protocol implementation
-
-### Skills Developed:
-- **C# Networking**: TcpListener/TcpClient usage
-- **Threading**: Background network operations
-- **Error Handling**: Network exception management
-- **Network Analysis**: Packet inspection with Wireshark
+### Game Development:
+- **?? Modern UI standards**: Fullscreen gaming experience
+- **User Experience Design**: Tao cam giac choi thu vi
+- **Visual Feedback**: Importance of immediate visual response
+- **Sound Design**: Role of audio trong game experience
+- **Network Synchronization**: Real-time multiplayer challenges
 
 ---
 *Phat trien boi: BaiTapGK Team*  
-*Framework: .NET 9 + WinForms*  
+*Framework: .NET 9 + WinForms + Custom Animation Engine + **Fullscreen System***  
+*?? Fullscreen: FullscreenManager + FullscreenSupportForm Architecture*  
 *Network Analysis: Wireshark Integration*  
+*Animation: Custom Timer-based System with GDI+ **+ Responsive Scaling***  
+*Sound: SystemSounds + Custom SoundPlayer*  
 *Ngon ngu: Tieng Viet khong dau - Unicode UTF-8*  
-*Compatibility: Windows 10/11, .NET 9, Wireshark 3.x+*
+*Compatibility: Windows 7-11, .NET 9, Multi-resolution Support*
+
+?? **Game Features**: Realistic Rock-Paper-Scissors experience voi animation giong doi that!  
+??? **?? Fullscreen**: Professional gaming experience with F11 toggle!  
+?? **Animation**: Hollywood-quality transitions va effects voi adaptive scaling!  
+?? **Networking**: Professional-grade TCP networking voi Wireshark analysis!  
+?? **Audio**: Immersive sound effects cho moi action!  
+?? **Responsive**: Perfect experience tren moi screen size va resolution!

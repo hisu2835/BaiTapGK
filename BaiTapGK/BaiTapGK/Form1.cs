@@ -1,20 +1,51 @@
 using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace BaiTapGK
 {
-    public partial class Form1 : Form
+    public partial class Form1 : FullscreenSupportForm
     {
         private string playerName = "";
         private bool isLoggedIn = false;
+        
+        // Luu original layout info
+        private Dictionary<Control, Rectangle> originalBounds = new Dictionary<Control, Rectangle>();
+        private Font? originalWelcomeFont;
 
         public Form1()
         {
             InitializeComponent();
             this.StartPosition = FormStartPosition.CenterScreen;
-            this.FormBorderStyle = FormBorderStyle.FixedDialog;
-            this.MaximizeBox = false;
+            this.FormBorderStyle = FormBorderStyle.Sizable; // Cho phep resize
+            this.MaximizeBox = true; // Cho phep maximize
+            this.MinimizeBox = true; // Cho phep minimize
+            
+            // Set minimum size
+            this.MinimumSize = new Size(600, 400);
+            
+            // Store original layout information
+            this.Load += (s, e) => StoreOriginalLayout();
+        }
+
+        private void StoreOriginalLayout()
+        {
+            // Luu layout ban dau de restore sau nay
+            foreach (Control control in this.Controls)
+            {
+                if (control != null)
+                {
+                    originalBounds[control] = control.Bounds;
+                }
+            }
+            
+            // Luu font ban dau
+            if (lblWelcome != null)
+            {
+                originalWelcomeFont = new Font(lblWelcome.Font.FontFamily, lblWelcome.Font.Size, lblWelcome.Font.Style);
+            }
         }
 
         protected override void OnLoad(EventArgs e)
@@ -92,6 +123,206 @@ namespace BaiTapGK
             isLoggedIn = false;
             EnableGameButtons(false);
             ShowLoginForm();
+        }
+
+        protected override void AdjustLayoutForFullscreen(bool isFullscreen)
+        {
+            if (isFullscreen)
+            {
+                // Fullscreen mode - center everything and scale up
+                ApplyFullscreenLayout();
+            }
+            else
+            {
+                // Windowed mode - restore original layout
+                RestoreWindowedLayout();
+            }
+        }
+
+        private void ApplyFullscreenLayout()
+        {
+            // Tinh toan scale factor dua tren screen size
+            float baseWidth = 600f; // Original minimum width
+            float baseHeight = 400f; // Original minimum height
+            
+            float widthScale = this.ClientSize.Width / baseWidth;
+            float heightScale = this.ClientSize.Height / baseHeight;
+            
+            // Su dung scale factor nho hon de dam bao fit
+            float scaleFactor = Math.Min(widthScale, heightScale) * 0.7f; // 0.7f de co margin
+            scaleFactor = Math.Max(scaleFactor, 1.2f); // Minimum 1.2x scale
+            scaleFactor = Math.Min(scaleFactor, 2.5f); // Maximum 2.5x scale for better visibility
+
+            // Tao layout moi cho fullscreen
+            ApplyFullscreenLayoutWithScale(scaleFactor);
+        }
+
+        private void ApplyFullscreenLayoutWithScale(float scaleFactor)
+        {
+            SuspendLayout();
+
+            // Calculate center position for main content area
+            int contentWidth = (int)(400 * scaleFactor); // Base content width
+            int contentHeight = (int)(500 * scaleFactor); // Base content height
+            
+            int startX = (this.ClientSize.Width - contentWidth) / 2;
+            int startY = Math.Max(50, (this.ClientSize.Height - contentHeight) / 2);
+
+            // Position title at top center (if exists)
+            if (lblTitle != null)
+            {
+                lblTitle.Font = new Font(lblTitle.Font.FontFamily, 
+                    lblTitle.Font.Size * scaleFactor, FontStyle.Bold);
+                
+                lblTitle.AutoSize = true;
+                lblTitle.Location = new Point(
+                    (this.ClientSize.Width - lblTitle.PreferredSize.Width) / 2,
+                    startY
+                );
+                lblTitle.ForeColor = Color.DarkBlue;
+            }
+
+            // Position welcome label below title
+            if (lblWelcome != null)
+            {
+                float welcomeFontSize = Math.Max(originalWelcomeFont?.Size ?? 12, 12) * scaleFactor;
+                welcomeFontSize = Math.Min(welcomeFontSize, 28); // Cap font size
+                
+                lblWelcome.Font = new Font(originalWelcomeFont?.FontFamily ?? FontFamily.GenericSansSerif, 
+                    welcomeFontSize, FontStyle.Bold);
+                
+                lblWelcome.AutoSize = true;
+                lblWelcome.Location = new Point(
+                    (this.ClientSize.Width - lblWelcome.PreferredSize.Width) / 2,
+                    startY + (int)(60 * scaleFactor)
+                );
+                lblWelcome.ForeColor = Color.DarkGreen;
+            }
+
+            // Position picture box (if exists)
+            if (pictureBox1 != null)
+            {
+                int picSize = (int)(100 * scaleFactor);
+                pictureBox1.Size = new Size(picSize, (int)(80 * scaleFactor));
+                pictureBox1.Location = new Point(
+                    (this.ClientSize.Width - picSize) / 2,
+                    startY + (int)(120 * scaleFactor)
+                );
+            }
+
+            // Calculate button layout in vertical stack - centered and evenly spaced
+            var buttons = new[] { btnSinglePlayer, btnMultiPlayer, btnGameIntro, btnChangeUser, btnExit };
+            var validButtons = buttons.Where(b => b != null).ToArray();
+            
+            if (validButtons.Length > 0)
+            {
+                int buttonWidth = (int)(250 * scaleFactor); // Wider buttons
+                int buttonHeight = (int)(55 * scaleFactor); // Taller buttons
+                int buttonSpacing = (int)(25 * scaleFactor); // More spacing
+                
+                int totalButtonHeight = (validButtons.Length * buttonHeight) + ((validButtons.Length - 1) * buttonSpacing);
+                int buttonStartY = startY + (int)(220 * scaleFactor); // After picture box
+                
+                // Center buttons vertically in remaining space
+                int availableHeight = this.ClientSize.Height - buttonStartY - (int)(80 * scaleFactor);
+                if (totalButtonHeight < availableHeight)
+                {
+                    buttonStartY += (availableHeight - totalButtonHeight) / 2;
+                }
+
+                for (int i = 0; i < validButtons.Length; i++)
+                {
+                    var button = validButtons[i];
+                    
+                    // Scale button with better proportions
+                    button.Size = new Size(buttonWidth, buttonHeight);
+                    
+                    // Center horizontally, stack vertically
+                    button.Location = new Point(
+                        (this.ClientSize.Width - buttonWidth) / 2,
+                        buttonStartY + (i * (buttonHeight + buttonSpacing))
+                    );
+                    
+                    // Scale font with better readability
+                    float buttonFontSize = Math.Max(button.Font.Size, 9) * scaleFactor;
+                    buttonFontSize = Math.Min(buttonFontSize, 16); // Cap button font size
+                    
+                    button.Font = new Font(button.Font.FontFamily, 
+                        buttonFontSize, button.Font.Style);
+                    
+                    // Add some visual enhancement for fullscreen
+                    button.FlatStyle = FlatStyle.Flat;
+                    button.FlatAppearance.BorderSize = 2;
+                    button.FlatAppearance.BorderColor = Color.DarkGray;
+                }
+            }
+
+            ResumeLayout(true);
+        }
+
+        private void RestoreWindowedLayout()
+        {
+            SuspendLayout();
+
+            // Restore original bounds and properties
+            foreach (var kvp in originalBounds)
+            {
+                if (kvp.Key != null && !kvp.Key.IsDisposed)
+                {
+                    kvp.Key.Bounds = kvp.Value;
+                    
+                    // Restore original font and style if it's a button
+                    if (kvp.Key is Button button)
+                    {
+                        // Restore original font size (estimate)
+                        float originalSize = button.Font.Size / GetCurrentScaleFactor();
+                        button.Font = new Font(button.Font.FontFamily, 
+                            Math.Max(originalSize, 8), FontStyle.Bold);
+                        
+                        // Restore original button style
+                        button.FlatStyle = FlatStyle.Standard;
+                        button.ForeColor = SystemColors.ControlText;
+                    }
+                }
+            }
+            
+            // Restore welcome label font and color
+            if (lblWelcome != null && originalWelcomeFont != null)
+            {
+                lblWelcome.Font = new Font(originalWelcomeFont.FontFamily, 
+                    originalWelcomeFont.Size, originalWelcomeFont.Style);
+                lblWelcome.ForeColor = Color.DarkGreen;
+            }
+
+            // Restore title if exists
+            if (lblTitle != null)
+            {
+                lblTitle.Font = new Font(lblTitle.Font.FontFamily, 24, FontStyle.Bold);
+                lblTitle.ForeColor = Color.DarkBlue;
+            }
+
+            ResumeLayout(true);
+        }
+
+        private float GetCurrentScaleFactor()
+        {
+            // Estimate current scale factor from button size
+            if (btnSinglePlayer != null && originalBounds.ContainsKey(btnSinglePlayer))
+            {
+                var originalSize = originalBounds[btnSinglePlayer].Size;
+                if (originalSize.Width > 0)
+                {
+                    return (float)btnSinglePlayer.Width / originalSize.Width;
+                }
+            }
+            return 1.0f;
+        }
+
+        // Cleanup method to be called from Dispose in Designer.cs
+        private void CleanupCustomResources()
+        {
+            originalWelcomeFont?.Dispose();
+            originalBounds.Clear();
         }
     }
 }
