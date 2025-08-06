@@ -86,7 +86,7 @@ namespace BaiTapGK
             this.btnPaper.Name = "btnPaper";
             this.btnPaper.Size = new Size(100, 80);
             this.btnPaper.TabIndex = 4;
-            this.btnPaper.Text = "?\nGIAY";
+            this.btnPaper.Text = "???\nGIAY";
             this.btnPaper.UseVisualStyleBackColor = false;
             this.btnPaper.Click += new EventHandler(this.btnPaper_Click);
             

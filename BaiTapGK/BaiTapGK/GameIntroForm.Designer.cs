@@ -41,32 +41,32 @@ namespace BaiTapGK
             this.rtbGameRules.ReadOnly = true;
             this.rtbGameRules.Size = new Size(460, 300);
             this.rtbGameRules.TabIndex = 1;
-            this.rtbGameRules.Text = @"?? TRO CHOI OAN TU TI (ROCK PAPER SCISSORS)
+            this.rtbGameRules.Text = @"TRO CHOI OAN TU TI (ROCK PAPER SCISSORS)
 
-?? CACH CHOI:
+CACH CHOI:
 • Ban va doi thu dong thoi chon mot trong ba lua chon:
   - ? DA (Rock)
-  - ? GIAY (Paper)  
+  - ??? GIAY (Paper)  
   - ?? KEO (Scissors)
 
-?? LUAT CHOI:
+LUAT CHOI:
 • DA thang KEO (da nghien nat keo)
 • KEO thang GIAY (keo cat giay)
 • GIAY thang DA (giay bao da)
 • Neu cung chon giong nhau = HOA
 
-?? CHE DO CHOI:
-1?? CHOI DON: Choi voi may tinh (AI ngau nhien)
-2?? CHOI DOI: Choi online voi nguoi khac
+CHE DO CHOI:
+1. CHOI DON: Choi voi may tinh (AI ngau nhien)
+2. CHOI DOI: Choi online voi nguoi khac
    - Tao phong hoac tham gia phong bang ID
    - Can ket noi Internet de choi
 
-?? MEO:
+MEO:
 • Khong co chien thuat co dinh vi game hoan toan dua vao may man
 • Hay du doan tam ly doi thu trong che do choi doi
 • Thuong thuc va vui choi!
 
-?? CHUC BAN CHOI VUI VE! ??";
+CHUC BAN CHOI VUI VE!";
             
             // btnClose
             this.btnClose.BackColor = Color.LightCoral;

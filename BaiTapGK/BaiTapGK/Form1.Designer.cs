@@ -142,13 +142,16 @@
 
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
         {
-            // Ve bieu tuong game don gian
+            // Ve bieu tuong hinh ban tay thay vi bua keo bao
             Graphics g = e.Graphics;
             Font font = new Font("Arial", 16, FontStyle.Bold);
             
-            g.DrawString("✊", font, Brushes.Black, 10, 10);
-            g.DrawString("✋", font, Brushes.Black, 35, 10);
-            g.DrawString("✂️", font, Brushes.Black, 60, 10);
+            // Hinh ban tay - Da (nam dam)
+            g.DrawString("✊", font, Brushes.DarkGray, 10, 10);
+            // Hinh ban tay - Giay (ban tay mo)
+            g.DrawString("🖐️", font, Brushes.LightBlue, 35, 10);
+            // Hinh ban tay - Keo (2 ngon tay)
+            g.DrawString("✌️", font, Brushes.Gold, 60, 10);
             
             g.DrawString("ROCK", new Font("Arial", 8), Brushes.Black, 5, 40);
             g.DrawString("PAPER", new Font("Arial", 8), Brushes.Black, 30, 40);

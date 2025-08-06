@@ -5,6 +5,8 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using System.Diagnostics;
+using System.IO;
 
 namespace BaiTapGK
 {
@@ -35,9 +37,25 @@ namespace BaiTapGK
             
             // Tao Room ID ngau nhien
             roomId = GenerateRoomId();
-            lblRoomId.Text = $"Room ID: {roomId}";
+            txtRoomId.Text = roomId;
             
             EnableGameButtons(false);
+            
+            // Hien thi thong tin IP local
+            ShowLocalIPInfo();
+        }
+
+        private void ShowLocalIPInfo()
+        {
+            try
+            {
+                string localIP = NetworkUtils.GetLocalIPAddress();
+                lblConnectionInfo.Text = $"IP Local: {localIP} | Room: {roomId}";
+            }
+            catch
+            {
+                lblConnectionInfo.Text = $"Room: {roomId}";
+            }
         }
 
         private string GenerateRoomId()
@@ -49,24 +67,29 @@ namespace BaiTapGK
         {
             try
             {
-                if (!NetworkUtils.IsPortAvailable(GameConfig.DEFAULT_PORT))
+                int port = int.Parse(txtPort.Text);
+                
+                if (!NetworkUtils.IsPortAvailable(port))
                 {
-                    MessageBox.Show($"Port {GameConfig.DEFAULT_PORT} dang duoc su dung!", "Loi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show($"Port {port} dang duoc su dung!", "Loi", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
                 isHost = true;
-                tcpListener = new TcpListener(IPAddress.Any, GameConfig.DEFAULT_PORT);
+                tcpListener = new TcpListener(IPAddress.Any, port);
                 tcpListener.Start();
                 
                 tcpListenerThread = new Thread(new ThreadStart(ListenForClients));
                 tcpListenerThread.IsBackground = true;
                 tcpListenerThread.Start();
                 
-                lblStatus.Text = "Dang cho nguoi choi khac tham gia...";
-                lblStatus.ForeColor = GameConfig.TIE_COLOR;
+                lblStatus.Text = $"Dang cho nguoi choi ket noi den {NetworkUtils.GetLocalIPAddress()}:{port}";
+                lblStatus.ForeColor = Color.Orange;
                 btnCreateRoom.Enabled = false;
                 btnJoinRoom.Enabled = false;
+                
+                // Hien thi thong tin cho ban be
+                ShowConnectionInfo(port);
             }
             catch (Exception ex)
             {
@@ -74,12 +97,35 @@ namespace BaiTapGK
             }
         }
 
+        private void ShowConnectionInfo(int port)
+        {
+            string localIP = NetworkUtils.GetLocalIPAddress();
+            string message = $"THONG TIN KET NOI:\n\n" +
+                           $"Server IP: {localIP}\n" +
+                           $"Port: {port}\n" +
+                           $"Room ID: {roomId}\n\n" +
+                           $"Gui thong tin nay cho ban be de ho ket noi!\n\n" +
+                           $"Su dung Wireshark de monitor traffic:\n" +
+                           $"Filter: tcp port {port}";
+            
+            MessageBox.Show(message, "Thong tin Server", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
         private void btnJoinRoom_Click(object sender, EventArgs e)
         {
+            string serverIP = txtServerIP.Text.Trim();
+            string portText = txtPort.Text.Trim();
             string inputRoomId = txtRoomId.Text.Trim();
-            if (!NetworkUtils.IsValidRoomId(inputRoomId))
+            
+            if (string.IsNullOrEmpty(serverIP) || string.IsNullOrEmpty(portText))
             {
-                MessageBox.Show(GameConfig.Messages.ENTER_ROOM_ID, "Thong bao", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Vui long nhap day du thong tin server!", "Thong bao", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (!int.TryParse(portText, out int port))
+            {
+                MessageBox.Show("Port khong hop le!", "Loi", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -87,7 +133,7 @@ namespace BaiTapGK
             {
                 isHost = false;
                 tcpClient = new TcpClient();
-                tcpClient.Connect(GameConfig.DEFAULT_HOST, GameConfig.DEFAULT_PORT);
+                tcpClient.Connect(serverIP, port);
                 stream = tcpClient.GetStream();
                 
                 tcpClientThread = new Thread(new ThreadStart(ListenForData));
@@ -97,8 +143,8 @@ namespace BaiTapGK
                 // Gui ten nguoi choi
                 SendMessage($"PLAYER:{playerName}");
                 
-                lblStatus.Text = "Da ket noi! San sang choi.";
-                lblStatus.ForeColor = GameConfig.WIN_COLOR;
+                lblStatus.Text = $"Da ket noi den {serverIP}:{port}! San sang choi.";
+                lblStatus.ForeColor = Color.Green;
                 btnCreateRoom.Enabled = false;
                 btnJoinRoom.Enabled = false;
                 EnableGameButtons(true);
@@ -106,8 +152,105 @@ namespace BaiTapGK
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Khong the ket noi den phong: {ex.Message}", "Loi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Khong the ket noi den server {serverIP}:{port}\n\nLoi: {ex.Message}", 
+                    "Loi ket noi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void btnOpenWireshark_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string port = txtPort.Text;
+                
+                if (WiresharkIntegration.LaunchWireshark(port, out string errorMessage))
+                {
+                    MessageBox.Show($"Da mo Wireshark voi filter: tcp port {port}\n\n" +
+                                   "Bat dau choi game de xem network traffic!\n\n" +
+                                   "Tips:\n" +
+                                   "- Right-click packet ? Follow TCP Stream\n" +
+                                   "- Statistics ? Conversations", 
+                                   "Wireshark Started", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show(errorMessage, "Loi Wireshark", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    WiresharkIntegration.ShowInstructions(port, txtServerIP.Text);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Loi: {ex.Message}", "Loi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void OpenWiresharkWithFilter(string port)
+        {
+            try
+            {
+                // Thu cac duong dan Wireshark thuong gap
+                string[] wiresharkPaths = {
+                    @"C:\Program Files\Wireshark\Wireshark.exe",
+                    @"C:\Program Files (x86)\Wireshark\Wireshark.exe",
+                    "wireshark.exe" // Neu co trong PATH
+                };
+
+                string wiresharkPath = "";
+                foreach (string path in wiresharkPaths)
+                {
+                    if (File.Exists(path) || path == "wireshark.exe")
+                    {
+                        wiresharkPath = path;
+                        break;
+                    }
+                }
+
+                if (string.IsNullOrEmpty(wiresharkPath))
+                {
+                    // Neu khong tim thay Wireshark, hien thi huong dan
+                    ShowWiresharkInstructions(port);
+                    return;
+                }
+
+                // Tao filter cho game traffic
+                string filter = $"tcp port {port}";
+                
+                // Khoi dong Wireshark voi filter
+                ProcessStartInfo startInfo = new ProcessStartInfo
+                {
+                    FileName = wiresharkPath,
+                    Arguments = $"-k -f \"{filter}\"", // -k: start capturing, -f: filter
+                    UseShellExecute = false
+                };
+
+                Process.Start(startInfo);
+                
+                MessageBox.Show($"Da mo Wireshark voi filter: {filter}\n\n" +
+                               "Bat dau choi game de xem network traffic!", 
+                               "Wireshark", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                ShowWiresharkInstructions(port);
+            }
+        }
+
+        private void ShowWiresharkInstructions(string port)
+        {
+            string instructions = $"HUONG DAN SU DUNG WIRESHARK:\n\n" +
+                                 $"1. Mo Wireshark (tai tai: https://www.wireshark.org/)\n" +
+                                 $"2. Chon network interface (thuong la Ethernet hoac WiFi)\n" +
+                                 $"3. Ap dung filter: tcp port {port}\n" +
+                                 $"4. Nhan Start de bat dau capture\n" +
+                                 $"5. Choi game de xem traffic!\n\n" +
+                                 $"CAC MESSAGE GAME BAN CO THE THAY:\n" +
+                                 $"- PLAYER:[ten] - Khi player tham gia\n" +
+                                 $"- CHOICE:[Da/Giay/Keo] - Khi player chon\n" +
+                                 $"- RESULT:[ket qua] - Ket qua tran dau\n\n" +
+                                 $"IP Server: {NetworkUtils.GetLocalIPAddress()}\n" +
+                                 $"Port: {port}";
+
+            MessageBox.Show(instructions, "Huong dan Wireshark", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void ListenForClients()
@@ -124,7 +267,7 @@ namespace BaiTapGK
                         this.Invoke((MethodInvoker)delegate
                         {
                             lblStatus.Text = "Nguoi choi da tham gia! San sang choi.";
-                            lblStatus.ForeColor = GameConfig.WIN_COLOR;
+                            lblStatus.ForeColor = Color.Green;
                             EnableGameButtons(true);
                             gameStarted = true;
                         });
@@ -162,7 +305,7 @@ namespace BaiTapGK
                 this.Invoke((MethodInvoker)delegate
                 {
                     lblStatus.Text = $"Mat ket noi: {ex.Message}";
-                    lblStatus.ForeColor = GameConfig.LOSE_COLOR;
+                    lblStatus.ForeColor = Color.Red;
                     EnableGameButtons(false);
                 });
             }
@@ -245,16 +388,16 @@ namespace BaiTapGK
                 if (result.Contains("Ban thang"))
                 {
                     playerScore++;
-                    lblGameResult.ForeColor = GameConfig.WIN_COLOR;
+                    lblGameResult.ForeColor = Color.Green;
                 }
                 else if (result.Contains("Ban thua"))
                 {
                     opponentScore++;
-                    lblGameResult.ForeColor = GameConfig.LOSE_COLOR;
+                    lblGameResult.ForeColor = Color.Red;
                 }
                 else
                 {
-                    lblGameResult.ForeColor = GameConfig.TIE_COLOR;
+                    lblGameResult.ForeColor = Color.Orange;
                 }
                 
                 UpdateScore();
@@ -315,8 +458,10 @@ namespace BaiTapGK
                 stream?.Close();
                 tcpClient?.Close();
                 tcpListener?.Stop();
-                tcpListenerThread?.Abort();
-                tcpClientThread?.Abort();
+                
+                // Su dung CancellationToken thay vi Abort()
+                tcpListenerThread = null;
+                tcpClientThread = null;
             }
             catch { }
             
@@ -331,12 +476,49 @@ namespace BaiTapGK
                 stream?.Close();
                 tcpClient?.Close();
                 tcpListener?.Stop();
-                tcpListenerThread?.Abort();
-                tcpClientThread?.Abort();
+                
+                tcpListenerThread = null;
+                tcpClientThread = null;
             }
             catch { }
             
             base.OnFormClosing(e);
+        }
+
+        private void btnWiresharkHelp_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string port = txtPort.Text;
+                string serverIP = string.IsNullOrEmpty(txtServerIP.Text) ? NetworkUtils.GetLocalIPAddress() : txtServerIP.Text;
+                
+                // Hien thi thong tin Wireshark status
+                string status = WiresharkIntegration.IsWiresharkInstalled() ? 
+                    "Da cai dat" : "Chua cai dat";
+                string version = WiresharkIntegration.GetWiresharkVersion();
+                
+                string info = $"WIRESHARK STATUS:\n" +
+                             $"Trang thai: {status}\n" +
+                             $"Phien ban: {version}\n\n" +
+                             $"Chon hanh dong:";
+                
+                DialogResult result = MessageBox.Show(info + "\n\nYes = Xem huong dan\nNo = Tao filter file\nCancel = Dong",
+                    "Wireshark Help", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+                
+                switch (result)
+                {
+                    case DialogResult.Yes:
+                        WiresharkIntegration.ShowInstructions(port, serverIP);
+                        break;
+                    case DialogResult.No:
+                        WiresharkIntegration.CreateFilterFile(port);
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Loi: {ex.Message}", "Loi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

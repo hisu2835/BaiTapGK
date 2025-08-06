@@ -22,9 +22,9 @@ namespace BaiTapGK
         public static readonly Color LOSE_COLOR = Color.Red;
         public static readonly Color TIE_COLOR = Color.Orange;
         
-        // Game symbols
+        // Game symbols - Hinh ban tay thay vi bua keo bao
         public const string ROCK_SYMBOL = "?";
-        public const string PAPER_SYMBOL = "?";
+        public const string PAPER_SYMBOL = "???";
         public const string SCISSORS_SYMBOL = "??";
         
         // Game choices
@@ -41,6 +41,23 @@ namespace BaiTapGK
             public const string LOGIN_REQUIRED = "Vui long dang nhap truoc!";
             public const string ENTER_NAME = "Vui long nhap ten nguoi choi!";
             public const string ENTER_ROOM_ID = "Vui long nhap Room ID!";
+            public const string ENTER_SERVER_INFO = "Vui long nhap thong tin server!";
+            public const string CONNECTION_SUCCESS = "Ket noi thanh cong!";
+            public const string CONNECTION_FAILED = "Ket noi that bai!";
+        }
+
+        // Wireshark integration
+        public static class Wireshark
+        {
+            public static readonly string[] COMMON_PATHS = {
+                @"C:\Program Files\Wireshark\Wireshark.exe",
+                @"C:\Program Files (x86)\Wireshark\Wireshark.exe",
+                "wireshark.exe"
+            };
+            
+            public const string DOWNLOAD_URL = "https://www.wireshark.org/";
+            public const string FILTER_TEMPLATE = "tcp port {0}";
+            public const string CAPTURE_ARGS = "-k -f \"{0}\""; // -k: start, -f: filter
         }
     }
 }

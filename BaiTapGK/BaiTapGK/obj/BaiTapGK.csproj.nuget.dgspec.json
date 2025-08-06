@@ -50,16 +50,6 @@
       "frameworks": {
         "net9.0-windows7.0": {
           "targetAlias": "net9.0-windows",
-          "dependencies": {
-            "PacketDotNet": {
-              "target": "Package",
-              "version": "[1.4.7, )"
-            },
-            "SharpPcap": {
-              "target": "Package",
-              "version": "[6.2.5, )"
-            }
-          },
           "imports": [
             "net461",
             "net462",

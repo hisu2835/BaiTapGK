@@ -6,10 +6,14 @@ namespace BaiTapGK
         private Label lblTitle;
         private Label lblPlayerName;
         private Label lblOpponent;
-        private Label lblRoomId;
+        private Label lblConnectionInfo;
+        private TextBox txtServerIP;
+        private TextBox txtPort;
         private TextBox txtRoomId;
         private Button btnCreateRoom;
         private Button btnJoinRoom;
+        private Button btnOpenWireshark;
+        private Button btnWiresharkHelp;
         private Label lblStatus;
         private Button btnRock;
         private Button btnPaper;
@@ -34,10 +38,14 @@ namespace BaiTapGK
             this.lblTitle = new Label();
             this.lblPlayerName = new Label();
             this.lblOpponent = new Label();
-            this.lblRoomId = new Label();
+            this.lblConnectionInfo = new Label();
+            this.txtServerIP = new TextBox();
+            this.txtPort = new TextBox();
             this.txtRoomId = new TextBox();
             this.btnCreateRoom = new Button();
             this.btnJoinRoom = new Button();
+            this.btnOpenWireshark = new Button();
+            this.btnWiresharkHelp = new Button();
             this.lblStatus = new Label();
             this.btnRock = new Button();
             this.btnPaper = new Button();
@@ -55,7 +63,7 @@ namespace BaiTapGK
             this.lblTitle.ForeColor = Color.DarkBlue;
             this.lblTitle.Location = new Point(150, 20);
             this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new Size(200, 29);
+            this.lblTitle.Size = new Size(250, 29);
             this.lblTitle.TabIndex = 0;
             this.lblTitle.Text = "CHOI DOI ONLINE";
             
@@ -77,31 +85,49 @@ namespace BaiTapGK
             this.lblOpponent.TabIndex = 2;
             this.lblOpponent.Text = "Doi thu: ---";
             
-            // lblRoomId
-            this.lblRoomId.AutoSize = true;
-            this.lblRoomId.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Bold, GraphicsUnit.Point);
-            this.lblRoomId.ForeColor = Color.DarkGreen;
-            this.lblRoomId.Location = new Point(30, 120);
-            this.lblRoomId.Name = "lblRoomId";
-            this.lblRoomId.Size = new Size(100, 17);
-            this.lblRoomId.TabIndex = 3;
-            this.lblRoomId.Text = "Room ID: ";
+            // lblConnectionInfo
+            this.lblConnectionInfo.AutoSize = true;
+            this.lblConnectionInfo.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Bold, GraphicsUnit.Point);
+            this.lblConnectionInfo.ForeColor = Color.DarkGreen;
+            this.lblConnectionInfo.Location = new Point(30, 120);
+            this.lblConnectionInfo.Name = "lblConnectionInfo";
+            this.lblConnectionInfo.Size = new Size(150, 17);
+            this.lblConnectionInfo.TabIndex = 3;
+            this.lblConnectionInfo.Text = "Thong tin ket noi:";
+            
+            // txtServerIP
+            this.txtServerIP.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            this.txtServerIP.Location = new Point(30, 150);
+            this.txtServerIP.Name = "txtServerIP";
+            this.txtServerIP.PlaceholderText = "IP Server (vd: 192.168.1.100)";
+            this.txtServerIP.Size = new Size(150, 23);
+            this.txtServerIP.TabIndex = 4;
+            this.txtServerIP.Text = "127.0.0.1";
+            
+            // txtPort
+            this.txtPort.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            this.txtPort.Location = new Point(190, 150);
+            this.txtPort.Name = "txtPort";
+            this.txtPort.PlaceholderText = "Port";
+            this.txtPort.Size = new Size(60, 23);
+            this.txtPort.TabIndex = 5;
+            this.txtPort.Text = "7777";
             
             // txtRoomId
             this.txtRoomId.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Regular, GraphicsUnit.Point);
-            this.txtRoomId.Location = new Point(30, 150);
+            this.txtRoomId.Location = new Point(260, 150);
             this.txtRoomId.Name = "txtRoomId";
-            this.txtRoomId.PlaceholderText = "Nhap Room ID de tham gia";
-            this.txtRoomId.Size = new Size(200, 23);
-            this.txtRoomId.TabIndex = 4;
+            this.txtRoomId.PlaceholderText = "Room ID";
+            this.txtRoomId.Size = new Size(80, 23);
+            this.txtRoomId.TabIndex = 6;
             
             // btnCreateRoom
             this.btnCreateRoom.BackColor = Color.LightGreen;
             this.btnCreateRoom.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Bold, GraphicsUnit.Point);
-            this.btnCreateRoom.Location = new Point(260, 140);
+            this.btnCreateRoom.Location = new Point(30, 185);
             this.btnCreateRoom.Name = "btnCreateRoom";
-            this.btnCreateRoom.Size = new Size(100, 40);
-            this.btnCreateRoom.TabIndex = 5;
+            this.btnCreateRoom.Size = new Size(120, 35);
+            this.btnCreateRoom.TabIndex = 7;
             this.btnCreateRoom.Text = "TAO PHONG";
             this.btnCreateRoom.UseVisualStyleBackColor = false;
             this.btnCreateRoom.Click += new EventHandler(this.btnCreateRoom_Click);
@@ -109,31 +135,54 @@ namespace BaiTapGK
             // btnJoinRoom
             this.btnJoinRoom.BackColor = Color.LightBlue;
             this.btnJoinRoom.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Bold, GraphicsUnit.Point);
-            this.btnJoinRoom.Location = new Point(380, 140);
+            this.btnJoinRoom.Location = new Point(160, 185);
             this.btnJoinRoom.Name = "btnJoinRoom";
-            this.btnJoinRoom.Size = new Size(100, 40);
-            this.btnJoinRoom.TabIndex = 6;
+            this.btnJoinRoom.Size = new Size(120, 35);
+            this.btnJoinRoom.TabIndex = 8;
             this.btnJoinRoom.Text = "VAO PHONG";
             this.btnJoinRoom.UseVisualStyleBackColor = false;
             this.btnJoinRoom.Click += new EventHandler(this.btnJoinRoom_Click);
+            
+            // btnOpenWireshark
+            this.btnOpenWireshark.BackColor = Color.LightSalmon;
+            this.btnOpenWireshark.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            this.btnOpenWireshark.Location = new Point(290, 185);
+            this.btnOpenWireshark.Name = "btnOpenWireshark";
+            this.btnOpenWireshark.Size = new Size(90, 35);
+            this.btnOpenWireshark.TabIndex = 9;
+            this.btnOpenWireshark.Text = "MO WIRESHARK";
+            this.btnOpenWireshark.UseVisualStyleBackColor = false;
+            this.btnOpenWireshark.Click += new EventHandler(this.btnOpenWireshark_Click);
+            
+            // btnWiresharkHelp  
+            this.btnWiresharkHelp = new Button();
+            this.btnWiresharkHelp.BackColor = Color.LightGoldenrodYellow;
+            this.btnWiresharkHelp.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            this.btnWiresharkHelp.Location = new Point(390, 185);
+            this.btnWiresharkHelp.Name = "btnWiresharkHelp";
+            this.btnWiresharkHelp.Size = new Size(90, 35);
+            this.btnWiresharkHelp.TabIndex = 19;
+            this.btnWiresharkHelp.Text = "WIRESHARK HELP";
+            this.btnWiresharkHelp.UseVisualStyleBackColor = false;
+            this.btnWiresharkHelp.Click += new EventHandler(this.btnWiresharkHelp_Click);
             
             // lblStatus
             this.lblStatus.AutoSize = true;
             this.lblStatus.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Bold, GraphicsUnit.Point);
             this.lblStatus.ForeColor = Color.Orange;
-            this.lblStatus.Location = new Point(30, 200);
+            this.lblStatus.Location = new Point(30, 235);
             this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new Size(250, 17);
-            this.lblStatus.TabIndex = 7;
-            this.lblStatus.Text = "Tao phong hoac tham gia phong de choi";
+            this.lblStatus.Size = new Size(300, 17);
+            this.lblStatus.TabIndex = 10;
+            this.lblStatus.Text = "Nhap thong tin server de tao phong hoac tham gia";
             
             // btnRock
             this.btnRock.BackColor = Color.LightGray;
             this.btnRock.Font = new Font("Microsoft Sans Serif", 12F, FontStyle.Bold, GraphicsUnit.Point);
-            this.btnRock.Location = new Point(50, 250);
+            this.btnRock.Location = new Point(50, 280);
             this.btnRock.Name = "btnRock";
             this.btnRock.Size = new Size(90, 70);
-            this.btnRock.TabIndex = 8;
+            this.btnRock.TabIndex = 11;
             this.btnRock.Text = "?\nDA";
             this.btnRock.UseVisualStyleBackColor = false;
             this.btnRock.Click += new EventHandler(this.btnRock_Click);
@@ -141,21 +190,21 @@ namespace BaiTapGK
             // btnPaper
             this.btnPaper.BackColor = Color.LightBlue;
             this.btnPaper.Font = new Font("Microsoft Sans Serif", 12F, FontStyle.Bold, GraphicsUnit.Point);
-            this.btnPaper.Location = new Point(180, 250);
+            this.btnPaper.Location = new Point(180, 280);
             this.btnPaper.Name = "btnPaper";
             this.btnPaper.Size = new Size(90, 70);
-            this.btnPaper.TabIndex = 9;
-            this.btnPaper.Text = "?\nGIAY";
+            this.btnPaper.TabIndex = 12;
+            this.btnPaper.Text = "???\nGIAY";
             this.btnPaper.UseVisualStyleBackColor = false;
             this.btnPaper.Click += new EventHandler(this.btnPaper_Click);
             
             // btnScissors
             this.btnScissors.BackColor = Color.LightYellow;
             this.btnScissors.Font = new Font("Microsoft Sans Serif", 12F, FontStyle.Bold, GraphicsUnit.Point);
-            this.btnScissors.Location = new Point(310, 250);
+            this.btnScissors.Location = new Point(310, 280);
             this.btnScissors.Name = "btnScissors";
             this.btnScissors.Size = new Size(90, 70);
-            this.btnScissors.TabIndex = 10;
+            this.btnScissors.TabIndex = 13;
             this.btnScissors.Text = "??\nKEO";
             this.btnScissors.UseVisualStyleBackColor = false;
             this.btnScissors.Click += new EventHandler(this.btnScissors_Click);
@@ -163,47 +212,47 @@ namespace BaiTapGK
             // lblPlayerChoice
             this.lblPlayerChoice.AutoSize = true;
             this.lblPlayerChoice.Font = new Font("Microsoft Sans Serif", 11F, FontStyle.Regular, GraphicsUnit.Point);
-            this.lblPlayerChoice.Location = new Point(30, 340);
+            this.lblPlayerChoice.Location = new Point(30, 370);
             this.lblPlayerChoice.Name = "lblPlayerChoice";
             this.lblPlayerChoice.Size = new Size(120, 18);
-            this.lblPlayerChoice.TabIndex = 11;
+            this.lblPlayerChoice.TabIndex = 14;
             this.lblPlayerChoice.Text = "Ban chon: ---";
             
             // lblOpponentChoice
             this.lblOpponentChoice.AutoSize = true;
             this.lblOpponentChoice.Font = new Font("Microsoft Sans Serif", 11F, FontStyle.Regular, GraphicsUnit.Point);
-            this.lblOpponentChoice.Location = new Point(30, 370);
+            this.lblOpponentChoice.Location = new Point(30, 400);
             this.lblOpponentChoice.Name = "lblOpponentChoice";
             this.lblOpponentChoice.Size = new Size(140, 18);
-            this.lblOpponentChoice.TabIndex = 12;
+            this.lblOpponentChoice.TabIndex = 15;
             this.lblOpponentChoice.Text = "Doi thu chon: ---";
             
             // lblGameResult
             this.lblGameResult.AutoSize = true;
             this.lblGameResult.Font = new Font("Microsoft Sans Serif", 12F, FontStyle.Bold, GraphicsUnit.Point);
-            this.lblGameResult.Location = new Point(30, 410);
+            this.lblGameResult.Location = new Point(30, 440);
             this.lblGameResult.Name = "lblGameResult";
             this.lblGameResult.Size = new Size(180, 20);
-            this.lblGameResult.TabIndex = 13;
+            this.lblGameResult.TabIndex = 16;
             this.lblGameResult.Text = "Chon lua chon cua ban";
             
             // lblScore
             this.lblScore.AutoSize = true;
             this.lblScore.Font = new Font("Microsoft Sans Serif", 11F, FontStyle.Bold, GraphicsUnit.Point);
             this.lblScore.ForeColor = Color.DarkGreen;
-            this.lblScore.Location = new Point(30, 450);
+            this.lblScore.Location = new Point(30, 480);
             this.lblScore.Name = "lblScore";
-            this.lblScore.Size = new Size(150, 18);
-            this.lblScore.TabIndex = 14;
+            this.lblScore.Size = new Size(200, 18);
+            this.lblScore.TabIndex = 17;
             this.lblScore.Text = "Ty so - Ban: 0 | Doi thu: 0";
             
             // btnBack
             this.btnBack.BackColor = Color.LightCoral;
             this.btnBack.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Bold, GraphicsUnit.Point);
-            this.btnBack.Location = new Point(380, 440);
+            this.btnBack.Location = new Point(380, 470);
             this.btnBack.Name = "btnBack";
             this.btnBack.Size = new Size(100, 35);
-            this.btnBack.TabIndex = 15;
+            this.btnBack.TabIndex = 18;
             this.btnBack.Text = "QUAY LAI";
             this.btnBack.UseVisualStyleBackColor = false;
             this.btnBack.Click += new EventHandler(this.btnBack_Click);
@@ -212,7 +261,8 @@ namespace BaiTapGK
             this.AutoScaleDimensions = new SizeF(7F, 15F);
             this.AutoScaleMode = AutoScaleMode.Font;
             this.BackColor = Color.LightCyan;
-            this.ClientSize = new Size(520, 500);
+            this.ClientSize = new Size(520, 530);
+            this.Controls.Add(this.btnWiresharkHelp);
             this.Controls.Add(this.btnBack);
             this.Controls.Add(this.lblScore);
             this.Controls.Add(this.lblGameResult);
@@ -222,10 +272,13 @@ namespace BaiTapGK
             this.Controls.Add(this.btnPaper);
             this.Controls.Add(this.btnRock);
             this.Controls.Add(this.lblStatus);
+            this.Controls.Add(this.btnOpenWireshark);
             this.Controls.Add(this.btnJoinRoom);
             this.Controls.Add(this.btnCreateRoom);
             this.Controls.Add(this.txtRoomId);
-            this.Controls.Add(this.lblRoomId);
+            this.Controls.Add(this.txtPort);
+            this.Controls.Add(this.txtServerIP);
+            this.Controls.Add(this.lblConnectionInfo);
             this.Controls.Add(this.lblOpponent);
             this.Controls.Add(this.lblPlayerName);
             this.Controls.Add(this.lblTitle);

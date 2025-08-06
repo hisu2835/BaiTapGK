@@ -1,0 +1,118 @@
+﻿# Game Oẳn Tù Tì (Rock Paper Scissors) - C# WinForms
+
+## 🎮 Giới thiệu
+Đây là trò chơi Oẳn Tù Tì (Rock Paper Scissors) được phát triển bằng C# WinForms với đầy đủ các tính năng:
+
+### ✨ Tính năng chính:
+- **Đăng nhập**: Hệ thống đăng nhập với tên người chơi
+- **Chơi đơn**: Chơi với máy tính (AI ngẫu nhiên)
+- **Chơi đôi**: Chơi online với người khác qua TCP/IP
+- **Giới thiệu game**: Hướng dẫn cách chơi và luật game
+
+## 🚀 Cách chạy ứng dụng
+
+### Yêu cầu hệ thống:
+- .NET 9 SDK
+- Windows OS
+- Visual Studio 2022 hoặc VS Code
+
+### Chạy ứng dụng:
+1. Mở Terminal/Command Prompt
+2. Navigate đến thư mục dự án
+3. Chạy lệnh: `dotnet run`
+
+## 📖 Hướng dẫn sử dụng
+
+### 1. Đăng nhập
+- Khi khởi động app, form đăng nhập sẽ xuất hiện
+- Nhập tên người chơi
+- Click "ĐĂNG NHẬP" hoặc nhấn Enter
+
+### 2. Menu chính
+Sau khi đăng nhập thành công, bạn có 3 lựa chọn:
+
+#### 🎯 Chơi đơn (Single Player)
+- Chơi với máy tính
+- Máy sẽ chọn ngẫu nhiên
+- Điểm số được tính tự động
+- Có nút Reset để chơi lại
+
+#### 👥 Chơi đôi (Multi Player)
+- **Tạo phòng**: Click "TẠO PHÒNG" để làm host
+- **Tham gia phòng**: Nhập Room ID và click "VÀO PHÒNG"
+- Cần 2 người chơi để bắt đầu
+- Game sẽ tự động so sánh kết quả
+
+#### ℹ️ Giới thiệu game
+- Xem luật chơi và cách thức hoạt động
+- Hướng dẫn chi tiết về game
+
+## 🔧 Cấu trúc mã nguồn
+
+### Các file chính:
+- `Form1.cs` - Form menu chính
+- `LoginForm.cs` - Form đăng nhập
+- `SinglePlayerForm.cs` - Form chơi đơn
+- `MultiPlayerForm.cs` - Form chơi đôi (TCP networking)
+- `GameIntroForm.cs` - Form giới thiệu
+
+### Công nghệ sử dụng:
+- **Frontend**: Windows Forms
+- **Networking**: TCP/IP Socket
+- **Threading**: Multi-threading cho server/client
+- **Random**: Algorithm ngẫu nhiên cho AI
+
+## 🌐 Chế độ Multiplayer
+
+### Cách hoạt động:
+1. **Host** tạo phòng → Server TCP lắng nghe port 7777
+2. **Client** tham gia → Kết nối đến localhost:7777
+3. Trao đổi dữ liệu qua TCP stream
+4. Đồng bộ lựa chọn và tính điểm
+
+### Giao thức tin nhắn:
+- `PLAYER:[tên]` - Gửi tên người chơi
+- `CHOICE:[lựa chọn]` - Gửi lựa chọn (Đá/Giấy/Kéo)
+- `RESULT:[kết quả]` - Kết quả trận đấu
+
+## 🎨 Giao diện
+
+### Màu sắc:
+- **Đá**: Xám nhạt (Rock - Gray)
+- **Giấy**: Xanh nhạt (Paper - Light Blue)  
+- **Kéo**: Vàng nhạt (Scissors - Light Yellow)
+
+### Biểu tượng:
+- ✊ Đá (Rock)
+- ✋ Giấy (Paper)
+- ✂️ Kéo (Scissors)
+
+## 🐛 Xử lý lỗi
+
+### Các lỗi thường gặp:
+1. **Lỗi kết nối**: Kiểm tra firewall và port 7777
+2. **Mất kết nối**: Tự động hiển thị thông báo lỗi
+3. **Thread exception**: Sử dụng Invoke để update UI thread-safe
+
+## 🔮 Tính năng mở rộng
+
+### Có thể phát triển thêm:
+- [ ] Chat trong game
+- [ ] Lưu lịch sử trận đấu  
+- [ ] Ranking system
+- [ ] Sound effects
+- [ ] Themes và skins
+- [ ] Tournament mode
+- [ ] Server dedicated (không chỉ P2P)
+
+## 🏆 Luật chơi
+
+### Nguyên tắc cơ bản:
+- **Đá** thắng **Kéo** (đá nghiền nát kéo)
+- **Kéo** thắng **Giấy** (kéo cắt giấy)  
+- **Giấy** thắng **Đá** (giấy bao đá)
+- Chọn giống nhau = **HÒA**
+
+---
+*Phát triển bởi: BaiTapGK Team*
+*Framework: .NET 9 + WinForms*

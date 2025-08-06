@@ -1,0 +1,259 @@
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
+using System.Linq;
+
+namespace BaiTapGK
+{
+    public partial class NetworkMonitorForm : Form
+    {
+        private NetworkCapture networkCapture;
+        private Timer updateTimer;
+        private bool autoScroll = true;
+
+        public NetworkMonitorForm()
+        {
+            InitializeComponent();
+            networkCapture = new NetworkCapture();
+            
+            // Đăng ký events
+            networkCapture.PacketCaptured += OnPacketCaptured;
+            networkCapture.StatusChanged += OnStatusChanged;
+            
+            // Timer để update UI
+            updateTimer = new Timer();
+            updateTimer.Interval = 1000; // 1 giây
+            updateTimer.Tick += UpdateTimer_Tick;
+            updateTimer.Start();
+            
+            // Load available interfaces
+            LoadInterfaces();
+            
+            this.StartPosition = FormStartPosition.CenterScreen;
+            this.FormBorderStyle = FormBorderStyle.Sizable;
+        }
+
+        private void LoadInterfaces()
+        {
+            try
+            {
+                var interfaces = networkCapture.GetAvailableInterfaces();
+                cmbInterfaces.Items.Clear();
+                foreach (var iface in interfaces)
+                {
+                    cmbInterfaces.Items.Add(iface);
+                }
+                if (cmbInterfaces.Items.Count > 0)
+                    cmbInterfaces.SelectedIndex = 0;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi load interfaces: {ex.Message}", "Lỗi", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void OnPacketCaptured(NetworkPacket packet)
+        {
+            // Update UI trong main thread
+            this.Invoke((MethodInvoker)delegate
+            {
+                AddPacketToList(packet);
+            });
+        }
+
+        private void OnStatusChanged(string status)
+        {
+            this.Invoke((MethodInvoker)delegate
+            {
+                lblStatus.Text = status;
+            });
+        }
+
+        private void AddPacketToList(NetworkPacket packet)
+        {
+            try
+            {
+                var item = new ListViewItem(packet.Timestamp.ToString("HH:mm:ss.fff"));
+                item.SubItems.Add(packet.SourceIP);
+                item.SubItems.Add(packet.DestinationIP);
+                item.SubItems.Add(packet.Protocol);
+                item.SubItems.Add(packet.Length.ToString());
+                item.SubItems.Add(packet.Info);
+                item.Tag = packet;
+
+                // Màu sắc theo protocol
+                switch (packet.Protocol)
+                {
+                    case "TCP":
+                        item.BackColor = Color.LightBlue;
+                        break;
+                    case "UDP":
+                        item.BackColor = Color.LightGreen;
+                        break;
+                    case "ICMP":
+                        item.BackColor = Color.LightYellow;
+                        break;
+                    default:
+                        item.BackColor = Color.White;
+                        break;
+                }
+
+                lvPackets.Items.Add(item);
+
+                // Giới hạn số items trong ListView
+                if (lvPackets.Items.Count > 1000)
+                {
+                    lvPackets.Items.RemoveAt(0);
+                }
+
+                // Auto scroll
+                if (autoScroll && lvPackets.Items.Count > 0)
+                {
+                    lvPackets.EnsureVisible(lvPackets.Items.Count - 1);
+                }
+            }
+            catch (Exception ex)
+            {
+                lblStatus.Text = $"Lỗi khi thêm packet: {ex.Message}";
+            }
+        }
+
+        private void UpdateTimer_Tick(object sender, EventArgs e)
+        {
+            // Update statistics
+            lblStatistics.Text = networkCapture.GetStatistics();
+        }
+
+        private void btnStartCapture_Click(object sender, EventArgs e)
+        {
+            if (networkCapture.IsCapturing)
+            {
+                networkCapture.StopCapture();
+                btnStartCapture.Text = "BẮT ĐẦU CAPTURE";
+                btnStartCapture.BackColor = Color.LightGreen;
+            }
+            else
+            {
+                int interfaceIndex = cmbInterfaces.SelectedIndex;
+                string filter = txtFilter.Text.Trim();
+                
+                if (networkCapture.StartCapture(interfaceIndex, filter))
+                {
+                    btnStartCapture.Text = "DỪNG CAPTURE";
+                    btnStartCapture.BackColor = Color.LightCoral;
+                }
+            }
+        }
+
+        private void btnClear_Click(object sender, EventArgs e)
+        {
+            lvPackets.Items.Clear();
+            networkCapture.ClearPackets();
+        }
+
+        private void btnApplyFilter_Click(object sender, EventArgs e)
+        {
+            if (networkCapture.IsCapturing)
+            {
+                MessageBox.Show("Vui lòng dừng capture trước khi áp dụng filter mới!", 
+                    "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+        }
+
+        private void chkAutoScroll_CheckedChanged(object sender, EventArgs e)
+        {
+            autoScroll = chkAutoScroll.Checked;
+        }
+
+        private void lvPackets_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (lvPackets.SelectedItems.Count > 0)
+            {
+                var packet = (NetworkPacket)lvPackets.SelectedItems[0].Tag;
+                ShowPacketDetails(packet);
+            }
+        }
+
+        private void ShowPacketDetails(NetworkPacket packet)
+        {
+            var details = $"Thời gian: {packet.Timestamp:yyyy-MM-dd HH:mm:ss.fff}\n";
+            details += $"Nguồn: {packet.SourceIP}\n";
+            details += $"Đích: {packet.DestinationIP}\n";
+            details += $"Protocol: {packet.Protocol}\n";
+            details += $"Kích thước: {packet.Length} bytes\n";
+            details += $"Thông tin: {packet.Info}\n\n";
+
+            // Hiển thị raw data (hex dump)
+            details += "Raw Data (Hex):\n";
+            var hexData = BitConverter.ToString(packet.RawData).Replace("-", " ");
+            
+            // Chia thành dòng 16 bytes
+            for (int i = 0; i < hexData.Length; i += 48) // 16 bytes * 3 chars per byte
+            {
+                var line = hexData.Substring(i, Math.Min(48, hexData.Length - i));
+                details += $"{i / 48:X4}: {line}\n";
+            }
+
+            txtPacketDetails.Text = details;
+        }
+
+        private void btnExport_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (var saveDialog = new SaveFileDialog())
+                {
+                    saveDialog.Filter = "CSV files (*.csv)|*.csv|Text files (*.txt)|*.txt";
+                    saveDialog.Title = "Xuất dữ liệu packets";
+                    
+                    if (saveDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        ExportPackets(saveDialog.FileName);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi xuất dữ liệu: {ex.Message}", "Lỗi", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void ExportPackets(string fileName)
+        {
+            using (var writer = new System.IO.StreamWriter(fileName))
+            {
+                // Header
+                writer.WriteLine("Timestamp,Source IP,Destination IP,Protocol,Length,Info");
+                
+                // Data
+                foreach (ListViewItem item in lvPackets.Items)
+                {
+                    var packet = (NetworkPacket)item.Tag;
+                    writer.WriteLine($"{packet.Timestamp:yyyy-MM-dd HH:mm:ss.fff}," +
+                                   $"{packet.SourceIP},{packet.DestinationIP}," +
+                                   $"{packet.Protocol},{packet.Length},\"{packet.Info}\"");
+                }
+            }
+            
+            MessageBox.Show($"Đã xuất {lvPackets.Items.Count} packets vào {fileName}", 
+                "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void btnBack_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            networkCapture?.StopCapture();
+            networkCapture?.Dispose();
+            updateTimer?.Stop();
+            updateTimer?.Dispose();
+            base.OnFormClosing(e);
+        }
+    }
+}

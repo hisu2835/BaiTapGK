@@ -1,0 +1,338 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|c:\\users\\nitro\\source\\repos\\baitapgk\\baitapgk\\multiplayerform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|solutionrelative:baitapgk\\multiplayerform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|c:\\users\\nitro\\source\\repos\\baitapgk\\baitapgk\\singleplayerform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|solutionrelative:baitapgk\\singleplayerform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|c:\\users\\nitro\\source\\repos\\baitapgk\\baitapgk\\singleplayerform.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|solutionrelative:baitapgk\\singleplayerform.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|c:\\users\\nitro\\source\\repos\\baitapgk\\baitapgk\\multiplayerform.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|solutionrelative:baitapgk\\multiplayerform.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|c:\\users\\nitro\\source\\repos\\baitapgk\\baitapgk\\readme.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|solutionrelative:baitapgk\\readme.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|c:\\users\\nitro\\source\\repos\\baitapgk\\baitapgk\\gameconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|solutionrelative:baitapgk\\gameconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|c:\\users\\nitro\\source\\repos\\baitapgk\\baitapgk\\networkutils.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|solutionrelative:baitapgk\\networkutils.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|c:\\users\\nitro\\source\\repos\\baitapgk\\baitapgk\\gameintroform.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|solutionrelative:baitapgk\\gameintroform.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|c:\\users\\nitro\\source\\repos\\baitapgk\\baitapgk\\gameintroform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|solutionrelative:baitapgk\\gameintroform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|c:\\users\\nitro\\source\\repos\\baitapgk\\baitapgk\\loginform.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|solutionrelative:baitapgk\\loginform.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|c:\\users\\nitro\\source\\repos\\baitapgk\\baitapgk\\loginform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|solutionrelative:baitapgk\\loginform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|c:\\users\\nitro\\source\\repos\\baitapgk\\baitapgk\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|solutionrelative:baitapgk\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|c:\\users\\nitro\\source\\repos\\baitapgk\\baitapgk\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|solutionrelative:baitapgk\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|c:\\users\\nitro\\source\\repos\\baitapgk\\baitapgk\\form1.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|solutionrelative:baitapgk\\form1.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|c:\\users\\nitro\\source\\repos\\baitapgk\\baitapgk\\form1.resx||{81828910-B8B3-4D2B-99A3-067027C180C1}",
+      "RelativeMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|solutionrelative:baitapgk\\form1.resx||{81828910-B8B3-4D2B-99A3-067027C180C1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\baitapgk\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|solutionrelative:baitapgk\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|c:\\users\\nitro\\source\\repos\\baitapgk\\baitapgk\\baitapgk.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|solutionrelative:baitapgk\\baitapgk.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|c:\\users\\nitro\\source\\repos\\baitapgk\\baitapgk\\wiresharkintegration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|solutionrelative:baitapgk\\wiresharkintegration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|c:\\users\\nitro\\source\\repos\\baitapgk\\baitapgk\\wireshark_guide.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|solutionrelative:baitapgk\\wireshark_guide.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "SinglePlayerForm.cs",
+              "DocumentMoniker": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\SinglePlayerForm.cs",
+              "RelativeDocumentMoniker": "BaiTapGK\\SinglePlayerForm.cs",
+              "ToolTip": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\SinglePlayerForm.cs",
+              "RelativeToolTip": "BaiTapGK\\SinglePlayerForm.cs",
+              "ViewState": "AgIAAFsAAAAAAAAAAIA3wGsAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-21T16:38:50.599Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "MultiPlayerForm.cs",
+              "DocumentMoniker": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\MultiPlayerForm.cs",
+              "RelativeDocumentMoniker": "BaiTapGK\\MultiPlayerForm.cs",
+              "ToolTip": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\MultiPlayerForm.cs",
+              "RelativeToolTip": "BaiTapGK\\MultiPlayerForm.cs",
+              "ViewState": "AgIAAAYBAAAAAAAAAAAmwBgBAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-21T16:39:53.482Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "WIRESHARK_GUIDE.md",
+              "DocumentMoniker": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\WIRESHARK_GUIDE.md",
+              "RelativeDocumentMoniker": "BaiTapGK\\WIRESHARK_GUIDE.md",
+              "ToolTip": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\WIRESHARK_GUIDE.md",
+              "RelativeToolTip": "BaiTapGK\\WIRESHARK_GUIDE.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0BAAAiAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-08-05T16:24:19.418Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "WiresharkIntegration.cs",
+              "DocumentMoniker": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\WiresharkIntegration.cs",
+              "RelativeDocumentMoniker": "BaiTapGK\\WiresharkIntegration.cs",
+              "ToolTip": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\WiresharkIntegration.cs",
+              "RelativeToolTip": "BaiTapGK\\WiresharkIntegration.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAPcAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-05T16:20:02.302Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "BaiTapGK",
+              "DocumentMoniker": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\BaiTapGK.csproj",
+              "RelativeDocumentMoniker": "BaiTapGK\\BaiTapGK.csproj",
+              "ToolTip": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\BaiTapGK.csproj",
+              "RelativeToolTip": "BaiTapGK\\BaiTapGK.csproj",
+              "ViewState": "AgIAAAkAAAAAAAAAAABBwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-08-05T14:53:42.386Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "SinglePlayerForm.Designer.cs",
+              "DocumentMoniker": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\SinglePlayerForm.Designer.cs",
+              "RelativeDocumentMoniker": "BaiTapGK\\SinglePlayerForm.Designer.cs",
+              "ToolTip": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\SinglePlayerForm.Designer.cs",
+              "RelativeToolTip": "BaiTapGK\\SinglePlayerForm.Designer.cs",
+              "ViewState": "AgIAAJgAAAAAAAAAAAAwwK4AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-21T16:39:16.613Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "MultiPlayerForm.Designer.cs",
+              "DocumentMoniker": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\MultiPlayerForm.Designer.cs",
+              "RelativeDocumentMoniker": "BaiTapGK\\MultiPlayerForm.Designer.cs",
+              "ToolTip": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\MultiPlayerForm.Designer.cs",
+              "RelativeToolTip": "BaiTapGK\\MultiPlayerForm.Designer.cs",
+              "ViewState": "AgIAAAUBAAAAAAAAAAAuwCIBAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-21T16:40:32.465Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "README.md",
+              "DocumentMoniker": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\README.md",
+              "RelativeDocumentMoniker": "BaiTapGK\\README.md",
+              "ToolTip": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\README.md",
+              "RelativeToolTip": "BaiTapGK\\README.md",
+              "ViewState": "AgIAANEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-07-21T16:43:20.399Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "GameConfig.cs",
+              "DocumentMoniker": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\GameConfig.cs",
+              "RelativeDocumentMoniker": "BaiTapGK\\GameConfig.cs",
+              "ToolTip": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\GameConfig.cs",
+              "RelativeToolTip": "BaiTapGK\\GameConfig.cs",
+              "ViewState": "AgIAACIAAAAAAAAAAAAwwD4AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-21T16:43:35.566Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "NetworkUtils.cs",
+              "DocumentMoniker": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\NetworkUtils.cs",
+              "RelativeDocumentMoniker": "BaiTapGK\\NetworkUtils.cs",
+              "ToolTip": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\NetworkUtils.cs",
+              "RelativeToolTip": "BaiTapGK\\NetworkUtils.cs",
+              "ViewState": "AgIAAFgAAAAAAAAAAAA2wFoAAAA5AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-21T16:43:52.459Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "GameIntroForm.Designer.cs",
+              "DocumentMoniker": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\GameIntroForm.Designer.cs",
+              "RelativeDocumentMoniker": "BaiTapGK\\GameIntroForm.Designer.cs",
+              "ToolTip": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\GameIntroForm.Designer.cs",
+              "RelativeToolTip": "BaiTapGK\\GameIntroForm.Designer.cs",
+              "ViewState": "AgIAAF0AAAAAAAAAAIBJwF8AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-21T16:38:32.537Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "GameIntroForm.cs",
+              "DocumentMoniker": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\GameIntroForm.cs",
+              "RelativeDocumentMoniker": "BaiTapGK\\GameIntroForm.cs",
+              "ToolTip": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\GameIntroForm.cs",
+              "RelativeToolTip": "BaiTapGK\\GameIntroForm.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABYAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-21T16:38:04.857Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "LoginForm.Designer.cs",
+              "DocumentMoniker": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\LoginForm.Designer.cs",
+              "RelativeDocumentMoniker": "BaiTapGK\\LoginForm.Designer.cs",
+              "ToolTip": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\LoginForm.Designer.cs",
+              "RelativeToolTip": "BaiTapGK\\LoginForm.Designer.cs",
+              "ViewState": "AgIAAF4AAAAAAAAAAABBwF8AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-21T16:37:50.268Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "LoginForm.cs",
+              "DocumentMoniker": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\LoginForm.cs",
+              "RelativeDocumentMoniker": "BaiTapGK\\LoginForm.cs",
+              "ToolTip": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\LoginForm.cs",
+              "RelativeToolTip": "BaiTapGK\\LoginForm.cs",
+              "ViewState": "AgIAAC8AAAAAAAAAAABBwDAAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-21T16:37:34.246Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "Form1.cs",
+              "DocumentMoniker": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\Form1.cs",
+              "RelativeDocumentMoniker": "BaiTapGK\\Form1.cs",
+              "ToolTip": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\Form1.cs",
+              "RelativeToolTip": "BaiTapGK\\Form1.cs",
+              "ViewState": "AgIAAF0AAAAAAAAAAEBVwGEAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-21T16:33:20.452Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\Program.cs",
+              "RelativeDocumentMoniker": "BaiTapGK\\Program.cs",
+              "ToolTip": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\Program.cs",
+              "RelativeToolTip": "BaiTapGK\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-21T16:33:10.539Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "Form1.Designer.cs",
+              "DocumentMoniker": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\Form1.Designer.cs",
+              "RelativeDocumentMoniker": "BaiTapGK\\Form1.Designer.cs",
+              "ToolTip": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\Form1.Designer.cs",
+              "RelativeToolTip": "BaiTapGK\\Form1.Designer.cs",
+              "ViewState": "AgIAAJwAAAAAAAAAAIBZwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-21T16:33:07.237Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "Form1.resx",
+              "DocumentMoniker": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\Form1.resx",
+              "RelativeDocumentMoniker": "BaiTapGK\\Form1.resx",
+              "ToolTip": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\Form1.resx",
+              "RelativeToolTip": "BaiTapGK\\Form1.resx",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001005|",
+              "WhenOpened": "2025-07-21T16:33:04.178Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "Form1.cs [Design]",
+              "DocumentMoniker": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\Form1.cs",
+              "RelativeDocumentMoniker": "BaiTapGK\\Form1.cs",
+              "ToolTip": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\Form1.cs [Design]",
+              "RelativeToolTip": "BaiTapGK\\Form1.cs [Design]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-21T16:32:31.855Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

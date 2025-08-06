@@ -1,0 +1,108 @@
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace BaiTapGK
+{
+    public partial class SinglePlayerForm : Form
+    {
+        private Random random;
+        private int playerScore = 0;
+        private int computerScore = 0;
+        private string playerName;
+
+        public SinglePlayerForm(string playerName)
+        {
+            InitializeComponent();
+            this.playerName = playerName;
+            random = new Random();
+            lblPlayerName.Text = $"Người chơi: {playerName}";
+            UpdateScore();
+            this.StartPosition = FormStartPosition.CenterScreen;
+            this.FormBorderStyle = FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+        }
+
+        private void btnRock_Click(object sender, EventArgs e)
+        {
+            PlayGame("Đá");
+        }
+
+        private void btnPaper_Click(object sender, EventArgs e)
+        {
+            PlayGame("Giấy");
+        }
+
+        private void btnScissors_Click(object sender, EventArgs e)
+        {
+            PlayGame("Kéo");
+        }
+
+        private void PlayGame(string playerChoice)
+        {
+            string[] choices = { "Đá", "Giấy", "Kéo" };
+            string computerChoice = choices[random.Next(3)];
+
+            lblPlayerChoice.Text = $"Bạn chọn: {playerChoice}";
+            lblComputerChoice.Text = $"Máy chọn: {computerChoice}";
+
+            string result = GetGameResult(playerChoice, computerChoice);
+            lblResult.Text = result;
+
+            if (result.Contains("Bạn thắng"))
+            {
+                playerScore++;
+                lblResult.ForeColor = Color.Green;
+            }
+            else if (result.Contains("Bạn thua"))
+            {
+                computerScore++;
+                lblResult.ForeColor = Color.Red;
+            }
+            else
+            {
+                lblResult.ForeColor = Color.Orange;
+            }
+
+            UpdateScore();
+        }
+
+        private string GetGameResult(string player, string computer)
+        {
+            if (player == computer)
+                return "Hòa!";
+
+            if ((player == "Đá" && computer == "Kéo") ||
+                (player == "Giấy" && computer == "Đá") ||
+                (player == "Kéo" && computer == "Giấy"))
+            {
+                return "Bạn thắng!";
+            }
+            else
+            {
+                return "Bạn thua!";
+            }
+        }
+
+        private void UpdateScore()
+        {
+            lblScore.Text = $"Tỷ số - {playerName}: {playerScore} | Máy: {computerScore}";
+        }
+
+        private void btnReset_Click(object sender, EventArgs e)
+        {
+            playerScore = 0;
+            computerScore = 0;
+            lblPlayerChoice.Text = "Bạn chọn: ---";
+            lblComputerChoice.Text = "Máy chọn: ---";
+            lblResult.Text = "Kết quả: ---";
+            lblResult.ForeColor = Color.Black;
+            UpdateScore();
+        }
+
+        private void btnBack_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+    }
+}
