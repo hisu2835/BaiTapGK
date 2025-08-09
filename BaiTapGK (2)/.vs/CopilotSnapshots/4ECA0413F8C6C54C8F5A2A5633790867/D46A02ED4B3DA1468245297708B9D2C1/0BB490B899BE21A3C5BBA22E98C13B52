@@ -1,0 +1,273 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Net.NetworkInformation;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Linq;
+using SharpPcap;
+using PacketDotNet;
+
+namespace BaiTapGK
+{
+    public class NetworkPacket
+    {
+        public DateTime Timestamp { get; set; }
+        public string SourceIP { get; set; } = "";
+        public string DestinationIP { get; set; } = "";
+        public string Protocol { get; set; } = "";
+        public int Length { get; set; }
+        public string Info { get; set; } = "";
+        public byte[] RawData { get; set; } = Array.Empty<byte>();
+    }
+
+    public class NetworkCapture
+    {
+        private ICaptureDevice? device;
+        private bool isCapturing = false;
+        private List<NetworkPacket> capturedPackets = new List<NetworkPacket>();
+        private int maxPackets = 1000;
+
+        public event Action<NetworkPacket>? PacketCaptured;
+        public event Action<string>? StatusChanged;
+
+        public bool IsCapturing => isCapturing;
+        public IReadOnlyList<NetworkPacket> CapturedPackets => capturedPackets.AsReadOnly();
+
+        /// <summary>
+        /// Lấy danh sách network interfaces có sẵn
+        /// </summary>
+        public List<string> GetAvailableInterfaces()
+        {
+            var interfaces = new List<string>();
+            try
+            {
+                var devices = CaptureDeviceList.Instance;
+                for (int i = 0; i < devices.Count; i++)
+                {
+                    var device = devices[i];
+                    interfaces.Add($"{i}: {device.Name} - {device.Description}");
+                }
+            }
+            catch (Exception ex)
+            {
+                StatusChanged?.Invoke($"Lỗi khi lấy danh sách interfaces: {ex.Message}");
+            }
+            return interfaces;
+        }
+
+        /// <summary>
+        /// Bắt đầu capture packets trên interface được chỉ định
+        /// </summary>
+        public bool StartCapture(int interfaceIndex = 0, string filter = "")
+        {
+            try
+            {
+                var devices = CaptureDeviceList.Instance;
+                if (devices.Count == 0)
+                {
+                    StatusChanged?.Invoke("Không tìm thấy network interface nào!");
+                    return false;
+                }
+
+                if (interfaceIndex >= devices.Count)
+                    interfaceIndex = 0;
+
+                device = devices[interfaceIndex];
+                
+                StatusChanged?.Invoke($"Đang mở interface: {device.Description}");
+                
+                // Mở device với timeout 1000ms
+                device.Open(DeviceModes.Promiscuous, 1000);
+
+                // Thiết lập filter nếu có
+                if (!string.IsNullOrEmpty(filter))
+                {
+                    device.Filter = filter;
+                }
+
+                // Đăng ký event handler
+                device.OnPacketArrival += OnPacketArrival;
+
+                // Bắt đầu capture
+                device.StartCapture();
+                
+                isCapturing = true;
+                StatusChanged?.Invoke("Đang capture packets...");
+                
+                return true;
+            }
+            catch (Exception ex)
+            {
+                StatusChanged?.Invoke($"Lỗi khi bắt đầu capture: {ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Dừng capture packets
+        /// </summary>
+        public void StopCapture()
+        {
+            try
+            {
+                if (device != null && isCapturing)
+                {
+                    device.StopCapture();
+                    device.OnPacketArrival -= OnPacketArrival;
+                    device.Close();
+                    device = null;
+                    
+                    isCapturing = false;
+                    StatusChanged?.Invoke("Đã dừng capture packets.");
+                }
+            }
+            catch (Exception ex)
+            {
+                StatusChanged?.Invoke($"Lỗi khi dừng capture: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Xử lý packet khi capture được
+        /// </summary>
+        private void OnPacketArrival(object sender, PacketCapture e)
+        {
+            try
+            {
+                var packet = Packet.ParsePacket(e.GetPacket().LinkLayerType, e.GetPacket().Data);
+                var networkPacket = ParsePacket(packet, e.GetPacket().Timeval.Date);
+                
+                // Thêm vào danh sách (giới hạn số lượng)
+                lock (capturedPackets)
+                {
+                    capturedPackets.Add(networkPacket);
+                    if (capturedPackets.Count > maxPackets)
+                    {
+                        capturedPackets.RemoveAt(0);
+                    }
+                }
+
+                // Thông báo có packet mới
+                PacketCaptured?.Invoke(networkPacket);
+            }
+            catch (Exception ex)
+            {
+                StatusChanged?.Invoke($"Lỗi khi xử lý packet: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Parse packet thành NetworkPacket object
+        /// </summary>
+        private NetworkPacket ParsePacket(Packet packet, DateTime timestamp)
+        {
+            var networkPacket = new NetworkPacket
+            {
+                Timestamp = timestamp,
+                RawData = packet.Bytes
+            };
+
+            // Lấy IP packet
+            var ipPacket = packet.Extract<IPPacket>();
+            if (ipPacket != null)
+            {
+                networkPacket.SourceIP = ipPacket.SourceAddress.ToString();
+                networkPacket.DestinationIP = ipPacket.DestinationAddress.ToString();
+                networkPacket.Length = ipPacket.TotalLength;
+
+                // Xác định protocol
+                var tcpPacket = packet.Extract<TcpPacket>();
+                var udpPacket = packet.Extract<UdpPacket>();
+                var icmpPacket = packet.Extract<IcmpV4Packet>();
+
+                if (tcpPacket != null)
+                {
+                    networkPacket.Protocol = "TCP";
+                    networkPacket.Info = $"TCP {tcpPacket.SourcePort} → {tcpPacket.DestinationPort}";
+                    
+                    // Thêm thông tin flags
+                    var flags = new List<string>();
+                    if (tcpPacket.Syn) flags.Add("SYN");
+                    if (tcpPacket.Ack) flags.Add("ACK");
+                    if (tcpPacket.Fin) flags.Add("FIN");
+                    if (tcpPacket.Rst) flags.Add("RST");
+                    if (tcpPacket.Psh) flags.Add("PSH");
+                    
+                    if (flags.Count > 0)
+                        networkPacket.Info += $" [{string.Join(", ", flags)}]";
+                }
+                else if (udpPacket != null)
+                {
+                    networkPacket.Protocol = "UDP";
+                    networkPacket.Info = $"UDP {udpPacket.SourcePort} → {udpPacket.DestinationPort}";
+                }
+                else if (icmpPacket != null)
+                {
+                    networkPacket.Protocol = "ICMP";
+                    networkPacket.Info = $"ICMP Type: {icmpPacket.TypeCode}";
+                }
+                else
+                {
+                    networkPacket.Protocol = ipPacket.Protocol.ToString();
+                    networkPacket.Info = $"Protocol: {ipPacket.Protocol}";
+                }
+            }
+            else
+            {
+                // Non-IP packet
+                var ethernetPacket = packet.Extract<EthernetPacket>();
+                if (ethernetPacket != null)
+                {
+                    networkPacket.Protocol = ethernetPacket.Type.ToString();
+                    networkPacket.Info = $"Ethernet: {ethernetPacket.Type}";
+                    networkPacket.Length = ethernetPacket.Bytes.Length;
+                }
+            }
+
+            return networkPacket;
+        }
+
+        /// <summary>
+        /// Xóa tất cả packets đã capture
+        /// </summary>
+        public void ClearPackets()
+        {
+            lock (capturedPackets)
+            {
+                capturedPackets.Clear();
+            }
+            StatusChanged?.Invoke("Đã xóa tất cả packets.");
+        }
+
+        /// <summary>
+        /// Thiết lập số lượng packet tối đa được lưu
+        /// </summary>
+        public void SetMaxPackets(int max)
+        {
+            maxPackets = Math.Max(1, max);
+        }
+
+        /// <summary>
+        /// Lấy thống kê capture
+        /// </summary>
+        public string GetStatistics()
+        {
+            lock (capturedPackets)
+            {
+                var total = capturedPackets.Count;
+                var tcp = capturedPackets.Count(p => p.Protocol == "TCP");
+                var udp = capturedPackets.Count(p => p.Protocol == "UDP");
+                var icmp = capturedPackets.Count(p => p.Protocol == "ICMP");
+                var others = total - tcp - udp - icmp;
+
+                return $"Tổng: {total} | TCP: {tcp} | UDP: {udp} | ICMP: {icmp} | Khác: {others}";
+            }
+        }
+
+        public void Dispose()
+        {
+            StopCapture();
+        }
+    }
+}

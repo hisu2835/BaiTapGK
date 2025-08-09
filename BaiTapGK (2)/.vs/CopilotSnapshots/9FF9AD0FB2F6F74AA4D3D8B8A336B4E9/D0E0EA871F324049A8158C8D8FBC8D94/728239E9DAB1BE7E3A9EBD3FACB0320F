@@ -1,0 +1,46 @@
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace BaiTapGK
+{
+    public static class GameConfig
+    {
+        // Network settings
+        public const int DEFAULT_PORT = 7777;
+        public const string DEFAULT_HOST = "127.0.0.1";
+        
+        // Game settings
+        public const int GAME_RESET_DELAY = 3000; // 3 seconds
+        
+        // UI Colors
+        public static readonly Color ROCK_COLOR = Color.LightGray;
+        public static readonly Color PAPER_COLOR = Color.LightBlue;
+        public static readonly Color SCISSORS_COLOR = Color.LightYellow;
+        
+        public static readonly Color WIN_COLOR = Color.Green;
+        public static readonly Color LOSE_COLOR = Color.Red;
+        public static readonly Color TIE_COLOR = Color.Orange;
+        
+        // Game symbols
+        public const string ROCK_SYMBOL = "✊";
+        public const string PAPER_SYMBOL = "✋";
+        public const string SCISSORS_SYMBOL = "✂️";
+        
+        // Game choices
+        public static readonly string[] CHOICES = { "Đá", "Giấy", "Kéo" };
+        
+        // Messages
+        public static class Messages
+        {
+            public const string WIN = "Bạn thắng!";
+            public const string LOSE = "Bạn thua!";
+            public const string TIE = "Hòa!";
+            public const string WAITING = "Đang chờ đối thủ...";
+            public const string CHOOSE = "Chọn lựa chọn của bạn";
+            public const string LOGIN_REQUIRED = "Vui lòng đăng nhập trước!";
+            public const string ENTER_NAME = "Vui lòng nhập tên người chơi!";
+            public const string ENTER_ROOM_ID = "Vui lòng nhập Room ID!";
+        }
+    }
+}

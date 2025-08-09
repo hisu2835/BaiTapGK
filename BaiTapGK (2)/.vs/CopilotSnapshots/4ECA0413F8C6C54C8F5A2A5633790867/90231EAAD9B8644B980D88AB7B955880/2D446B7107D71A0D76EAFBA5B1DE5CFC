@@ -1,0 +1,270 @@
+﻿# Hướng dẫn sử dụng Wireshark với Game Oan Tu Ti
+
+## 🔍 Tổng quan
+Game Oan Tu Ti đã được tích hợp với Wireshark để bạn có thể monitor và phân tích network traffic real-time khi chơi multiplayer.
+
+## 📥 Cài đặt Wireshark
+
+### Bước 1: Tải Wireshark
+```
+1. Truy cập: https://www.wireshark.org/
+2. Click "Download" 
+3. Chọn Windows x64 Installer
+4. Tải về file .exe
+```
+
+### Bước 2: Cài đặt
+```
+1. Chạy file installer as Administrator
+2. Follow wizard (mặc định là OK)
+3. Chọn cài đặt Npcap khi được hỏi
+4. Restart computer sau khi cài đặt
+```
+
+## 🎮 Sử dụng với Game
+
+### Cách 1: Auto-launch từ Game
+```
+1. Mở game → Multiplayer
+2. Nhập thông tin server (IP, Port)
+3. Click "MO WIRESHARK"
+4. Wireshark sẽ tự động mở với filter phù hợp
+5. Bắt đầu chơi để thấy traffic!
+```
+
+### Cách 2: Manual setup
+```
+1. Mở Wireshark độc lập
+2. Chọn network interface (Ethernet/WiFi)
+3. Áp dụng filter: tcp port 7777
+4. Click Start (shark fin icon)
+5. Chơi game trong tab khác
+```
+
+## 🔧 Filters hữu ích
+
+### Basic Filters
+```sh
+# Tất cả traffic game
+tcp port 7777
+
+# Chỉ packets có data
+tcp port 7777 and tcp.len > 0
+
+# Chỉ traffic từ/đến IP cụ thể
+tcp port 7777 and ip.addr == 192.168.1.100
+```
+
+### Game Protocol Filters
+```sh
+# Player join messages
+tcp port 7777 and tcp contains "PLAYER"
+
+# Game moves
+tcp port 7777 and tcp contains "CHOICE"
+
+# Game results  
+tcp port 7777 and tcp contains "RESULT"
+```
+
+### Advanced Filters
+```sh
+# Chỉ stream đầu tiên
+tcp.stream eq 0
+
+# TCP handshake packets
+tcp.flags.syn == 1
+
+# Connection teardown
+tcp.flags.fin == 1
+
+# Specific TCP stream
+tcp.stream eq 0 and tcp port 7777
+```
+
+## 📊 Phân tích Traffic
+
+### Game Protocol Structure
+```
+1. TCP Handshake:
+   SYN → SYN-ACK → ACK
+
+2. Player Join:
+   PLAYER:[tên người chơi]
+
+3. Game Loop:
+   CHOICE:[Da/Giay/Keo] ↔ CHOICE:[Da/Giay/Keo]
+   
+4. Result:
+   RESULT:[kết quả]
+
+5. Connection Close:
+   FIN → ACK → FIN → ACK
+```
+
+### Useful Analysis Features
+```
+1. Follow TCP Stream:
+   - Right-click packet → Follow → TCP Stream
+   - Xem toàn bộ conversation
+
+2. Statistics:
+   - Statistics → Conversations → TCP tab
+   - Xem bandwidth, packets count
+
+3. IO Graph:
+   - Statistics → I/O Graph
+   - Visualize traffic over time
+
+4. Export Data:
+   - File → Export Packet Dissections
+   - Save analysis results
+```
+
+## 🎯 Use Cases thực tế
+
+### 1. Debug Connection Issues
+```
+Filter: tcp port 7777
+Look for:
+- TCP retransmissions [TCP Retransmission]
+- Connection resets [TCP Reset]
+- Long response times
+```
+
+### 2. Analyze Game Performance
+```
+Filter: tcp port 7777 and tcp.len > 0
+Measure:
+- Time between CHOICE messages
+- Response latency
+- Packet loss
+```
+
+### 3. Security Analysis
+```
+Filter: tcp port 7777
+Check:
+- No unexpected data
+- Proper connection handling
+- Clean disconnects
+```
+
+### 4. Network Learning
+```
+Observe:
+- TCP 3-way handshake
+- Application protocol design
+- Network error handling
+- Connection management
+```
+
+## 🔧 Troubleshooting
+
+### Wireshark không bắt được packets
+```
+Solutions:
+1. Chọn đúng network interface
+2. Check permissions (run as Admin)
+3. Disable firewall tạm thời
+4. Try different interface
+```
+
+### Filter không hoạt động
+```
+Solutions:
+1. Clear filter và thử lại
+2. Check syntax: tcp port 7777
+3. Use display filter thay vì capture filter
+4. Try simpler filter first
+```
+
+### Game traffic không hiện
+```
+Solutions:
+1. Ensure game is using correct port
+2. Check if playing on localhost vs LAN
+3. Verify network interface selection
+4. Try capture on "any" interface
+```
+
+## 💡 Pro Tips
+
+### Display Optimization
+```
+1. View → Time Display Format → Seconds Since Beginning
+2. Right-click columns → Adjust width
+3. View → Colorize Packet List (enable)
+4. Analyze → Display Filters → Save custom filters
+```
+
+### Export và Save
+```
+1. File → Export Packet Dissections → CSV
+2. Statistics → Conversations → Copy data
+3. File → Save capture for later analysis
+4. Edit → Find Packet (Ctrl+F) for search
+```
+
+### Keyboard Shortcuts
+```
+Ctrl+E - Start/Stop capture
+Ctrl+F - Find packet
+Ctrl+G - Go to packet number
+Ctrl+Shift+O - Open capture file
+Space - Mark packet
+```
+
+## 🎓 Educational Value
+
+### Network Concepts học được
+```
+1. TCP Protocol:
+   - Connection establishment
+   - Data transfer
+   - Flow control
+   - Connection termination
+
+2. Application Protocol:
+   - Message format design
+   - Request-response patterns
+   - Error handling
+   - State management
+
+3. Network Performance:
+   - Latency measurement
+   - Throughput analysis
+   - Packet loss detection
+   - Connection quality
+```
+
+### Skills phát triển
+```
+1. Network Troubleshooting
+2. Protocol Analysis
+3. Performance Monitoring
+4. Security Assessment
+```
+
+## 📚 Tài liệu tham khảo
+
+### Wireshark Resources
+```
+- Official Documentation: https://www.wireshark.org/docs/
+- User Guide: https://www.wireshark.org/docs/wsug_html_chunked/
+- Display Filters: https://wiki.wireshark.org/DisplayFilters
+- Sample Captures: https://wiki.wireshark.org/SampleCaptures
+```
+
+### TCP/IP Learning
+```
+- RFC 793 (TCP): https://tools.ietf.org/html/rfc793
+- TCP/IP Illustrated book series
+- Computer Networks textbooks
+- Online courses (Coursera, edX)
+```
+
+---
+*Tạo bởi: BaiTapGK Team*  
+*Mục đích: Giáo dục và học tập network protocols*  
+*Tool: Wireshark + Game Oan Tu Ti*

@@ -1,0 +1,302 @@
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace BaiTapGK
+{
+    public class HandGestureAnimationControl : UserControl
+    {
+        private System.Windows.Forms.Timer? animationTimer;
+        private int animationStep = 0;
+        private string finalChoice = "";
+        private bool isAnimating = false;
+        private Font gestureFont;
+        private Action<string>? onAnimationComplete;
+
+        // Cac frames animation cho "quơ quơ"
+        private readonly string[] shakeFrames = {
+            "✊", "🖐️", "✊", "🖐️", "✊", "🖐️", "✊" 
+        };
+
+        // Final gestures
+        private readonly string rockGesture = "✊";
+        private readonly string paperGesture = "🖐️"; 
+        private readonly string scissorsGesture = "✌️";
+
+        public HandGestureAnimationControl()
+        {
+            this.Size = new Size(150, 150);
+            this.BackColor = Color.Transparent;
+            gestureFont = new Font("Segoe UI Emoji", 48, FontStyle.Regular);
+            this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.DoubleBuffer, true);
+        }
+
+        /// <summary>
+        /// Bat dau animation "quơ quơ" va ket thuc voi choice cu the
+        /// </summary>
+        public void StartShakeAnimation(string choice, Action<string> onComplete = null)
+        {
+            if (isAnimating) return;
+
+            finalChoice = choice;
+            onAnimationComplete = onComplete;
+            animationStep = 0;
+            isAnimating = true;
+
+            // Phat am thanh bat dau
+            SoundEffectHelper.PlayCountdownSound();
+
+            animationTimer = new System.Windows.Forms.Timer();
+            animationTimer.Interval = 200; // 200ms moi frame
+            animationTimer.Tick += AnimationTimer_Tick;
+            animationTimer.Start();
+
+            this.Invalidate(); // Repaint
+        }
+
+        private void AnimationTimer_Tick(object sender, EventArgs e)
+        {
+            animationStep++;
+
+            if (animationStep <= shakeFrames.Length)
+            {
+                // Phase 1: Shake animation (quơ quơ)
+                this.Invalidate();
+            }
+            else if (animationStep <= shakeFrames.Length + 5)
+            {
+                // Phase 2: Suspense pause (keep shaking slower)
+                if (animationStep == shakeFrames.Length + 1)
+                {
+                    animationTimer.Interval = 100; // Faster for final shakes
+                }
+                this.Invalidate();
+            }
+            else
+            {
+                // Phase 3: Final reveal
+                animationTimer.Stop();
+                animationTimer.Dispose();
+                isAnimating = false;
+                
+                // Play final sound
+                SoundEffectHelper.PlayClickSound();
+                
+                this.Invalidate();
+                
+                // Callback after animation complete
+                onAnimationComplete?.Invoke(finalChoice);
+            }
+        }
+
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            base.OnPaint(e);
+
+            Graphics g = e.Graphics;
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+
+            string displayGesture = "";
+            Color textColor = Color.Black;
+            
+            if (!isAnimating)
+            {
+                // Show final choice
+                displayGesture = GetGestureByChoice(finalChoice);
+                textColor = GetColorByChoice(finalChoice);
+            }
+            else if (animationStep <= shakeFrames.Length)
+            {
+                // Show shaking animation
+                int frameIndex = (animationStep - 1) % shakeFrames.Length;
+                displayGesture = shakeFrames[frameIndex];
+                textColor = Color.Gray;
+            }
+            else
+            {
+                // Suspense phase - show closed fist
+                displayGesture = "✊";
+                textColor = Color.DarkGray;
+            }
+
+            // Ve shadow effect
+            using (Brush shadowBrush = new SolidBrush(Color.FromArgb(50, Color.Black)))
+            {
+                g.DrawString(displayGesture, gestureFont, shadowBrush, 
+                    this.Width / 2 - 35 + 3, this.Height / 2 - 35 + 3);
+            }
+
+            // Ve main gesture
+            using (Brush mainBrush = new SolidBrush(textColor))
+            {
+                g.DrawString(displayGesture, gestureFont, mainBrush, 
+                    this.Width / 2 - 35, this.Height / 2 - 35);
+            }
+
+            // Ve glow effect neu dang animate
+            if (isAnimating && animationStep > shakeFrames.Length)
+            {
+                using (Pen glowPen = new Pen(Color.Gold, 3))
+                {
+                    g.DrawEllipse(glowPen, 10, 10, this.Width - 20, this.Height - 20);
+                }
+            }
+        }
+
+        private string GetGestureByChoice(string choice)
+        {
+            return choice switch
+            {
+                "Da" => rockGesture,
+                "Giay" => paperGesture,
+                "Keo" => scissorsGesture,
+                _ => rockGesture
+            };
+        }
+
+        private Color GetColorByChoice(string choice)
+        {
+            return choice switch
+            {
+                "Da" => Color.DarkGray,
+                "Giay" => Color.DarkBlue,
+                "Keo" => Color.DarkGoldenrod,
+                _ => Color.Black
+            };
+        }
+
+        /// <summary>
+        /// Dung animation neu dang chay
+        /// </summary>
+        public void StopAnimation()
+        {
+            if (animationTimer != null)
+            {
+                animationTimer.Stop();
+                animationTimer.Dispose();
+                animationTimer = null;
+            }
+            isAnimating = false;
+            this.Invalidate();
+        }
+
+        /// <summary>
+        /// Reset ve trang thai ban dau
+        /// </summary>
+        public void Reset()
+        {
+            StopAnimation();
+            finalChoice = "";
+            animationStep = 0;
+            this.Invalidate();
+        }
+
+        /// <summary>
+        /// Hien thi static gesture khong co animation
+        /// </summary>
+        public void ShowStaticGesture(string choice)
+        {
+            StopAnimation();
+            finalChoice = choice;
+            this.Invalidate();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                StopAnimation();
+                gestureFont?.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+    }
+
+    /// <summary>
+    /// Helper class cho countdown animation giong nhu "San-ko-ho"
+    /// </summary>
+    public static class CountdownAnimationHelper
+    {
+        /// <summary>
+        /// Tao countdown animation giong nhu trong game that
+        /// </summary>
+        public static void StartCountdown(Control container, Action onComplete)
+        {
+            Label countdownLabel = new Label
+            {
+                Text = "",
+                Font = new Font("Microsoft Sans Serif", 36, FontStyle.Bold),
+                ForeColor = Color.Red,
+                BackColor = Color.Transparent,
+                Size = new Size(200, 100),
+                Location = new Point(container.Width / 2 - 100, container.Height / 2 - 50),
+                TextAlign = ContentAlignment.MiddleCenter
+            };
+
+            container.Controls.Add(countdownLabel);
+            countdownLabel.BringToFront();
+
+            System.Windows.Forms.Timer countdownTimer = new System.Windows.Forms.Timer();
+            countdownTimer.Interval = 800; // 0.8 giay
+            int countStep = 0;
+            string[] countTexts = { "SAN!", "KO!", "HO!", "" };
+
+            countdownTimer.Tick += (sender, e) =>
+            {
+                if (countStep < countTexts.Length - 1)
+                {
+                    countdownLabel.Text = countTexts[countStep];
+                    
+                    // Animate scale
+                    AnimateCountdownText(countdownLabel);
+                    
+                    // Play sound
+                    SoundEffectHelper.PlayCountdownSound();
+                    
+                    countStep++;
+                }
+                else
+                {
+                    // Finish countdown
+                    container.Controls.Remove(countdownLabel);
+                    countdownLabel.Dispose();
+                    countdownTimer.Stop();
+                    countdownTimer.Dispose();
+                    
+                    onComplete?.Invoke();
+                }
+            };
+
+            countdownTimer.Start();
+        }
+
+        private static void AnimateCountdownText(Label label)
+        {
+            Font originalFont = label.Font;
+            System.Windows.Forms.Timer scaleTimer = new System.Windows.Forms.Timer();
+            scaleTimer.Interval = 50;
+            int scaleStep = 0;
+
+            scaleTimer.Tick += (sender, e) =>
+            {
+                scaleStep++;
+                
+                if (scaleStep <= 5)
+                {
+                    // Scale up
+                    float newSize = originalFont.Size + scaleStep * 4;
+                    label.Font = new Font(originalFont.FontFamily, newSize, originalFont.Style);
+                }
+                else
+                {
+                    // Scale back to original
+                    label.Font = originalFont;
+                    scaleTimer.Stop();
+                    scaleTimer.Dispose();
+                }
+            };
+            
+            scaleTimer.Start();
+        }
+    }
+}

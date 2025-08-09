@@ -1,0 +1,335 @@
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace BaiTapGK
+{
+    public static class ButtonAnimationHelper
+    {
+        private static System.Windows.Forms.Timer animationTimer;
+        private static Button currentButton;
+        private static Color originalColor;
+        private static Color originalForeColor;
+        private static Size originalSize;
+        private static Point originalLocation;
+        private static int animationStep = 0;
+        private static readonly int animationDuration = 500; // 0.5 giay
+        private static readonly int animationSteps = 10;
+
+        /// <summary>
+        /// Tao hieu ung dong khi click button
+        /// </summary>
+        public static void AnimateButtonClick(Button button, Action? onComplete = null)
+        {
+            if (button == null) return;
+
+            // Phat am thanh click
+            SoundEffectHelper.PlayClickSound();
+
+            // Dung animation cu neu dang chay
+            StopCurrentAnimation();
+
+            // Luu trang thai ban dau
+            currentButton = button;
+            originalColor = button.BackColor;
+            originalForeColor = button.ForeColor;
+            originalSize = button.Size;
+            originalLocation = button.Location;
+            animationStep = 0;
+
+            // Tao timer cho animation
+            animationTimer = new System.Windows.Forms.Timer();
+            animationTimer.Interval = animationDuration / animationSteps;
+            
+            animationTimer.Tick += (sender, e) =>
+            {
+                animationStep++;
+                
+                // Tinh toan vi tri va kich thuoc moi
+                double progress = (double)animationStep / animationSteps;
+                
+                if (animationStep <= animationSteps / 2)
+                {
+                    // Pha phong to va sang mau
+                    double scaleProgress = progress * 2; // 0 -> 1 trong nua dau
+                    
+                    // Tang kich thuoc len 20%
+                    int newWidth = (int)(originalSize.Width * (1 + 0.2 * scaleProgress));
+                    int newHeight = (int)(originalSize.Height * (1 + 0.2 * scaleProgress));
+                    
+                    // Dieu chinh vi tri de giu center
+                    int newX = originalLocation.X - (newWidth - originalSize.Width) / 2;
+                    int newY = originalLocation.Y - (newHeight - originalSize.Height) / 2;
+                    
+                    button.Size = new Size(newWidth, newHeight);
+                    button.Location = new Point(newX, newY);
+                    
+                    // Thay doi mau sac (sang hon)
+                    button.BackColor = BlendColors(originalColor, Color.White, 0.3 * scaleProgress);
+                    button.ForeColor = BlendColors(originalForeColor, Color.Black, 0.5 * scaleProgress);
+                }
+                else
+                {
+                    // Pha thu nho ve ban dau
+                    double scaleProgress = 2 - progress * 2; // 1 -> 0 trong nua sau
+                    
+                    // Giam kich thuoc ve ban dau
+                    int newWidth = (int)(originalSize.Width * (1 + 0.2 * scaleProgress));
+                    int newHeight = (int)(originalSize.Height * (1 + 0.2 * scaleProgress));
+                    
+                    // Dieu chinh vi tri
+                    int newX = originalLocation.X - (newWidth - originalSize.Width) / 2;
+                    int newY = originalLocation.Y - (newHeight - originalSize.Height) / 2;
+                    
+                    button.Size = new Size(newWidth, newHeight);
+                    button.Location = new Point(newX, newY);
+                    
+                    // Khoi phuc mau sac
+                    button.BackColor = BlendColors(originalColor, Color.White, 0.3 * scaleProgress);
+                    button.ForeColor = BlendColors(originalForeColor, Color.Black, 0.5 * scaleProgress);
+                }
+                
+                // Ket thuc animation
+                if (animationStep >= animationSteps)
+                {
+                    // Khoi phuc trang thai ban dau
+                    button.Size = originalSize;
+                    button.Location = originalLocation;
+                    button.BackColor = originalColor;
+                    button.ForeColor = originalForeColor;
+                    
+                    animationTimer.Stop();
+                    animationTimer.Dispose();
+                    animationTimer = null;
+                    currentButton = null;
+                    
+                    // Goi callback neu co
+                    onComplete?.Invoke();
+                }
+            };
+            
+            animationTimer.Start();
+        }
+
+        /// <summary>
+        /// Tao hieu ung nhap nhay cho button khi hover
+        /// </summary>
+        public static void AnimateButtonHover(Button button, bool isEntering)
+        {
+            if (button == null || currentButton == button) return; // Khong animate neu dang co animation khac
+
+            if (isEntering)
+            {
+                // Hover vao - tang do sang nhe
+                button.BackColor = BlendColors(button.BackColor, Color.White, 0.2);
+                button.Font = new Font(button.Font, FontStyle.Bold);
+            }
+            else
+            {
+                // Hover ra - khoi phuc mau goc
+                if (button.Name.Contains("Rock"))
+                    button.BackColor = GameConfig.ROCK_COLOR;
+                else if (button.Name.Contains("Paper"))
+                    button.BackColor = GameConfig.PAPER_COLOR;
+                else if (button.Name.Contains("Scissors"))
+                    button.BackColor = GameConfig.SCISSORS_COLOR;
+                    
+                button.Font = new Font(button.Font.FontFamily, button.Font.Size, FontStyle.Bold);
+            }
+        }
+
+        /// <summary>
+        /// Tao hieu ung choice confirmation
+        /// </summary>
+        public static void AnimateChoiceConfirmation(Button button)
+        {
+            if (button == null) return;
+
+            // Tao hieu ung blink 3 lan
+            Timer blinkTimer = new Timer();
+            blinkTimer.Interval = 200;
+            int blinkCount = 0;
+            Color originalBg = button.BackColor;
+            
+            blinkTimer.Tick += (sender, e) =>
+            {
+                blinkCount++;
+                
+                if (blinkCount % 2 == 1)
+                {
+                    // Sang
+                    button.BackColor = Color.Gold;
+                    button.ForeColor = Color.Black;
+                }
+                else
+                {
+                    // Tam
+                    button.BackColor = originalBg;
+                    button.ForeColor = Color.Black;
+                }
+                
+                if (blinkCount >= 6) // 3 lan blink
+                {
+                    button.BackColor = originalBg;
+                    blinkTimer.Stop();
+                    blinkTimer.Dispose();
+                }
+            };
+            
+            blinkTimer.Start();
+        }
+
+        /// <summary>
+        /// Tao hieu ung khi button bi disable
+        /// </summary>
+        public static void AnimateButtonDisable(Button button)
+        {
+            if (button == null) return;
+
+            Timer fadeTimer = new Timer();
+            fadeTimer.Interval = 50;
+            int fadeStep = 0;
+            Color originalBg = button.BackColor;
+            
+            fadeTimer.Tick += (sender, e) =>
+            {
+                fadeStep++;
+                double progress = Math.Min(fadeStep / 10.0, 1.0);
+                
+                // Fade to gray
+                button.BackColor = BlendColors(originalBg, Color.Gray, progress);
+                button.ForeColor = BlendColors(Color.Black, Color.DarkGray, progress);
+                
+                if (fadeStep >= 10)
+                {
+                    fadeTimer.Stop();
+                    fadeTimer.Dispose();
+                }
+            };
+            
+            fadeTimer.Start();
+        }
+
+        /// <summary>
+        /// Tao hieu ung khi button duoc enable lai
+        /// </summary>
+        public static void AnimateButtonEnable(Button button)
+        {
+            if (button == null) return;
+
+            Timer fadeTimer = new Timer();
+            fadeTimer.Interval = 50;
+            int fadeStep = 0;
+            Color targetBg = Color.Gray;
+            
+            // Xac dinh mau target
+            if (button.Name.Contains("Rock"))
+                targetBg = GameConfig.ROCK_COLOR;
+            else if (button.Name.Contains("Paper"))
+                targetBg = GameConfig.PAPER_COLOR;
+            else if (button.Name.Contains("Scissors"))
+                targetBg = GameConfig.SCISSORS_COLOR;
+            
+            fadeTimer.Tick += (sender, e) =>
+            {
+                fadeStep++;
+                double progress = Math.Min(fadeStep / 10.0, 1.0);
+                
+                // Fade from gray to normal
+                button.BackColor = BlendColors(Color.Gray, targetBg, progress);
+                button.ForeColor = BlendColors(Color.DarkGray, Color.Black, progress);
+                
+                if (fadeStep >= 10)
+                {
+                    fadeTimer.Stop();
+                    fadeTimer.Dispose();
+                }
+            };
+            
+            fadeTimer.Start();
+        }
+
+        /// <summary>
+        /// Dung animation hien tai
+        /// </summary>
+        public static void StopCurrentAnimation()
+        {
+            if (animationTimer != null)
+            {
+                animationTimer.Stop();
+                animationTimer.Dispose();
+                animationTimer = null;
+                
+                // Khoi phuc trang thai ban dau neu can
+                if (currentButton != null)
+                {
+                    currentButton.Size = originalSize;
+                    currentButton.Location = originalLocation;
+                    currentButton.BackColor = originalColor;
+                    currentButton.ForeColor = originalForeColor;
+                    currentButton = null;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Tron hai mau theo ty le
+        /// </summary>
+        private static Color BlendColors(Color color1, Color color2, double ratio)
+        {
+            ratio = Math.Max(0, Math.Min(1, ratio)); // Clamp 0-1
+            
+            int r = (int)(color1.R + (color2.R - color1.R) * ratio);
+            int g = (int)(color1.G + (color2.G - color1.G) * ratio);
+            int b = (int)(color1.B + (color2.B - color1.B) * ratio);
+            
+            return Color.FromArgb(r, g, b);
+        }
+
+        /// <summary>
+        /// Setup hover effects cho button
+        /// </summary>
+        public static void SetupButtonHoverEffects(Button button)
+        {
+            if (button == null) return;
+
+            button.MouseEnter += (sender, e) => AnimateButtonHover(button, true);
+            button.MouseLeave += (sender, e) => AnimateButtonHover(button, false);
+        }
+
+        /// <summary>
+        /// Tao hieu ung win celebration
+        /// </summary>
+        public static void AnimateWinCelebration(Control container)
+        {
+            if (container == null) return;
+
+            // Phat am thanh win
+            SoundEffectHelper.PlayWinSound();
+
+            Timer celebrationTimer = new Timer();
+            celebrationTimer.Interval = 100;
+            int step = 0;
+            Random random = new Random();
+            
+            celebrationTimer.Tick += (sender, e) =>
+            {
+                step++;
+                
+                // Tao hieu ung flash mau ngau nhien
+                container.BackColor = step % 2 == 0 ? 
+                    Color.Gold : 
+                    Color.LightGreen;
+                
+                if (step >= 10)
+                {
+                    container.BackColor = Color.LightCyan; // Khoi phuc mau goc
+                    celebrationTimer.Stop();
+                    celebrationTimer.Dispose();
+                }
+            };
+            
+            celebrationTimer.Start();
+        }
+    }
+}

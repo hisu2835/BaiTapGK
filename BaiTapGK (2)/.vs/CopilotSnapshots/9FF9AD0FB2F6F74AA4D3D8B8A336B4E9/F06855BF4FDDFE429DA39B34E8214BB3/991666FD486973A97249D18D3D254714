@@ -1,0 +1,96 @@
+﻿namespace BaiTapGK
+{
+    partial class GameIntroForm
+    {
+        private System.ComponentModel.IContainer components = null;
+        private Label lblTitle;
+        private RichTextBox rtbGameRules;
+        private Button btnClose;
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        private void InitializeComponent()
+        {
+            this.lblTitle = new Label();
+            this.rtbGameRules = new RichTextBox();
+            this.btnClose = new Button();
+            this.SuspendLayout();
+            
+            // lblTitle
+            this.lblTitle.AutoSize = true;
+            this.lblTitle.Font = new Font("Microsoft Sans Serif", 16F, FontStyle.Bold, GraphicsUnit.Point);
+            this.lblTitle.ForeColor = Color.DarkBlue;
+            this.lblTitle.Location = new Point(130, 20);
+            this.lblTitle.Name = "lblTitle";
+            this.lblTitle.Size = new Size(240, 26);
+            this.lblTitle.TabIndex = 0;
+            this.lblTitle.Text = "GIỚI THIỆU VÀ CÁCH CHƠI";
+            
+            // rtbGameRules
+            this.rtbGameRules.BackColor = Color.White;
+            this.rtbGameRules.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            this.rtbGameRules.Location = new Point(20, 60);
+            this.rtbGameRules.Name = "rtbGameRules";
+            this.rtbGameRules.ReadOnly = true;
+            this.rtbGameRules.Size = new Size(460, 300);
+            this.rtbGameRules.TabIndex = 1;
+            this.rtbGameRules.Text = @"🎮 TRÒ CHƠI OẢN TÙ TÌ (ROCK PAPER SCISSORS)
+
+📝 CÁCH CHƠI:
+• Bạn và đối thủ đồng thời chọn một trong ba lựa chọn:
+  - ✊ ĐÁ (Rock)
+  - ✋ GIẤY (Paper)  
+  - ✂️ KÉO (Scissors)
+
+🏆 LUẬT CHƠI:
+• ĐÁ thắng KÉO (đá nghiền nát kéo)
+• KÉO thắng GIẤY (kéo cắt giấy)
+• GIẤY thắng ĐÁ (giấy bao đá)
+• Nếu cùng chọn giống nhau = HÒA
+
+🎯 CHẾ ĐỘ CHƠI:
+1️⃣ CHƠI ĐƠN: Chơi với máy tính (AI ngẫu nhiên)
+2️⃣ CHƠI ĐÔI: Chơi online với người khác
+   - Tạo phòng hoặc tham gia phòng bằng ID
+   - Cần kết nối Internet để chơi
+
+💡 MẸO:
+• Không có chiến thuật cố định vì game hoàn toàn dựa vào may mắn
+• Hãy dự đoán tâm lý đối thủ trong chế độ chơi đôi
+• Thưởng thức và vui chơi!
+
+🔥 CHÚC BẠN CHƠI VUI VẺ! 🔥";
+            
+            // btnClose
+            this.btnClose.BackColor = Color.LightCoral;
+            this.btnClose.Font = new Font("Microsoft Sans Serif", 12F, FontStyle.Bold, GraphicsUnit.Point);
+            this.btnClose.Location = new Point(200, 380);
+            this.btnClose.Name = "btnClose";
+            this.btnClose.Size = new Size(100, 40);
+            this.btnClose.TabIndex = 2;
+            this.btnClose.Text = "ĐÓNG";
+            this.btnClose.UseVisualStyleBackColor = false;
+            this.btnClose.Click += new EventHandler(this.btnClose_Click);
+            
+            // GameIntroForm
+            this.AutoScaleDimensions = new SizeF(7F, 15F);
+            this.AutoScaleMode = AutoScaleMode.Font;
+            this.BackColor = Color.LightYellow;
+            this.ClientSize = new Size(500, 440);
+            this.Controls.Add(this.btnClose);
+            this.Controls.Add(this.rtbGameRules);
+            this.Controls.Add(this.lblTitle);
+            this.Name = "GameIntroForm";
+            this.Text = "Giới thiệu Game - Rock Paper Scissors";
+            this.ResumeLayout(false);
+            this.PerformLayout();
+        }
+    }
+}

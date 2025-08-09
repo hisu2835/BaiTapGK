@@ -1,0 +1,268 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Net.NetworkInformation;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Linq;
+using SharpPcap;
+using PacketDotNet;
+
+namespace BaiTapGK
+{
+    public class NetworkPacket
+    {
+        public DateTime Timestamp { get; set; }
+        public string SourceIP { get; set; } = "";
+        public string DestinationIP { get; set; } = "";
+        public string Protocol { get; set; } = "";
+        public int Length { get; set; }
+        public string Info { get; set; } = "";
+        public byte[] RawData { get; set; } = Array.Empty<byte>();
+    }
+
+    public class NetworkCapture
+    {
+        private ICaptureDevice? device;
+        private bool isCapturing = false;
+        private List<NetworkPacket> capturedPackets = new List<NetworkPacket>();
+        private int maxPackets = 1000;
+
+        public event Action<NetworkPacket>? PacketCaptured;
+        public event Action<string>? StatusChanged;
+
+        public bool IsCapturing => isCapturing;
+        public IReadOnlyList<NetworkPacket> CapturedPackets => capturedPackets.AsReadOnly();
+
+        /// <summary>
+        /// Lay danh sach network interfaces co san
+        /// </summary>
+        public List<string> GetAvailableInterfaces()
+        {
+            var interfaces = new List<string>();
+            try
+            {
+                var devices = CaptureDeviceList.Instance;
+                for (int i = 0; i < devices.Count; i++)
+                {
+                    var device = devices[i];
+                    interfaces.Add($"{i}: {device.Name} - {device.Description}");
+                }
+            }
+            catch (Exception ex)
+            {
+                StatusChanged?.Invoke($"Loi khi lay danh sach interfaces: {ex.Message}");
+            }
+            return interfaces;
+        }
+
+        /// <summary>
+        /// Bat dau capture packets tren interface duoc chi dinh
+        /// </summary>
+        public bool StartCapture(int interfaceIndex = 0, string filter = "")
+        {
+            try
+            {
+                var devices = CaptureDeviceList.Instance;
+                if (devices.Count == 0)
+                {
+                    StatusChanged?.Invoke("Khong tim thay network interface nao!");
+                    return false;
+                }
+
+                if (interfaceIndex >= devices.Count)
+                    interfaceIndex = 0;
+
+                device = devices[interfaceIndex];
+                
+                StatusChanged?.Invoke($"Dang mo interface: {device.Description}");
+                
+                // Mo device voi timeout 1000ms
+                device.Open(DeviceModes.Promiscuous, 1000);
+
+                // Thiet lap filter neu co
+                if (!string.IsNullOrEmpty(filter))
+                {
+                    device.Filter = filter;
+                }
+
+                // Dang ky event handler
+                device.OnPacketArrival += OnPacketArrival;
+
+                // Bat dau capture
+                device.StartCapture();
+                
+                isCapturing = true;
+                StatusChanged?.Invoke("Dang capture packets...");
+                
+                return true;
+            }
+            catch (Exception ex)
+            {
+                StatusChanged?.Invoke($"Loi khi bat dau capture: {ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Dung capture packets
+        /// </summary>
+        public void StopCapture()
+        {
+            try
+            {
+                if (device != null && isCapturing)
+                {
+                    device.StopCapture();
+                    device.OnPacketArrival -= OnPacketArrival;
+                    device.Close();
+                    device = null;
+                    
+                    isCapturing = false;
+                    StatusChanged?.Invoke("Da dung capture packets.");
+                }
+            }
+            catch (Exception ex)
+            {
+                StatusChanged?.Invoke($"Loi khi dung capture: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Xu ly packet khi capture duoc
+        /// </summary>
+        private void OnPacketArrival(object sender, PacketCapture e)
+        {
+            try
+            {
+                var packet = Packet.ParsePacket(e.GetPacket().LinkLayerType, e.GetPacket().Data);
+                var networkPacket = ParsePacket(packet, e.GetPacket().Timeval.Date);
+                
+                // Them vao danh sach (gioi han so luong)
+                lock (capturedPackets)
+                {
+                    capturedPackets.Add(networkPacket);
+                    if (capturedPackets.Count > maxPackets)
+                    {
+                        capturedPackets.RemoveAt(0);
+                    }
+                }
+
+                // Thong bao co packet moi
+                PacketCaptured?.Invoke(networkPacket);
+            }
+            catch (Exception ex)
+            {
+                StatusChanged?.Invoke($"Loi khi xu ly packet: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Parse packet thanh NetworkPacket object
+        /// </summary>
+        private NetworkPacket ParsePacket(Packet packet, DateTime timestamp)
+        {
+            var networkPacket = new NetworkPacket
+            {
+                Timestamp = timestamp,
+                RawData = packet.Bytes
+            };
+
+            // Lay IP packet
+            var ipPacket = packet.Extract<IPPacket>();
+            if (ipPacket != null)
+            {
+                networkPacket.SourceIP = ipPacket.SourceAddress.ToString();
+                networkPacket.DestinationIP = ipPacket.DestinationAddress.ToString();
+                networkPacket.Length = ipPacket.TotalLength;
+
+                // Xac dinh protocol
+                var tcpPacket = packet.Extract<TcpPacket>();
+                var udpPacket = packet.Extract<UdpPacket>();
+                var icmpPacket = packet.Extract<IcmpV4Packet>();
+
+                if (tcpPacket != null)
+                {
+                    networkPacket.Protocol = "TCP";
+                    networkPacket.Info = $"TCP {tcpPacket.SourcePort} → {tcpPacket.DestinationPort}";
+                    
+                    // Them thong tin ve kich thuoc payload
+                    if (tcpPacket.PayloadData != null && tcpPacket.PayloadData.Length > 0)
+                    {
+                        networkPacket.Info += $" [Len={tcpPacket.PayloadData.Length}]";
+                    }
+                }
+                else if (udpPacket != null)
+                {
+                    networkPacket.Protocol = "UDP";
+                    networkPacket.Info = $"UDP {udpPacket.SourcePort} → {udpPacket.DestinationPort}";
+                }
+                else if (icmpPacket != null)
+                {
+                    networkPacket.Protocol = "ICMP";
+                    networkPacket.Info = $"ICMP Type: {icmpPacket.TypeCode}";
+                }
+                else
+                {
+                    networkPacket.Protocol = ipPacket.Protocol.ToString();
+                    networkPacket.Info = $"Protocol: {ipPacket.Protocol}";
+                }
+            }
+            else
+            {
+                // Non-IP packet
+                var ethernetPacket = packet.Extract<EthernetPacket>();
+                if (ethernetPacket != null)
+                {
+                    networkPacket.Protocol = ethernetPacket.Type.ToString();
+                    networkPacket.Info = $"Ethernet: {ethernetPacket.Type}";
+                    networkPacket.Length = ethernetPacket.Bytes.Length;
+                }
+            }
+
+            return networkPacket;
+        }
+
+        /// <summary>
+        /// Xoa tat ca packets da capture
+        /// </summary>
+        public void ClearPackets()
+        {
+            lock (capturedPackets)
+            {
+                capturedPackets.Clear();
+            }
+            StatusChanged?.Invoke("Da xoa tat ca packets.");
+        }
+
+        /// <summary>
+        /// Thiet lap so luong packet toi da duoc luu
+        /// </summary>
+        public void SetMaxPackets(int max)
+        {
+            maxPackets = Math.Max(1, max);
+        }
+
+        /// <summary>
+        /// Lay thong ke capture
+        /// </summary>
+        public string GetStatistics()
+        {
+            lock (capturedPackets)
+            {
+                var total = capturedPackets.Count;
+                var tcp = capturedPackets.Count(p => p.Protocol == "TCP");
+                var udp = capturedPackets.Count(p => p.Protocol == "UDP");
+                var icmp = capturedPackets.Count(p => p.Protocol == "ICMP");
+                var others = total - tcp - udp - icmp;
+
+                return $"Tong: {total} | TCP: {tcp} | UDP: {udp} | ICMP: {icmp} | Khac: {others}";
+            }
+        }
+
+        public void Dispose()
+        {
+            StopCapture();
+        }
+    }
+}
