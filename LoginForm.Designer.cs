@@ -1,0 +1,96 @@
+namespace BaiTapGK
+{
+    partial class LoginForm
+    {
+        private System.ComponentModel.IContainer components = null;
+        private TextBox txtPlayerName;
+        private Button btnLogin;
+        private Button btnCancel;
+        private Label lblTitle;
+        private Label lblPlayerName;
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        private void InitializeComponent()
+        {
+            this.txtPlayerName = new TextBox();
+            this.btnLogin = new Button();
+            this.btnCancel = new Button();
+            this.lblTitle = new Label();
+            this.lblPlayerName = new Label();
+            this.SuspendLayout();
+            
+            // lblTitle
+            this.lblTitle.AutoSize = true;
+            this.lblTitle.Font = new Font("Microsoft Sans Serif", 16F, FontStyle.Bold, GraphicsUnit.Point);
+            this.lblTitle.ForeColor = Color.DarkBlue;
+            this.lblTitle.Location = new Point(50, 20);
+            this.lblTitle.Name = "lblTitle";
+            this.lblTitle.Size = new Size(250, 26);
+            this.lblTitle.TabIndex = 0;
+            this.lblTitle.Text = "DANG NHAP VAO GAME";
+            this.lblTitle.TextAlign = ContentAlignment.MiddleCenter;
+            
+            // lblPlayerName
+            this.lblPlayerName.AutoSize = true;
+            this.lblPlayerName.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            this.lblPlayerName.Location = new Point(30, 70);
+            this.lblPlayerName.Name = "lblPlayerName";
+            this.lblPlayerName.Size = new Size(105, 17);
+            this.lblPlayerName.TabIndex = 1;
+            this.lblPlayerName.Text = "Ten nguoi choi:";
+            
+            // txtPlayerName
+            this.txtPlayerName.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            this.txtPlayerName.Location = new Point(30, 100);
+            this.txtPlayerName.Name = "txtPlayerName";
+            this.txtPlayerName.Size = new Size(290, 23);
+            this.txtPlayerName.TabIndex = 2;
+            this.txtPlayerName.KeyPress += new KeyPressEventHandler(this.txtPlayerName_KeyPress);
+            
+            // btnLogin
+            this.btnLogin.BackColor = Color.LightGreen;
+            this.btnLogin.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Bold, GraphicsUnit.Point);
+            this.btnLogin.Location = new Point(30, 150);
+            this.btnLogin.Name = "btnLogin";
+            this.btnLogin.Size = new Size(120, 35);
+            this.btnLogin.TabIndex = 3;
+            this.btnLogin.Text = "DANG NHAP";
+            this.btnLogin.UseVisualStyleBackColor = false;
+            this.btnLogin.Click += new EventHandler(this.btnLogin_Click);
+            
+            // btnCancel
+            this.btnCancel.BackColor = Color.LightCoral;
+            this.btnCancel.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Bold, GraphicsUnit.Point);
+            this.btnCancel.Location = new Point(200, 150);
+            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.Size = new Size(120, 35);
+            this.btnCancel.TabIndex = 4;
+            this.btnCancel.Text = "HUY";
+            this.btnCancel.UseVisualStyleBackColor = false;
+            this.btnCancel.Click += new EventHandler(this.btnCancel_Click);
+            
+            // LoginForm
+            this.AutoScaleDimensions = new SizeF(7F, 15F);
+            this.AutoScaleMode = AutoScaleMode.Font;
+            this.BackColor = Color.LightBlue;
+            this.ClientSize = new Size(350, 220);
+            this.Controls.Add(this.btnCancel);
+            this.Controls.Add(this.btnLogin);
+            this.Controls.Add(this.txtPlayerName);
+            this.Controls.Add(this.lblPlayerName);
+            this.Controls.Add(this.lblTitle);
+            this.Name = "LoginForm";
+            this.Text = "Dang nhap - Rock Paper Scissors";
+            this.ResumeLayout(false);
+            this.PerformLayout();
+        }
+    }
+}

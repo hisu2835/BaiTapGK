@@ -1,0 +1,172 @@
+﻿namespace BaiTapGK
+{
+    partial class Form1
+    {
+        private System.ComponentModel.IContainer components = null;
+        private Label lblTitle;
+        private Label lblWelcome;
+        private Button btnSinglePlayer;
+        private Button btnMultiPlayer;
+        private Button btnGameIntro;
+        private Button btnChangeUser;
+        private Button btnExit;
+        private PictureBox pictureBox1;
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                // Cleanup custom resources
+                try
+                {
+                    CleanupCustomResources();
+                }
+                catch { }
+                
+                // Cleanup components
+                if (components != null)
+                {
+                    components.Dispose();
+                }
+            }
+            base.Dispose(disposing);
+        }
+
+        private void InitializeComponent()
+        {
+            this.lblTitle = new Label();
+            this.lblWelcome = new Label();
+            this.btnSinglePlayer = new Button();
+            this.btnMultiPlayer = new Button();
+            this.btnGameIntro = new Button();
+            this.btnChangeUser = new Button();
+            this.btnExit = new Button();
+            this.pictureBox1 = new PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.SuspendLayout();
+            
+            // lblTitle
+            this.lblTitle.AutoSize = true;
+            this.lblTitle.Font = new Font("Microsoft Sans Serif", 24F, FontStyle.Bold, GraphicsUnit.Point);
+            this.lblTitle.ForeColor = Color.DarkBlue;
+            this.lblTitle.Location = new Point(100, 30);
+            this.lblTitle.Name = "lblTitle";
+            this.lblTitle.Size = new Size(400, 37);
+            this.lblTitle.TabIndex = 0;
+            this.lblTitle.Text = "GAME OAN TU TI";
+            this.lblTitle.TextAlign = ContentAlignment.MiddleCenter;
+            
+            // lblWelcome
+            this.lblWelcome.AutoSize = true;
+            this.lblWelcome.Font = new Font("Microsoft Sans Serif", 14F, FontStyle.Bold, GraphicsUnit.Point);
+            this.lblWelcome.ForeColor = Color.DarkGreen;
+            this.lblWelcome.Location = new Point(200, 80);
+            this.lblWelcome.Name = "lblWelcome";
+            this.lblWelcome.Size = new Size(200, 24);
+            this.lblWelcome.TabIndex = 1;
+            this.lblWelcome.Text = "Chao mung!";
+            this.lblWelcome.TextAlign = ContentAlignment.MiddleCenter;
+            
+            // pictureBox1
+            this.pictureBox1.BackColor = Color.LightGray;
+            this.pictureBox1.Location = new Point(250, 120);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new Size(100, 80);
+            this.pictureBox1.TabIndex = 2;
+            this.pictureBox1.TabStop = false;
+            this.pictureBox1.Paint += new PaintEventHandler(this.pictureBox1_Paint);
+            
+            // btnSinglePlayer
+            this.btnSinglePlayer.BackColor = Color.LightGreen;
+            this.btnSinglePlayer.Font = new Font("Microsoft Sans Serif", 14F, FontStyle.Bold, GraphicsUnit.Point);
+            this.btnSinglePlayer.Location = new Point(200, 220);
+            this.btnSinglePlayer.Name = "btnSinglePlayer";
+            this.btnSinglePlayer.Size = new Size(200, 50);
+            this.btnSinglePlayer.TabIndex = 3;
+            this.btnSinglePlayer.Text = "1. CHOI DON";
+            this.btnSinglePlayer.UseVisualStyleBackColor = false;
+            this.btnSinglePlayer.Click += new EventHandler(this.btnSinglePlayer_Click);
+            
+            // btnMultiPlayer
+            this.btnMultiPlayer.BackColor = Color.LightBlue;
+            this.btnMultiPlayer.Font = new Font("Microsoft Sans Serif", 14F, FontStyle.Bold, GraphicsUnit.Point);
+            this.btnMultiPlayer.Location = new Point(200, 280);
+            this.btnMultiPlayer.Name = "btnMultiPlayer";
+            this.btnMultiPlayer.Size = new Size(200, 50);
+            this.btnMultiPlayer.TabIndex = 4;
+            this.btnMultiPlayer.Text = "2. CHOI DOI";
+            this.btnMultiPlayer.UseVisualStyleBackColor = false;
+            this.btnMultiPlayer.Click += new EventHandler(this.btnMultiPlayer_Click);
+            
+            // btnGameIntro
+            this.btnGameIntro.BackColor = Color.LightYellow;
+            this.btnGameIntro.Font = new Font("Microsoft Sans Serif", 14F, FontStyle.Bold, GraphicsUnit.Point);
+            this.btnGameIntro.Location = new Point(200, 340);
+            this.btnGameIntro.Name = "btnGameIntro";
+            this.btnGameIntro.Size = new Size(200, 50);
+            this.btnGameIntro.TabIndex = 5;
+            this.btnGameIntro.Text = "3. GIOI THIEU GAME";
+            this.btnGameIntro.UseVisualStyleBackColor = false;
+            this.btnGameIntro.Click += new EventHandler(this.btnGameIntro_Click);
+            
+            // btnChangeUser
+            this.btnChangeUser.BackColor = Color.LightCoral;
+            this.btnChangeUser.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Bold, GraphicsUnit.Point);
+            this.btnChangeUser.Location = new Point(150, 420);
+            this.btnChangeUser.Name = "btnChangeUser";
+            this.btnChangeUser.Size = new Size(120, 35);
+            this.btnChangeUser.TabIndex = 6;
+            this.btnChangeUser.Text = "DOI USER";
+            this.btnChangeUser.UseVisualStyleBackColor = false;
+            this.btnChangeUser.Click += new EventHandler(this.btnChangeUser_Click);
+            
+            // btnExit
+            this.btnExit.BackColor = Color.LightGray;
+            this.btnExit.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Bold, GraphicsUnit.Point);
+            this.btnExit.Location = new Point(330, 420);
+            this.btnExit.Name = "btnExit";
+            this.btnExit.Size = new Size(120, 35);
+            this.btnExit.TabIndex = 7;
+            this.btnExit.Text = "THOAT";
+            this.btnExit.UseVisualStyleBackColor = false;
+            this.btnExit.Click += new EventHandler(this.btnExit_Click);
+            
+            // Form1
+            this.AutoScaleDimensions = new SizeF(7F, 15F);
+            this.AutoScaleMode = AutoScaleMode.Font;
+            this.BackColor = Color.LightCyan;
+            this.ClientSize = new Size(600, 480);
+            this.Controls.Add(this.btnExit);
+            this.Controls.Add(this.btnChangeUser);
+            this.Controls.Add(this.btnGameIntro);
+            this.Controls.Add(this.btnMultiPlayer);
+            this.Controls.Add(this.btnSinglePlayer);
+            this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(this.lblWelcome);
+            this.Controls.Add(this.lblTitle);
+            this.Name = "Form1";
+            this.Text = "Rock Paper Scissors Game - Main Menu";
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.ResumeLayout(false);
+            this.PerformLayout();
+        }
+
+        private void pictureBox1_Paint(object sender, PaintEventArgs e)
+        {
+            // Ve bieu tuong hinh ban tay thay vi bua keo bao
+            Graphics g = e.Graphics;
+            Font font = new Font("Arial", 16, FontStyle.Bold);
+            
+            // Hinh ban tay - Da (nam dam)
+            g.DrawString("✊", font, Brushes.DarkGray, 10, 10);
+            // Hinh ban tay - Giay (ban tay mo)
+            g.DrawString("🖐️", font, Brushes.LightBlue, 35, 10);
+            // Hinh ban tay - Keo (2 ngon tay)
+            g.DrawString("✌️", font, Brushes.Gold, 60, 10);
+            
+            g.DrawString("ROCK", new Font("Arial", 8), Brushes.Black, 5, 40);
+            g.DrawString("PAPER", new Font("Arial", 8), Brushes.Black, 30, 40);
+            g.DrawString("SCISSORS", new Font("Arial", 7), Brushes.Black, 55, 40);
+        }
+    }
+}
