@@ -1,0 +1,89 @@
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace BaiTapGK
+{
+    public partial class Form1 : Form
+    {
+        private string playerName = "";
+        private bool isLoggedIn = false;
+
+        public Form1()
+        {
+            InitializeComponent();
+            this.StartPosition = FormStartPosition.CenterScreen;
+            this.FormBorderStyle = FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            
+            // Hiển thị form đăng nhập khi khởi động
+            ShowLoginForm();
+        }
+
+        private void ShowLoginForm()
+        {
+            LoginForm loginForm = new LoginForm();
+            if (loginForm.ShowDialog() == DialogResult.OK)
+            {
+                playerName = loginForm.PlayerName;
+                isLoggedIn = true;
+                lblWelcome.Text = $"Chào mừng, {playerName}!";
+                EnableGameButtons(true);
+            }
+            else
+            {
+                // Nếu người dùng hủy đăng nhập, đóng ứng dụng
+                Application.Exit();
+            }
+        }
+
+        private void EnableGameButtons(bool enabled)
+        {
+            btnSinglePlayer.Enabled = enabled;
+            btnMultiPlayer.Enabled = enabled;
+            btnGameIntro.Enabled = enabled;
+        }
+
+        private void btnSinglePlayer_Click(object sender, EventArgs e)
+        {
+            if (!isLoggedIn)
+            {
+                MessageBox.Show("Vui lòng đăng nhập trước!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            SinglePlayerForm singlePlayerForm = new SinglePlayerForm(playerName);
+            singlePlayerForm.ShowDialog();
+        }
+
+        private void btnMultiPlayer_Click(object sender, EventArgs e)
+        {
+            if (!isLoggedIn)
+            {
+                MessageBox.Show("Vui lòng đăng nhập trước!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            MultiPlayerForm multiPlayerForm = new MultiPlayerForm(playerName);
+            multiPlayerForm.ShowDialog();
+        }
+
+        private void btnGameIntro_Click(object sender, EventArgs e)
+        {
+            GameIntroForm gameIntroForm = new GameIntroForm();
+            gameIntroForm.ShowDialog();
+        }
+
+        private void btnExit_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void btnChangeUser_Click(object sender, EventArgs e)
+        {
+            isLoggedIn = false;
+            EnableGameButtons(false);
+            ShowLoginForm();
+        }
+    }
+}

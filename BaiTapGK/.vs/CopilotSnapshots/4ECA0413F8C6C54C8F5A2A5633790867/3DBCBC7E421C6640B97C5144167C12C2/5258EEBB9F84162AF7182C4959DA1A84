@@ -1,0 +1,352 @@
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace BaiTapGK
+{
+    public partial class SinglePlayerForm : Form
+    {
+        private Random random;
+        private int playerScore = 0;
+        private int computerScore = 0;
+        private string playerName;
+        private System.Windows.Forms.Timer gameResultTimer;
+
+        public SinglePlayerForm(string playerName)
+        {
+            InitializeComponent();
+            this.playerName = playerName;
+            random = new Random();
+            lblPlayerName.Text = $"Nguoi choi: {playerName}";
+            UpdateScore();
+            this.StartPosition = FormStartPosition.CenterScreen;
+            this.FormBorderStyle = FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            
+            // Thiet lap hover effects cho cac button
+            SetupButtonEffects();
+        }
+
+        private void SetupButtonEffects()
+        {
+            // Thiet lap hover effects
+            ButtonAnimationHelper.SetupButtonHoverEffects(btnRock);
+            ButtonAnimationHelper.SetupButtonHoverEffects(btnPaper);
+            ButtonAnimationHelper.SetupButtonHoverEffects(btnScissors);
+            
+            // Thiet lap mau sac ban dau
+            btnRock.BackColor = GameConfig.ROCK_COLOR;
+            btnPaper.BackColor = GameConfig.PAPER_COLOR;
+            btnScissors.BackColor = GameConfig.SCISSORS_COLOR;
+        }
+
+        private void btnRock_Click(object sender, EventArgs e)
+        {
+            // Animation cho button click
+            ButtonAnimationHelper.AnimateButtonClick(btnRock, () => {
+                PlayGameWithAnimation("Da");
+            });
+        }
+
+        private void btnPaper_Click(object sender, EventArgs e)
+        {
+            // Animation cho button click
+            ButtonAnimationHelper.AnimateButtonClick(btnPaper, () => {
+                PlayGameWithAnimation("Giay");
+            });
+        }
+
+        private void btnScissors_Click(object sender, EventArgs e)
+        {
+            // Animation cho button click
+            ButtonAnimationHelper.AnimateButtonClick(btnScissors, () => {
+                PlayGameWithAnimation("Keo");
+            });
+        }
+
+        private void PlayGameWithAnimation(string playerChoice)
+        {
+            // Disable tat ca buttons va animate
+            DisableGameButtonsWithAnimation();
+            
+            // Hien thi choice confirmation
+            Button chosenButton = GetButtonByChoice(playerChoice);
+            if (chosenButton != null)
+            {
+                ButtonAnimationHelper.AnimateChoiceConfirmation(chosenButton);
+            }
+            
+            // Delay nho de tao cam giac suspense
+            System.Windows.Forms.Timer delayTimer = new System.Windows.Forms.Timer();
+            delayTimer.Interval = 800; // 0.8 giay
+            delayTimer.Tick += (sender, e) =>
+            {
+                delayTimer.Stop();
+                delayTimer.Dispose();
+                
+                // Thuc hien game logic
+                PlayGame(playerChoice);
+            };
+            delayTimer.Start();
+        }
+
+        private Button GetButtonByChoice(string choice)
+        {
+            return choice switch
+            {
+                "Da" => btnRock,
+                "Giay" => btnPaper,
+                "Keo" => btnScissors,
+                _ => null
+            };
+        }
+
+        private void PlayGame(string playerChoice)
+        {
+            string[] choices = { "Da", "Giay", "Keo" };
+            string computerChoice = choices[random.Next(3)];
+
+            // Animate computer choice
+            ShowComputerChoiceWithAnimation(computerChoice);
+
+            lblPlayerChoice.Text = $"Ban chon: {playerChoice}";
+            lblComputerChoice.Text = $"May chon: {computerChoice}";
+
+            string result = GetGameResult(playerChoice, computerChoice);
+            
+            // Animate result display
+            ShowResultWithAnimation(result);
+
+            if (result.Contains("Ban thang"))
+            {
+                playerScore++;
+                lblResult.ForeColor = Color.Green;
+                // Animate win celebration
+                ButtonAnimationHelper.AnimateWinCelebration(this);
+            }
+            else if (result.Contains("Ban thua"))
+            {
+                computerScore++;
+                lblResult.ForeColor = Color.Red;
+                // Phat am thanh lose
+                SoundEffectHelper.PlayLoseSound();
+            }
+            else
+            {
+                lblResult.ForeColor = Color.Orange;
+            }
+
+            UpdateScore();
+            
+            // Enable lai buttons sau 2 giay
+            System.Windows.Forms.Timer enableTimer = new System.Windows.Forms.Timer();
+            enableTimer.Interval = 2000;
+            enableTimer.Tick += (sender, e) =>
+            {
+                EnableGameButtonsWithAnimation();
+                enableTimer.Stop();
+                enableTimer.Dispose();
+            };
+            enableTimer.Start();
+        }
+
+        private void ShowComputerChoiceWithAnimation(string computerChoice)
+        {
+            // Tao hieu ung "dang chon..." cho may
+            System.Windows.Forms.Timer thinkingTimer = new System.Windows.Forms.Timer();
+            thinkingTimer.Interval = 200;
+            int thinkingStep = 0;
+            string[] thinkingText = { "May dang chon.", "May dang chon..", "May dang chon..." };
+            
+            thinkingTimer.Tick += (sender, e) =>
+            {
+                lblComputerChoice.Text = thinkingText[thinkingStep % 3];
+                thinkingStep++;
+                
+                if (thinkingStep >= 6) // 1.2 giay
+                {
+                    lblComputerChoice.Text = $"May chon: {computerChoice}";
+                    thinkingTimer.Stop();
+                    thinkingTimer.Dispose();
+                }
+            };
+            thinkingTimer.Start();
+        }
+
+        private void ShowResultWithAnimation(string result)
+        {
+            // Tao hieu ung fade-in cho ket qua
+            lblResult.Text = result;
+            lblResult.ForeColor = Color.Transparent;
+            
+            System.Windows.Forms.Timer fadeTimer = new System.Windows.Forms.Timer();
+            fadeTimer.Interval = 50;
+            int fadeStep = 0;
+            Color targetColor = result.Contains("Ban thang") ? Color.Green :
+                               result.Contains("Ban thua") ? Color.Red : Color.Orange;
+            
+            fadeTimer.Tick += (sender, e) =>
+            {
+                fadeStep++;
+                double progress = Math.Min(fadeStep / 10.0, 1.0);
+                
+                int alpha = (int)(255 * progress);
+                lblResult.ForeColor = Color.FromArgb(alpha, targetColor);
+                
+                if (fadeStep >= 10)
+                {
+                    lblResult.ForeColor = targetColor;
+                    fadeTimer.Stop();
+                    fadeTimer.Dispose();
+                }
+            };
+            fadeTimer.Start();
+        }
+
+        private void DisableGameButtonsWithAnimation()
+        {
+            btnRock.Enabled = false;
+            btnPaper.Enabled = false;
+            btnScissors.Enabled = false;
+            
+            ButtonAnimationHelper.AnimateButtonDisable(btnRock);
+            ButtonAnimationHelper.AnimateButtonDisable(btnPaper);
+            ButtonAnimationHelper.AnimateButtonDisable(btnScissors);
+        }
+
+        private void EnableGameButtonsWithAnimation()
+        {
+            btnRock.Enabled = true;
+            btnPaper.Enabled = true;
+            btnScissors.Enabled = true;
+            
+            ButtonAnimationHelper.AnimateButtonEnable(btnRock);
+            ButtonAnimationHelper.AnimateButtonEnable(btnPaper);
+            ButtonAnimationHelper.AnimateButtonEnable(btnScissors);
+        }
+
+        private string GetGameResult(string player, string computer)
+        {
+            if (player == computer)
+                return "Hoa!";
+
+            if ((player == "Da" && computer == "Keo") ||
+                (player == "Giay" && computer == "Da") ||
+                (player == "Keo" && computer == "Giay"))
+            {
+                return "Ban thang!";
+            }
+            else
+            {
+                return "Ban thua!";
+            }
+        }
+
+        private void UpdateScore()
+        {
+            lblScore.Text = $"Ty so - {playerName}: {playerScore} | May: {computerScore}";
+            
+            // Animate score update
+            System.Windows.Forms.Timer pulseTimer = new System.Windows.Forms.Timer();
+            pulseTimer.Interval = 100;
+            int pulseStep = 0;
+            Font originalFont = lblScore.Font;
+            
+            pulseTimer.Tick += (sender, e) =>
+            {
+                pulseStep++;
+                
+                if (pulseStep <= 3)
+                {
+                    // Phong to
+                    lblScore.Font = new Font(originalFont.FontFamily, originalFont.Size + 2, FontStyle.Bold);
+                    lblScore.ForeColor = Color.DarkBlue;
+                }
+                else
+                {
+                    // Thu nho ve ban dau
+                    lblScore.Font = originalFont;
+                    lblScore.ForeColor = Color.DarkGreen;
+                }
+                
+                if (pulseStep >= 6)
+                {
+                    pulseTimer.Stop();
+                    pulseTimer.Dispose();
+                }
+            };
+            pulseTimer.Start();
+        }
+
+        private void btnReset_Click(object sender, EventArgs e)
+        {
+            // Animation cho reset
+            ButtonAnimationHelper.AnimateButtonClick(btnReset, () => {
+                ResetGameWithAnimation();
+            });
+        }
+
+        private void ResetGameWithAnimation()
+        {
+            playerScore = 0;
+            computerScore = 0;
+            
+            // Animate reset process
+            Timer resetTimer = new Timer();
+            resetTimer.Interval = 100;
+            int resetStep = 0;
+            
+            resetTimer.Tick += (sender, e) =>
+            {
+                resetStep++;
+                
+                switch (resetStep)
+                {
+                    case 1:
+                        lblPlayerChoice.Text = "Ban chon: ---";
+                        lblPlayerChoice.ForeColor = Color.Gray;
+                        break;
+                    case 2:
+                        lblComputerChoice.Text = "May chon: ---";
+                        lblComputerChoice.ForeColor = Color.Gray;
+                        break;
+                    case 3:
+                        lblResult.Text = "Ket qua: ---";
+                        lblResult.ForeColor = Color.Black;
+                        break;
+                    case 4:
+                        UpdateScore();
+                        break;
+                    case 5:
+                        // Khoi phuc mau sac ban dau
+                        lblPlayerChoice.ForeColor = Color.Black;
+                        lblComputerChoice.ForeColor = Color.Black;
+                        resetTimer.Stop();
+                        resetTimer.Dispose();
+                        break;
+                }
+            };
+            resetTimer.Start();
+        }
+
+        private void btnBack_Click(object sender, EventArgs e)
+        {
+            // Cleanup timers
+            gameResultTimer?.Stop();
+            gameResultTimer?.Dispose();
+            ButtonAnimationHelper.StopCurrentAnimation();
+            
+            this.Close();
+        }
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            // Cleanup timers khi dong form
+            gameResultTimer?.Stop();
+            gameResultTimer?.Dispose();
+            ButtonAnimationHelper.StopCurrentAnimation();
+            
+            base.OnFormClosing(e);
+        }
+    }
+}

@@ -1,0 +1,337 @@
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using System.Threading;
+
+namespace BaiTapGK
+{
+    public partial class MultiPlayerForm : Form
+    {
+        private string playerName;
+        private bool isHost = false;
+        private TcpListener tcpListener;
+        private TcpClient tcpClient;
+        private NetworkStream stream;
+        private Thread tcpListenerThread;
+        private Thread tcpClientThread;
+        private string roomId;
+        private bool gameStarted = false;
+        private string playerChoice = "";
+        private string opponentChoice = "";
+        private int playerScore = 0;
+        private int opponentScore = 0;
+
+        public MultiPlayerForm(string playerName)
+        {
+            InitializeComponent();
+            this.playerName = playerName;
+            lblPlayerName.Text = $"Người chơi: {playerName}";
+            this.StartPosition = FormStartPosition.CenterScreen;
+            this.FormBorderStyle = FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            
+            // Tạo Room ID ngẫu nhiên
+            roomId = GenerateRoomId();
+            lblRoomId.Text = $"Room ID: {roomId}";
+            
+            EnableGameButtons(false);
+        }
+
+        private string GenerateRoomId()
+        {
+            Random random = new Random();
+            return random.Next(1000, 9999).ToString();
+        }
+
+        private void btnCreateRoom_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                isHost = true;
+                tcpListener = new TcpListener(IPAddress.Any, 7777);
+                tcpListener.Start();
+                
+                tcpListenerThread = new Thread(new ThreadStart(ListenForClients));
+                tcpListenerThread.IsBackground = true;
+                tcpListenerThread.Start();
+                
+                lblStatus.Text = "Đang chờ người chơi khác tham gia...";
+                lblStatus.ForeColor = Color.Orange;
+                btnCreateRoom.Enabled = false;
+                btnJoinRoom.Enabled = false;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi tạo phòng: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnJoinRoom_Click(object sender, EventArgs e)
+        {
+            string inputRoomId = txtRoomId.Text.Trim();
+            if (string.IsNullOrEmpty(inputRoomId))
+            {
+                MessageBox.Show("Vui lòng nhập Room ID!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            try
+            {
+                isHost = false;
+                tcpClient = new TcpClient();
+                tcpClient.Connect("127.0.0.1", 7777); // Local connection for demo
+                stream = tcpClient.GetStream();
+                
+                tcpClientThread = new Thread(new ThreadStart(ListenForData));
+                tcpClientThread.IsBackground = true;
+                tcpClientThread.Start();
+                
+                // Gửi tên người chơi
+                SendMessage($"PLAYER:{playerName}");
+                
+                lblStatus.Text = "Đã kết nối! Sẵn sàng chơi.";
+                lblStatus.ForeColor = Color.Green;
+                btnCreateRoom.Enabled = false;
+                btnJoinRoom.Enabled = false;
+                EnableGameButtons(true);
+                gameStarted = true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Không thể kết nối đến phòng: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void ListenForClients()
+        {
+            try
+            {
+                while (true)
+                {
+                    using (TcpClient client = tcpListener.AcceptTcpClient())
+                    {
+                        tcpClient = client;
+                        stream = client.GetStream();
+                        
+                        this.Invoke((MethodInvoker)delegate
+                        {
+                            lblStatus.Text = "Người chơi đã tham gia! Sẵn sàng chơi.";
+                            lblStatus.ForeColor = Color.Green;
+                            EnableGameButtons(true);
+                            gameStarted = true;
+                        });
+
+                        ListenForData();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                this.Invoke((MethodInvoker)delegate
+                {
+                    lblStatus.Text = $"Lỗi server: {ex.Message}";
+                    lblStatus.ForeColor = Color.Red;
+                });
+            }
+        }
+
+        private void ListenForData()
+        {
+            try
+            {
+                byte[] buffer = new byte[4096];
+                while (true)
+                {
+                    int bytesRead = stream.Read(buffer, 0, buffer.Length);
+                    if (bytesRead == 0) break;
+                    
+                    string message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                    ProcessMessage(message);
+                }
+            }
+            catch (Exception ex)
+            {
+                this.Invoke((MethodInvoker)delegate
+                {
+                    lblStatus.Text = $"Mất kết nối: {ex.Message}";
+                    lblStatus.ForeColor = Color.Red;
+                    EnableGameButtons(false);
+                });
+            }
+        }
+
+        private void ProcessMessage(string message)
+        {
+            this.Invoke((MethodInvoker)delegate
+            {
+                if (message.StartsWith("PLAYER:"))
+                {
+                    string opponentName = message.Substring(7);
+                    lblOpponent.Text = $"Đối thủ: {opponentName}";
+                }
+                else if (message.StartsWith("CHOICE:"))
+                {
+                    opponentChoice = message.Substring(7);
+                    CheckGameResult();
+                }
+                else if (message.StartsWith("RESULT:"))
+                {
+                    lblGameResult.Text = message.Substring(7);
+                }
+            });
+        }
+
+        private void SendMessage(string message)
+        {
+            try
+            {
+                if (stream != null)
+                {
+                    byte[] data = Encoding.UTF8.GetBytes(message);
+                    stream.Write(data, 0, data.Length);
+                }
+            }
+            catch (Exception ex)
+            {
+                lblStatus.Text = $"Lỗi gửi tin nhắn: {ex.Message}";
+                lblStatus.ForeColor = Color.Red;
+            }
+        }
+
+        private void btnRock_Click(object sender, EventArgs e)
+        {
+            MakeChoice("Đá");
+        }
+
+        private void btnPaper_Click(object sender, EventArgs e)
+        {
+            MakeChoice("Giấy");
+        }
+
+        private void btnScissors_Click(object sender, EventArgs e)
+        {
+            MakeChoice("Kéo");
+        }
+
+        private void MakeChoice(string choice)
+        {
+            playerChoice = choice;
+            lblPlayerChoice.Text = $"Bạn chọn: {choice}";
+            SendMessage($"CHOICE:{choice}");
+            
+            EnableGameButtons(false);
+            lblGameResult.Text = "Đang chờ đối thủ...";
+            
+            CheckGameResult();
+        }
+
+        private void CheckGameResult()
+        {
+            if (!string.IsNullOrEmpty(playerChoice) && !string.IsNullOrEmpty(opponentChoice))
+            {
+                lblOpponentChoice.Text = $"Đối thủ chọn: {opponentChoice}";
+                
+                string result = GetGameResult(playerChoice, opponentChoice);
+                lblGameResult.Text = result;
+                
+                if (result.Contains("Bạn thắng"))
+                {
+                    playerScore++;
+                    lblGameResult.ForeColor = Color.Green;
+                }
+                else if (result.Contains("Bạn thua"))
+                {
+                    opponentScore++;
+                    lblGameResult.ForeColor = Color.Red;
+                }
+                else
+                {
+                    lblGameResult.ForeColor = Color.Orange;
+                }
+                
+                UpdateScore();
+                
+                // Reset cho ván tiếp theo
+                System.Windows.Forms.Timer resetTimer = new System.Windows.Forms.Timer();
+                resetTimer.Interval = 3000; // 3 giây
+                resetTimer.Tick += (s, e) =>
+                {
+                    playerChoice = "";
+                    opponentChoice = "";
+                    lblPlayerChoice.Text = "Bạn chọn: ---";
+                    lblOpponentChoice.Text = "Đối thủ chọn: ---";
+                    lblGameResult.Text = "Chọn lựa chọn của bạn";
+                    lblGameResult.ForeColor = Color.Black;
+                    EnableGameButtons(true);
+                    resetTimer.Stop();
+                    resetTimer.Dispose();
+                };
+                resetTimer.Start();
+            }
+        }
+
+        private string GetGameResult(string player, string opponent)
+        {
+            if (player == opponent)
+                return "Hòa!";
+
+            if ((player == "Đá" && opponent == "Kéo") ||
+                (player == "Giấy" && opponent == "Đá") ||
+                (player == "Kéo" && opponent == "Giấy"))
+            {
+                return "Bạn thắng!";
+            }
+            else
+            {
+                return "Bạn thua!";
+            }
+        }
+
+        private void UpdateScore()
+        {
+            lblScore.Text = $"Tỷ số - Bạn: {playerScore} | Đối thủ: {opponentScore}";
+        }
+
+        private void EnableGameButtons(bool enabled)
+        {
+            btnRock.Enabled = enabled;
+            btnPaper.Enabled = enabled;
+            btnScissors.Enabled = enabled;
+        }
+
+        private void btnBack_Click(object sender, EventArgs e)
+        {
+            // Đóng kết nối
+            try
+            {
+                stream?.Close();
+                tcpClient?.Close();
+                tcpListener?.Stop();
+                tcpListenerThread?.Abort();
+                tcpClientThread?.Abort();
+            }
+            catch { }
+            
+            this.Close();
+        }
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            // Đóng kết nối khi đóng form
+            try
+            {
+                stream?.Close();
+                tcpClient?.Close();
+                tcpListener?.Stop();
+                tcpListenerThread?.Abort();
+                tcpClientThread?.Abort();
+            }
+            catch { }
+            
+            base.OnFormClosing(e);
+        }
+    }
+}

@@ -1,0 +1,554 @@
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace BaiTapGK
+{
+    public class HandGestureAnimationControl : UserControl
+    {
+        private System.Windows.Forms.Timer? animationTimer;
+        private int animationStep = 0;
+        private string finalChoice = "";
+        private bool isAnimating = false;
+        private Font gestureFont;
+        private Action<string>? onAnimationComplete;
+
+        // Cac frames animation cho "quơ quơ"
+        private readonly string[] shakeFrames = {
+            "✊", "🖐️", "✊", "🖐️", "✊", "🖐️", "✊" 
+        };
+
+        // Final gestures
+        private readonly string rockGesture = "✊";
+        private readonly string paperGesture = "🖐️"; 
+        private readonly string scissorsGesture = "✌️";
+
+        public HandGestureAnimationControl()
+        {
+            this.Size = new Size(150, 150);
+            this.BackColor = Color.Transparent;
+            
+            // Try to use Segoe UI Emoji, fallback to Arial if not available
+            try
+            {
+                gestureFont = new Font("Segoe UI Emoji", 48, FontStyle.Regular);
+            }
+            catch
+            {
+                try
+                {
+                    gestureFont = new Font("Arial", 48, FontStyle.Regular);
+                }
+                catch
+                {
+                    gestureFont = new Font(FontFamily.GenericSansSerif, 48, FontStyle.Regular);
+                }
+            }
+            
+            this.SetStyle(ControlStyles.AllPaintingInWmPaint | 
+                         ControlStyles.UserPaint | 
+                         ControlStyles.DoubleBuffer | 
+                         ControlStyles.ResizeRedraw, true);
+        }
+
+        /// <summary>
+        /// Bat dau animation "quơ quơ" va ket thuc voi choice cu the
+        /// </summary>
+        public void StartShakeAnimation(string choice, Action<string>? onComplete = null)
+        {
+            if (isAnimating) 
+            {
+                StopAnimation(); // Stop current animation before starting new one
+            }
+
+            if (string.IsNullOrEmpty(choice))
+            {
+                return; // Don't start animation with empty choice
+            }
+
+            finalChoice = choice;
+            onAnimationComplete = onComplete;
+            animationStep = 0;
+            isAnimating = true;
+
+            // Phat am thanh bat dau
+            try
+            {
+                SoundEffectHelper.PlayCountdownSound();
+            }
+            catch
+            {
+                // Continue without sound if there's an error
+            }
+
+            // Ensure we're on UI thread
+            if (this.InvokeRequired)
+            {
+                this.Invoke(new Action(() => StartShakeAnimation(choice, onComplete)));
+                return;
+            }
+
+            animationTimer = new System.Windows.Forms.Timer();
+            animationTimer.Interval = 200; // 200ms moi frame
+            animationTimer.Tick += AnimationTimer_Tick;
+            animationTimer.Start();
+
+            this.Invalidate(); // Repaint
+        }
+
+        private void AnimationTimer_Tick(object? sender, EventArgs e)
+        {
+            if (!isAnimating || animationTimer == null)
+            {
+                return; // Safety check
+            }
+
+            animationStep++;
+
+            if (animationStep <= shakeFrames.Length)
+            {
+                // Phase 1: Shake animation (quơ quơ)
+                this.Invalidate();
+            }
+            else if (animationStep <= shakeFrames.Length + 5)
+            {
+                // Phase 2: Suspense pause (keep shaking slower)
+                if (animationStep == shakeFrames.Length + 1)
+                {
+                    animationTimer.Interval = 100; // Faster for final shakes
+                }
+                this.Invalidate();
+            }
+            else
+            {
+                // Phase 3: Final reveal
+                StopAnimationTimer();
+                isAnimating = false;
+                
+                // Play final sound
+                try
+                {
+                    SoundEffectHelper.PlayClickSound();
+                }
+                catch
+                {
+                    // Continue without sound if there's an error
+                }
+                
+                this.Invalidate();
+                
+                // Callback after animation complete
+                try
+                {
+                    onAnimationComplete?.Invoke(finalChoice);
+                }
+                catch (Exception ex)
+                {
+                    // Log error but don't crash
+                    System.Diagnostics.Debug.WriteLine($"Animation callback error: {ex.Message}");
+                }
+            }
+        }
+
+        private void StopAnimationTimer()
+        {
+            if (animationTimer != null)
+            {
+                animationTimer.Stop();
+                animationTimer.Tick -= AnimationTimer_Tick;
+                animationTimer.Dispose();
+                animationTimer = null;
+            }
+        }
+
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            if (e?.Graphics == null) return;
+
+            base.OnPaint(e);
+
+            Graphics g = e.Graphics;
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
+
+            string displayGesture = "";
+            Color textColor = Color.Black;
+            
+            try
+            {
+                if (!isAnimating)
+                {
+                    // Show final choice
+                    displayGesture = GetGestureByChoice(finalChoice);
+                    textColor = GetColorByChoice(finalChoice);
+                }
+                else if (animationStep <= shakeFrames.Length && animationStep > 0)
+                {
+                    // Show shaking animation
+                    int frameIndex = (animationStep - 1) % shakeFrames.Length;
+                    displayGesture = shakeFrames[frameIndex];
+                    textColor = Color.Gray;
+                }
+                else
+                {
+                    // Suspense phase - show closed fist
+                    displayGesture = "✊";
+                    textColor = Color.DarkGray;
+                }
+
+                // Calculate text position for centering
+                SizeF textSize = g.MeasureString(displayGesture, gestureFont);
+                float x = (this.Width - textSize.Width) / 2;
+                float y = (this.Height - textSize.Height) / 2;
+
+                // Ve shadow effect
+                using (Brush shadowBrush = new SolidBrush(Color.FromArgb(50, Color.Black)))
+                {
+                    g.DrawString(displayGesture, gestureFont, shadowBrush, x + 3, y + 3);
+                }
+
+                // Ve main gesture
+                using (Brush mainBrush = new SolidBrush(textColor))
+                {
+                    g.DrawString(displayGesture, gestureFont, mainBrush, x, y);
+                }
+
+                // Ve glow effect neu dang animate
+                if (isAnimating && animationStep > shakeFrames.Length)
+                {
+                    using (Pen glowPen = new Pen(Color.Gold, 3))
+                    {
+                        int margin = 10;
+                        g.DrawEllipse(glowPen, margin, margin, 
+                            this.Width - 2 * margin, this.Height - 2 * margin);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Fallback rendering in case of error
+                System.Diagnostics.Debug.WriteLine($"Paint error: {ex.Message}");
+                
+                using (Brush errorBrush = new SolidBrush(Color.Red))
+                {
+                    g.DrawString("?", new Font(FontFamily.GenericSansSerif, 24), 
+                        errorBrush, this.Width / 2 - 12, this.Height / 2 - 12);
+                }
+            }
+        }
+
+        private string GetGestureByChoice(string choice)
+        {
+            if (string.IsNullOrEmpty(choice)) return rockGesture;
+            
+            return choice switch
+            {
+                "Da" => rockGesture,
+                "Giay" => paperGesture,
+                "Keo" => scissorsGesture,
+                _ => rockGesture
+            };
+        }
+
+        private Color GetColorByChoice(string choice)
+        {
+            if (string.IsNullOrEmpty(choice)) return Color.Black;
+            
+            return choice switch
+            {
+                "Da" => Color.DarkGray,
+                "Giay" => Color.DarkBlue,
+                "Keo" => Color.DarkGoldenrod,
+                _ => Color.Black
+            };
+        }
+
+        /// <summary>
+        /// Dung animation neu dang chay
+        /// </summary>
+        public void StopAnimation()
+        {
+            isAnimating = false;
+            StopAnimationTimer();
+            
+            if (this.InvokeRequired)
+            {
+                try
+                {
+                    this.Invoke(new Action(() => this.Invalidate()));
+                }
+                catch
+                {
+                    // Ignore invoke errors during shutdown
+                }
+            }
+            else
+            {
+                this.Invalidate();
+            }
+        }
+
+        /// <summary>
+        /// Reset ve trang thai ban dau
+        /// </summary>
+        public void Reset()
+        {
+            StopAnimation();
+            finalChoice = "";
+            animationStep = 0;
+            onAnimationComplete = null;
+            
+            if (this.InvokeRequired)
+            {
+                try
+                {
+                    this.Invoke(new Action(() => this.Invalidate()));
+                }
+                catch
+                {
+                    // Ignore invoke errors during shutdown
+                }
+            }
+            else
+            {
+                this.Invalidate();
+            }
+        }
+
+        /// <summary>
+        /// Hien thi static gesture khong co animation
+        /// </summary>
+        public void ShowStaticGesture(string choice)
+        {
+            StopAnimation();
+            finalChoice = choice ?? "";
+            
+            if (this.InvokeRequired)
+            {
+                try
+                {
+                    this.Invoke(new Action(() => this.Invalidate()));
+                }
+                catch
+                {
+                    // Ignore invoke errors during shutdown
+                }
+            }
+            else
+            {
+                this.Invalidate();
+            }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                try
+                {
+                    StopAnimation();
+                    gestureFont?.Dispose();
+                }
+                catch
+                {
+                    // Ignore disposal errors
+                }
+            }
+            base.Dispose(disposing);
+        }
+    }
+
+    /// <summary>
+    /// Helper class cho countdown animation giong nhu "San-ko-ho"
+    /// </summary>
+    public static class CountdownAnimationHelper
+    {
+        /// <summary>
+        /// Tao countdown animation giong nhu trong game that
+        /// </summary>
+        public static void StartCountdown(Control container, Action? onComplete)
+        {
+            if (container == null || container.IsDisposed)
+            {
+                onComplete?.Invoke();
+                return;
+            }
+
+            // Ensure we're on UI thread
+            if (container.InvokeRequired)
+            {
+                try
+                {
+                    container.Invoke(new Action(() => StartCountdown(container, onComplete)));
+                }
+                catch
+                {
+                    // If invoke fails, just call the completion callback
+                    onComplete?.Invoke();
+                }
+                return;
+            }
+
+            Label countdownLabel = new Label
+            {
+                Text = "",
+                Font = new Font("Microsoft Sans Serif", 36, FontStyle.Bold),
+                ForeColor = Color.Red,
+                BackColor = Color.Transparent,
+                Size = new Size(200, 100),
+                Location = new Point(Math.Max(0, container.Width / 2 - 100), 
+                                   Math.Max(0, container.Height / 2 - 50)),
+                TextAlign = ContentAlignment.MiddleCenter
+            };
+
+            try
+            {
+                container.Controls.Add(countdownLabel);
+                countdownLabel.BringToFront();
+            }
+            catch
+            {
+                // If adding control fails, cleanup and call completion
+                countdownLabel.Dispose();
+                onComplete?.Invoke();
+                return;
+            }
+
+            System.Windows.Forms.Timer countdownTimer = new System.Windows.Forms.Timer();
+            countdownTimer.Interval = 800; // 0.8 giay
+            int countStep = 0;
+            string[] countTexts = { "SAN!", "KO!", "HO!", "" };
+
+            countdownTimer.Tick += (sender, e) =>
+            {
+                try
+                {
+                    if (countStep < countTexts.Length - 1)
+                    {
+                        if (!countdownLabel.IsDisposed)
+                        {
+                            countdownLabel.Text = countTexts[countStep];
+                            
+                            // Animate scale
+                            AnimateCountdownText(countdownLabel);
+                            
+                            // Play sound
+                            try
+                            {
+                                SoundEffectHelper.PlayCountdownSound();
+                            }
+                            catch
+                            {
+                                // Continue without sound if error
+                            }
+                        }
+                        
+                        countStep++;
+                    }
+                    else
+                    {
+                        // Finish countdown
+                        countdownTimer.Stop();
+                        countdownTimer.Dispose();
+                        
+                        if (!countdownLabel.IsDisposed && !container.IsDisposed)
+                        {
+                            try
+                            {
+                                container.Controls.Remove(countdownLabel);
+                            }
+                            catch
+                            {
+                                // Ignore removal errors
+                            }
+                        }
+                        
+                        countdownLabel.Dispose();
+                        
+                        try
+                        {
+                            onComplete?.Invoke();
+                        }
+                        catch (Exception ex)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"Countdown completion error: {ex.Message}");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Clean up on error
+                    System.Diagnostics.Debug.WriteLine($"Countdown timer error: {ex.Message}");
+                    countdownTimer.Stop();
+                    countdownTimer.Dispose();
+                    
+                    try
+                    {
+                        if (!countdownLabel.IsDisposed && !container.IsDisposed)
+                        {
+                            container.Controls.Remove(countdownLabel);
+                        }
+                        countdownLabel.Dispose();
+                        onComplete?.Invoke();
+                    }
+                    catch
+                    {
+                        // Final fallback
+                    }
+                }
+            };
+
+            countdownTimer.Start();
+        }
+
+        private static void AnimateCountdownText(Label label)
+        {
+            if (label == null || label.IsDisposed) return;
+
+            Font originalFont = label.Font;
+            System.Windows.Forms.Timer scaleTimer = new System.Windows.Forms.Timer();
+            scaleTimer.Interval = 50;
+            int scaleStep = 0;
+
+            scaleTimer.Tick += (sender, e) =>
+            {
+                try
+                {
+                    if (label.IsDisposed)
+                    {
+                        scaleTimer.Stop();
+                        scaleTimer.Dispose();
+                        return;
+                    }
+
+                    scaleStep++;
+                    
+                    if (scaleStep <= 5)
+                    {
+                        // Scale up
+                        float newSize = Math.Min(originalFont.Size + scaleStep * 4, 72); // Cap max size
+                        using (Font newFont = new Font(originalFont.FontFamily, newSize, originalFont.Style))
+                        {
+                            label.Font = new Font(newFont.FontFamily, newFont.Size, newFont.Style);
+                        }
+                    }
+                    else
+                    {
+                        // Scale back to original
+                        label.Font = new Font(originalFont.FontFamily, originalFont.Size, originalFont.Style);
+                        scaleTimer.Stop();
+                        scaleTimer.Dispose();
+                    }
+                }
+                catch
+                {
+                    // Clean up on error
+                    scaleTimer.Stop();
+                    scaleTimer.Dispose();
+                }
+            };
+            
+            scaleTimer.Start();
+        }
+    }
+}

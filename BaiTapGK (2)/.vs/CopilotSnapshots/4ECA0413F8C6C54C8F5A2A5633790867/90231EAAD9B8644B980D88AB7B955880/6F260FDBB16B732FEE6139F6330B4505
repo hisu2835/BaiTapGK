@@ -1,0 +1,228 @@
+﻿# Game Oan Tu Ti (Rock Paper Scissors) - C# WinForms
+
+## 🎮 Gioi thieu
+Day la tro choi Oan Tu Ti (Rock Paper Scissors) duoc phat trien bang C# WinForms voi day du cac tinh nang:
+
+### 🌟 Tinh nang chinh:
+- **Dang nhap**: He thong dang nhap voi ten nguoi choi
+- **Choi don**: Choi voi may tinh (AI ngau nhien)
+- **Choi doi**: Choi online voi nguoi khac qua TCP/IP
+- **Gioi thieu game**: Huong dan cach choi va luat game
+- **Network Monitor**: Cong cu monitor network traffic tuong tu Wireshark
+- **Khong dau tieng Viet**: Tat ca text su dung tieng Viet khong dau de tranh loi hien thi
+
+## 🚀 Cach chay ung dung
+
+### Yeu cau he thong:
+- .NET 9 SDK
+- Windows OS
+- Visual Studio 2022 hoac VS Code
+- **Admin privileges** (cho Network Monitor)
+
+### Chay ung dung:
+1. Mo Terminal/Command Prompt **as Administrator**
+2. Navigate den thu muc du an
+3. Chay lenh: `dotnet run`
+
+## 📖 Huong dan su dung
+
+### 1. Dang nhap
+- Khi khoi dong app, form dang nhap se xuat hien
+- Nhap ten nguoi choi
+- Click "DANG NHAP" hoac nhan Enter
+
+### 2. Menu chinh
+Sau khi dang nhap thanh cong, ban co 4 lua chon:
+
+#### 🎯 Choi don (Single Player)
+- Choi voi may tinh
+- May se chon ngau nhien
+- Diem so duoc tinh tu dong
+- Co nut Reset de choi lai
+- **Icons**: Hinh ban tay thay vi bua-keo-bao truyen thong
+
+#### 🌐 Choi doi (Multi Player)
+- **Tao phong**: Click "TAO PHONG" de lam host
+- **Tham gia phong**: Nhap Room ID va click "VAO PHONG"
+- Can 2 nguoi choi de bat dau
+- Game se tu dong so sanh ket qua
+- **Icons**: Hinh ban tay sinh dong
+
+#### 📚 Gioi thieu game
+- Xem luat choi va cach thuc hoat dong
+- Huong dan chi tiet ve game
+
+#### 🔍 Network Monitor
+- **Chuc nang tuong tu Wireshark**
+- Capture va phan tich network traffic real-time
+- Hien thi packets TCP, UDP, ICMP
+- Filter packets theo protocol
+- Export du lieu ra CSV/TXT
+- Hien thi chi tiet packet (hex dump)
+- Thong ke real-time theo protocol
+
+## 🔗 Cau truc ma nguon
+
+### Cac file chinh:
+- `Form1.cs` - Form menu chinh
+- `LoginForm.cs` - Form dang nhap
+- `SinglePlayerForm.cs` - Form choi don
+- `MultiPlayerForm.cs` - Form choi doi (TCP networking)
+- `GameIntroForm.cs` - Form gioi thieu
+- `NetworkMonitorForm.cs` - Form network monitoring
+- `NetworkCapture.cs` - Engine capture packets
+- `GameConfig.cs` - Cac cau hinh game
+- `NetworkUtils.cs` - Tien ich network
+
+### Cong nghe su dung:
+- **Frontend**: Windows Forms
+- **Networking**: TCP/IP Socket
+- **Threading**: Multi-threading cho server/client
+- **Random**: Algorithm ngau nhien cho AI
+- **Packet Capture**: SharpPcap + PacketDotNet
+- **Network Analysis**: Raw socket programming
+- **Encoding**: UTF-8 khong dau cho tieng Viet
+
+## 🌐 Che do Multiplayer
+
+### Cach hoat dong:
+1. **Host** tao phong → Server TCP lang nghe port 7777
+2. **Client** tham gia → Ket noi den localhost:7777
+3. Trao doi du lieu qua TCP stream
+4. Dong bo lua chon va tinh diem
+
+### Giao thuc tin nhan:
+- `PLAYER:[ten]` - Gui ten nguoi choi
+- `CHOICE:[lua chon]` - Gui lua chon (Da/Giay/Keo)
+- `RESULT:[ket qua]` - Ket qua tran dau
+
+## 🔍 Network Monitor
+
+### Tinh nang Wireshark:
+- **Real-time packet capture** tren tat ca network interfaces
+- **Protocol detection**: TCP, UDP, ICMP, Ethernet
+- **Packet filtering** voi Berkeley Packet Filter syntax
+- **Packet details**: Source/Destination IP, Ports, Protocol info
+- **Hex dump viewer** cho raw packet data
+- **Statistics dashboard** hien thi so luong packets theo protocol
+- **Export capabilities** ra CSV hoac text files
+- **Auto-scroll** va manual navigation
+- **Interface selection** cho multi-NIC systems
+
+### Su dung Network Monitor:
+1. Chon network interface tu dropdown
+2. (Tuy chon) Nhap filter expression (vd: "tcp port 80", "udp", "icmp")
+3. Click "BAT DAU CAPTURE" de bat dau
+4. Xem packets real-time trong bang
+5. Click vao packet de xem chi tiet
+6. Su dung "XUAT FILE" de luu du lieu
+7. Click "DUNG CAPTURE" de ket thuc
+
+### Filter Examples:
+- `tcp` - Chi hien thi TCP packets
+- `udp port 53` - Chi DNS queries
+- `icmp` - Chi ping packets
+- `host 192.168.1.1` - Chi traffic den/tu IP nay
+- `port 80 or port 443` - Chi HTTP/HTTPS traffic
+
+## 🎨 Giao dien
+
+### Mau sac:
+- **Da**: Xam nhat (Rock - Gray) voi icon ✊
+- **Giay**: Xanh nhat (Paper - Light Blue) voi icon 🖐️
+- **Keo**: Vang nhat (Scissors - Light Yellow) voi icon ✌️
+
+### Bieu tuong moi:
+- ✊ **Nam dam** (Rock) - thay cho icon bua cu
+- 🖐️ **Ban tay mo** (Paper) - thay cho icon giay cu  
+- ✌️ **Hai ngon tay** (Scissors) - thay cho icon keo cu
+
+### Tieng Viet khong dau:
+- Tat ca text trong ung dung su dung **tieng Viet khong dau**
+- Tranh loi hien thi font va encoding tren cac he thong khac nhau
+- Dam bao tuong thich voi tat ca Windows versions
+- Giao dien sach dep, de doc
+
+## ⚠️ Xu ly loi
+
+### Cac loi thuong gap:
+1. **Loi ket noi**: Kiem tra firewall va port 7777
+2. **Mat ket noi**: Tu dong hien thi thong bao loi
+3. **Thread exception**: Su dung Invoke de update UI thread-safe
+4. **Network Monitor loi**: Can quyen Administrator de capture packets
+5. **SharpPcap loi**: Kiem tra WinPcap/Npcap da cai dat
+6. **Font loi**: Da su dung tieng Viet khong dau de tranh loi
+
+### Khac phuc Network Monitor:
+- **Chay as Administrator** de co quyen capture packets
+- Cai dat **Npcap** neu chua co: https://npcap.com/
+- Kiem tra Windows Firewall settings
+- Thu chon interface khac neu current interface khong hoat dong
+
+### Khac phuc loi font:
+- Ung dung da duoc thiet ke voi **tieng Viet khong dau**
+- Khong can cai dat font dac biet
+- Tuong thich voi tat ca Windows locale settings
+- Su dung Unicode UTF-8 cho tat ca text
+
+## 🚀 Tinh nang mo rong
+
+### Co the phat trien them:
+- [ ] Chat trong game
+- [ ] Luu lich su tran dau  
+- [ ] Ranking system
+- [ ] Sound effects
+- [ ] Themes va skins
+- [ ] Tournament mode
+- [ ] Server dedicated (khong chi P2P)
+- [ ] **Advanced packet analysis** (checksums, TTL, etc.)
+- [ ] **Network topology mapping**
+- [ ] **Traffic visualization charts**
+- [ ] **Packet replay functionality**
+- [ ] **Deep packet inspection** cho application protocols
+- [ ] **Multi-language support** (tieng Viet co dau, English, etc.)
+
+## 📋 Luat choi
+
+### Nguyen tac co ban:
+- **Da** (✊) thang **Keo** (✌️) - da nghien nat keo
+- **Keo** (✌️) thang **Giay** (🖐️) - keo cat giay  
+- **Giay** (🖐️) thang **Da** (✊) - giay bao da
+- Chon giong nhau = **HOA**
+
+## 🔒 Bao mat va Quyen rieng tu
+
+### Network Monitor:
+- Tool chi **monitor traffic**, khong modify hay inject packets
+- Du lieu capture chi luu local, khong gui di dau khac
+- Can **admin privileges** de truy cap network interfaces
+- **Khong capture passwords** hay sensitive data (chi metadata)
+- Tuong thich voi Windows Firewall va antivirus
+
+### Bao mat du lieu:
+- Tat ca du lieu game duoc truyen qua **localhost** (an toan)
+- Khong luu tru thong tin ca nhan
+- Network traffic chi duoc monitor, khong stored permanently
+- Tuong thich voi privacy policies
+
+## 🛠️ Phat trien va Maintainance
+
+### Code Quality:
+- Su dung **tieng Viet khong dau** trong tat ca comments va strings
+- Follow Microsoft C# coding standards
+- Proper exception handling va logging
+- Thread-safe operations cho networking
+- Memory management cho packet capture
+
+### Testing:
+- Test tren nhieu Windows versions
+- Test voi cac network interfaces khac nhau
+- Stress test cho network monitoring
+- UI/UX testing cho accessibility
+
+---
+*Phat trien boi: BaiTapGK Team*  
+*Framework: .NET 9 + WinForms*  
+*Packet Capture: SharpPcap + PacketDotNet*  
+*Ngon ngu: Tieng Viet khong dau - Unicode UTF-8*  
+*Compatibility: Windows 10/11, .NET 9*

@@ -1,0 +1,298 @@
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace BaiTapGK
+{
+    public partial class Form1 : FullscreenSupportForm
+    {
+        private string playerName = "";
+        private bool isLoggedIn = false;
+        
+        // Luu original layout info
+        private Dictionary<Control, Rectangle> originalBounds = new Dictionary<Control, Rectangle>();
+        private Font originalWelcomeFont;
+
+        public Form1()
+        {
+            InitializeComponent();
+            this.StartPosition = FormStartPosition.CenterScreen;
+            this.FormBorderStyle = FormBorderStyle.Sizable; // Cho phep resize
+            this.MaximizeBox = true; // Cho phep maximize
+            this.MinimizeBox = true; // Cho phep minimize
+            
+            // Set minimum size
+            this.MinimumSize = new Size(600, 400);
+            
+            // Store original layout information
+            this.Load += (s, e) => StoreOriginalLayout();
+        }
+
+        private void StoreOriginalLayout()
+        {
+            // Luu layout ban dau de restore sau nay
+            foreach (Control control in this.Controls)
+            {
+                if (control != null)
+                {
+                    originalBounds[control] = control.Bounds;
+                }
+            }
+            
+            // Luu font ban dau
+            if (lblWelcome != null)
+            {
+                originalWelcomeFont = new Font(lblWelcome.Font.FontFamily, lblWelcome.Font.Size, lblWelcome.Font.Style);
+            }
+        }
+
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+            // Hien thi form dang nhap khi form load
+            ShowLoginForm();
+        }
+
+        private void ShowLoginForm()
+        {
+            LoginForm loginForm = new LoginForm();
+            if (loginForm.ShowDialog() == DialogResult.OK)
+            {
+                playerName = loginForm.PlayerName;
+                isLoggedIn = true;
+                if (lblWelcome != null)
+                    lblWelcome.Text = $"Chao mung, {playerName}!";
+                EnableGameButtons(true);
+            }
+            else
+            {
+                // Neu nguoi dung huy dang nhap, dong ung dung
+                Application.Exit();
+            }
+        }
+
+        private void EnableGameButtons(bool enabled)
+        {
+            if (btnSinglePlayer != null)
+                btnSinglePlayer.Enabled = enabled;
+            if (btnMultiPlayer != null)
+                btnMultiPlayer.Enabled = enabled;
+            if (btnGameIntro != null)
+                btnGameIntro.Enabled = enabled;
+        }
+
+        private void btnSinglePlayer_Click(object sender, EventArgs e)
+        {
+            if (!isLoggedIn)
+            {
+                MessageBox.Show("Vui long dang nhap truoc!", "Thong bao", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            SinglePlayerForm singlePlayerForm = new SinglePlayerForm(playerName);
+            singlePlayerForm.ShowDialog();
+        }
+
+        private void btnMultiPlayer_Click(object sender, EventArgs e)
+        {
+            if (!isLoggedIn)
+            {
+                MessageBox.Show("Vui long dang nhap truoc!", "Thong bao", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            MultiPlayerForm multiPlayerForm = new MultiPlayerForm(playerName);
+            multiPlayerForm.ShowDialog();
+        }
+
+        private void btnGameIntro_Click(object sender, EventArgs e)
+        {
+            GameIntroForm gameIntroForm = new GameIntroForm();
+            gameIntroForm.ShowDialog();
+        }
+
+        private void btnExit_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void btnChangeUser_Click(object sender, EventArgs e)
+        {
+            isLoggedIn = false;
+            EnableGameButtons(false);
+            ShowLoginForm();
+        }
+
+        protected override void AdjustLayoutForFullscreen(bool isFullscreen)
+        {
+            if (isFullscreen)
+            {
+                // Fullscreen mode - center everything and scale up
+                ApplyFullscreenLayout();
+            }
+            else
+            {
+                // Windowed mode - restore original layout
+                RestoreWindowedLayout();
+            }
+        }
+
+        private void ApplyFullscreenLayout()
+        {
+            // Tinh toan scale factor dua tren screen size
+            float baseWidth = 600f; // Original minimum width
+            float baseHeight = 400f; // Original minimum height
+            
+            float widthScale = this.ClientSize.Width / baseWidth;
+            float heightScale = this.ClientSize.Height / baseHeight;
+            
+            // Su dung scale factor nho hon de dam bao fit
+            float scaleFactor = Math.Min(widthScale, heightScale) * 0.7f; // 0.7f de co margin
+            scaleFactor = Math.Max(scaleFactor, 1.2f); // Minimum 1.2x scale
+            scaleFactor = Math.Min(scaleFactor, 2.0f); // Maximum 2.0x scale
+
+            // Tao layout moi cho fullscreen
+            ApplyFullscreenLayoutWithScale(scaleFactor);
+        }
+
+        private void ApplyFullscreenLayoutWithScale(float scaleFactor)
+        {
+            SuspendLayout();
+
+            // Calculate center position for main content area
+            int contentWidth = (int)(400 * scaleFactor); // Base content width
+            int contentHeight = (int)(500 * scaleFactor); // Base content height
+            
+            int startX = (this.ClientSize.Width - contentWidth) / 2;
+            int startY = (this.ClientSize.Height - contentHeight) / 2;
+
+            // Position welcome label at top center
+            if (lblWelcome != null)
+            {
+                lblWelcome.Font = new Font(originalWelcomeFont.FontFamily, 
+                    originalWelcomeFont.Size * scaleFactor, originalWelcomeFont.Style);
+                
+                lblWelcome.AutoSize = true; // Let it auto-size first
+                lblWelcome.Location = new Point(
+                    (this.ClientSize.Width - lblWelcome.Width) / 2,
+                    startY
+                );
+            }
+
+            // Calculate button layout in vertical stack - centered
+            var buttons = new[] { btnSinglePlayer, btnMultiPlayer, btnGameIntro, btnChangeUser, btnExit };
+            var validButtons = buttons.Where(b => b != null).ToArray();
+            
+            if (validButtons.Length > 0)
+            {
+                int buttonWidth = (int)(200 * scaleFactor);
+                int buttonHeight = (int)(50 * scaleFactor);
+                int buttonSpacing = (int)(20 * scaleFactor);
+                
+                int totalButtonHeight = (validButtons.Length * buttonHeight) + ((validButtons.Length - 1) * buttonSpacing);
+                int buttonStartY = startY + (int)(80 * scaleFactor); // After welcome label
+                
+                // Center buttons vertically in remaining space
+                int availableHeight = this.ClientSize.Height - buttonStartY - (int)(50 * scaleFactor);
+                if (totalButtonHeight < availableHeight)
+                {
+                    buttonStartY += (availableHeight - totalButtonHeight) / 2;
+                }
+
+                for (int i = 0; i < validButtons.Length; i++)
+                {
+                    var button = validButtons[i];
+                    
+                    // Scale button
+                    button.Size = new Size(buttonWidth, buttonHeight);
+                    
+                    // Center horizontally, stack vertically
+                    button.Location = new Point(
+                        (this.ClientSize.Width - buttonWidth) / 2,
+                        buttonStartY + (i * (buttonHeight + buttonSpacing))
+                    );
+                    
+                    // Scale font
+                    button.Font = new Font(button.Font.FontFamily, 
+                        button.Font.Size * scaleFactor, button.Font.Style);
+                }
+            }
+
+            ResumeLayout(true);
+        }
+
+        private void RestoreWindowedLayout()
+        {
+            SuspendLayout();
+
+            // Restore original bounds
+            foreach (var kvp in originalBounds)
+            {
+                if (kvp.Key != null && !kvp.Key.IsDisposed)
+                {
+                    kvp.Key.Bounds = kvp.Value;
+                    
+                    // Restore original font if it's a button
+                    if (kvp.Key is Button button)
+                    {
+                        button.Font = new Font(button.Font.FontFamily, 
+                            button.Font.Size / GetCurrentScaleFactor(), button.Font.Style);
+                    }
+                }
+            }
+            
+            // Restore welcome label font
+            if (lblWelcome != null && originalWelcomeFont != null)
+            {
+                lblWelcome.Font = new Font(originalWelcomeFont.FontFamily, 
+                    originalWelcomeFont.Size, originalWelcomeFont.Style);
+            }
+
+            ResumeLayout(true);
+        }
+
+        private float GetCurrentScaleFactor()
+        {
+            // Estimate current scale factor from button size
+            if (btnSinglePlayer != null && originalBounds.ContainsKey(btnSinglePlayer))
+            {
+                var originalSize = originalBounds[btnSinglePlayer].Size;
+                if (originalSize.Width > 0)
+                {
+                    return (float)btnSinglePlayer.Width / originalSize.Width;
+                }
+            }
+            return 1.0f;
+        }
+
+        // Obsolete methods - keeping for compatibility but not used
+        private void AdjustControlsForFullscreen(bool isFullscreen)
+        {
+            // This method is now replaced by ApplyFullscreenLayout/RestoreWindowedLayout
+            // Keeping for backward compatibility
+        }
+
+        private void AdjustButtonForFullscreen(Button? button, float scaleFactor)
+        {
+            // This method is now handled in ApplyFullscreenLayoutWithScale
+            // Keeping for backward compatibility
+        }
+
+        private void CenterControlsOnForm()
+        {
+            // This method is now handled in ApplyFullscreenLayoutWithScale
+            // Keeping for backward compatibility
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                // Cleanup fonts
+                originalWelcomeFont?.Dispose();
+                originalBounds.Clear();
+            }
+            base.Dispose(disposing);
+        }
+    }
+}

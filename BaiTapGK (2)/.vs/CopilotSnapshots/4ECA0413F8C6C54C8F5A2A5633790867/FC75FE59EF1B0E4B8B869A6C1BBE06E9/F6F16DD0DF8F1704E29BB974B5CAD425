@@ -1,0 +1,289 @@
+﻿namespace BaiTapGK
+{
+    partial class NetworkMonitorForm
+    {
+        private System.ComponentModel.IContainer components = null;
+        private Label lblTitle;
+        private ComboBox cmbInterfaces;
+        private Label lblInterface;
+        private Button btnStartCapture;
+        private Button btnClear;
+        private ListView lvPackets;
+        private ColumnHeader colTime;
+        private ColumnHeader colSource;
+        private ColumnHeader colDestination;
+        private ColumnHeader colProtocol;
+        private ColumnHeader colLength;
+        private ColumnHeader colInfo;
+        private Label lblStatus;
+        private Label lblStatistics;
+        private TextBox txtFilter;
+        private Label lblFilter;
+        private Button btnApplyFilter;
+        private CheckBox chkAutoScroll;
+        private TextBox txtPacketDetails;
+        private Label lblPacketDetails;
+        private Button btnExport;
+        private Button btnBack;
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        private void InitializeComponent()
+        {
+            this.lblTitle = new Label();
+            this.lblInterface = new Label();
+            this.cmbInterfaces = new ComboBox();
+            this.btnStartCapture = new Button();
+            this.btnClear = new Button();
+            this.lvPackets = new ListView();
+            this.colTime = new ColumnHeader();
+            this.colSource = new ColumnHeader();
+            this.colDestination = new ColumnHeader();
+            this.colProtocol = new ColumnHeader();
+            this.colLength = new ColumnHeader();
+            this.colInfo = new ColumnHeader();
+            this.lblStatus = new Label();
+            this.lblStatistics = new Label();
+            this.txtFilter = new TextBox();
+            this.lblFilter = new Label();
+            this.btnApplyFilter = new Button();
+            this.chkAutoScroll = new CheckBox();
+            this.txtPacketDetails = new TextBox();
+            this.lblPacketDetails = new Label();
+            this.btnExport = new Button();
+            this.btnBack = new Button();
+            this.SuspendLayout();
+            
+            // lblTitle
+            this.lblTitle.AutoSize = true;
+            this.lblTitle.Font = new Font("Microsoft Sans Serif", 16F, FontStyle.Bold, GraphicsUnit.Point);
+            this.lblTitle.ForeColor = Color.DarkBlue;
+            this.lblTitle.Location = new Point(20, 20);
+            this.lblTitle.Name = "lblTitle";
+            this.lblTitle.Size = new Size(250, 26);
+            this.lblTitle.TabIndex = 0;
+            this.lblTitle.Text = "NETWORK MONITOR";
+            
+            // lblInterface
+            this.lblInterface.AutoSize = true;
+            this.lblInterface.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            this.lblInterface.Location = new Point(20, 60);
+            this.lblInterface.Name = "lblInterface";
+            this.lblInterface.Size = new Size(110, 17);
+            this.lblInterface.TabIndex = 1;
+            this.lblInterface.Text = "Network Interface:";
+            
+            // cmbInterfaces
+            this.cmbInterfaces.DropDownStyle = ComboBoxStyle.DropDownList;
+            this.cmbInterfaces.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            this.cmbInterfaces.FormattingEnabled = true;
+            this.cmbInterfaces.Location = new Point(140, 58);
+            this.cmbInterfaces.Name = "cmbInterfaces";
+            this.cmbInterfaces.Size = new Size(400, 23);
+            this.cmbInterfaces.TabIndex = 2;
+            
+            // lblFilter
+            this.lblFilter.AutoSize = true;
+            this.lblFilter.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            this.lblFilter.Location = new Point(20, 95);
+            this.lblFilter.Name = "lblFilter";
+            this.lblFilter.Size = new Size(85, 17);
+            this.lblFilter.TabIndex = 3;
+            this.lblFilter.Text = "Packet Filter:";
+            
+            // txtFilter
+            this.txtFilter.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            this.txtFilter.Location = new Point(140, 93);
+            this.txtFilter.Name = "txtFilter";
+            this.txtFilter.PlaceholderText = "Vi du: tcp port 80, udp, icmp";
+            this.txtFilter.Size = new Size(300, 21);
+            this.txtFilter.TabIndex = 4;
+            
+            // btnApplyFilter
+            this.btnApplyFilter.BackColor = Color.LightBlue;
+            this.btnApplyFilter.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            this.btnApplyFilter.Location = new Point(450, 91);
+            this.btnApplyFilter.Name = "btnApplyFilter";
+            this.btnApplyFilter.Size = new Size(90, 25);
+            this.btnApplyFilter.TabIndex = 5;
+            this.btnApplyFilter.Text = "AP DUNG";
+            this.btnApplyFilter.UseVisualStyleBackColor = false;
+            this.btnApplyFilter.Click += new EventHandler(this.btnApplyFilter_Click);
+            
+            // btnStartCapture
+            this.btnStartCapture.BackColor = Color.LightGreen;
+            this.btnStartCapture.Font = new Font("Microsoft Sans Serif", 11F, FontStyle.Bold, GraphicsUnit.Point);
+            this.btnStartCapture.Location = new Point(560, 58);
+            this.btnStartCapture.Name = "btnStartCapture";
+            this.btnStartCapture.Size = new Size(150, 35);
+            this.btnStartCapture.TabIndex = 6;
+            this.btnStartCapture.Text = "BAT DAU CAPTURE";
+            this.btnStartCapture.UseVisualStyleBackColor = false;
+            this.btnStartCapture.Click += new EventHandler(this.btnStartCapture_Click);
+            
+            // btnClear
+            this.btnClear.BackColor = Color.LightCoral;
+            this.btnClear.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Bold, GraphicsUnit.Point);
+            this.btnClear.Location = new Point(720, 58);
+            this.btnClear.Name = "btnClear";
+            this.btnClear.Size = new Size(100, 35);
+            this.btnClear.TabIndex = 7;
+            this.btnClear.Text = "XOA HET";
+            this.btnClear.UseVisualStyleBackColor = false;
+            this.btnClear.Click += new EventHandler(this.btnClear_Click);
+            
+            // chkAutoScroll
+            this.chkAutoScroll.AutoSize = true;
+            this.chkAutoScroll.Checked = true;
+            this.chkAutoScroll.CheckState = CheckState.Checked;
+            this.chkAutoScroll.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            this.chkAutoScroll.Location = new Point(560, 95);
+            this.chkAutoScroll.Name = "chkAutoScroll";
+            this.chkAutoScroll.Size = new Size(85, 19);
+            this.chkAutoScroll.TabIndex = 8;
+            this.chkAutoScroll.Text = "Auto Scroll";
+            this.chkAutoScroll.UseVisualStyleBackColor = true;
+            this.chkAutoScroll.CheckedChanged += new EventHandler(this.chkAutoScroll_CheckedChanged);
+            
+            // lvPackets
+            this.lvPackets.FullRowSelect = true;
+            this.lvPackets.GridLines = true;
+            this.lvPackets.HideSelection = false;
+            this.lvPackets.Location = new Point(20, 130);
+            this.lvPackets.MultiSelect = false;
+            this.lvPackets.Name = "lvPackets";
+            this.lvPackets.Size = new Size(800, 300);
+            this.lvPackets.TabIndex = 9;
+            this.lvPackets.UseCompatibleStateImageBehavior = false;
+            this.lvPackets.View = View.Details;
+            this.lvPackets.SelectedIndexChanged += new EventHandler(this.lvPackets_SelectedIndexChanged);
+            
+            // colTime
+            this.colTime.Text = "Thoi gian";
+            this.colTime.Width = 100;
+            
+            // colSource
+            this.colSource.Text = "IP Nguon";
+            this.colSource.Width = 120;
+            
+            // colDestination
+            this.colDestination.Text = "IP Dich";
+            this.colDestination.Width = 120;
+            
+            // colProtocol
+            this.colProtocol.Text = "Protocol";
+            this.colProtocol.Width = 80;
+            
+            // colLength
+            this.colLength.Text = "Kich thuoc";
+            this.colLength.Width = 80;
+            
+            // colInfo
+            this.colInfo.Text = "Thong tin";
+            this.colInfo.Width = 280;
+            
+            this.lvPackets.Columns.AddRange(new ColumnHeader[] {
+                this.colTime,
+                this.colSource,
+                this.colDestination,
+                this.colProtocol,
+                this.colLength,
+                this.colInfo});
+            
+            // lblPacketDetails
+            this.lblPacketDetails.AutoSize = true;
+            this.lblPacketDetails.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Bold, GraphicsUnit.Point);
+            this.lblPacketDetails.Location = new Point(20, 445);
+            this.lblPacketDetails.Name = "lblPacketDetails";
+            this.lblPacketDetails.Size = new Size(130, 17);
+            this.lblPacketDetails.TabIndex = 10;
+            this.lblPacketDetails.Text = "Chi tiet Packet:";
+            
+            // txtPacketDetails
+            this.txtPacketDetails.Font = new Font("Consolas", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            this.txtPacketDetails.Location = new Point(20, 470);
+            this.txtPacketDetails.Multiline = true;
+            this.txtPacketDetails.Name = "txtPacketDetails";
+            this.txtPacketDetails.ReadOnly = true;
+            this.txtPacketDetails.ScrollBars = ScrollBars.Both;
+            this.txtPacketDetails.Size = new Size(800, 150);
+            this.txtPacketDetails.TabIndex = 11;
+            this.txtPacketDetails.WordWrap = false;
+            
+            // lblStatus
+            this.lblStatus.AutoSize = true;
+            this.lblStatus.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            this.lblStatus.ForeColor = Color.DarkGreen;
+            this.lblStatus.Location = new Point(20, 635);
+            this.lblStatus.Name = "lblStatus";
+            this.lblStatus.Size = new Size(200, 17);
+            this.lblStatus.TabIndex = 12;
+            this.lblStatus.Text = "San sang de capture packets...";
+            
+            // lblStatistics
+            this.lblStatistics.AutoSize = true;
+            this.lblStatistics.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            this.lblStatistics.ForeColor = Color.DarkBlue;
+            this.lblStatistics.Location = new Point(400, 635);
+            this.lblStatistics.Name = "lblStatistics";
+            this.lblStatistics.Size = new Size(150, 17);
+            this.lblStatistics.TabIndex = 13;
+            this.lblStatistics.Text = "Thong ke: 0 packets";
+            
+            // btnExport
+            this.btnExport.BackColor = Color.LightYellow;
+            this.btnExport.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Bold, GraphicsUnit.Point);
+            this.btnExport.Location = new Point(620, 630);
+            this.btnExport.Name = "btnExport";
+            this.btnExport.Size = new Size(100, 30);
+            this.btnExport.TabIndex = 14;
+            this.btnExport.Text = "XUAT FILE";
+            this.btnExport.UseVisualStyleBackColor = false;
+            this.btnExport.Click += new EventHandler(this.btnExport_Click);
+            
+            // btnBack
+            this.btnBack.BackColor = Color.LightGray;
+            this.btnBack.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Bold, GraphicsUnit.Point);
+            this.btnBack.Location = new Point(730, 630);
+            this.btnBack.Name = "btnBack";
+            this.btnBack.Size = new Size(90, 30);
+            this.btnBack.TabIndex = 15;
+            this.btnBack.Text = "QUAY LAI";
+            this.btnBack.UseVisualStyleBackColor = false;
+            this.btnBack.Click += new EventHandler(this.btnBack_Click);
+            
+            // NetworkMonitorForm
+            this.AutoScaleDimensions = new SizeF(7F, 15F);
+            this.AutoScaleMode = AutoScaleMode.Font;
+            this.BackColor = Color.WhiteSmoke;
+            this.ClientSize = new Size(850, 680);
+            this.Controls.Add(this.btnBack);
+            this.Controls.Add(this.btnExport);
+            this.Controls.Add(this.lblStatistics);
+            this.Controls.Add(this.lblStatus);
+            this.Controls.Add(this.txtPacketDetails);
+            this.Controls.Add(this.lblPacketDetails);
+            this.Controls.Add(this.lvPackets);
+            this.Controls.Add(this.chkAutoScroll);
+            this.Controls.Add(this.btnClear);
+            this.Controls.Add(this.btnStartCapture);
+            this.Controls.Add(this.btnApplyFilter);
+            this.Controls.Add(this.txtFilter);
+            this.Controls.Add(this.lblFilter);
+            this.Controls.Add(this.cmbInterfaces);
+            this.Controls.Add(this.lblInterface);
+            this.Controls.Add(this.lblTitle);
+            this.Name = "NetworkMonitorForm";
+            this.Text = "Network Monitor - Wireshark Clone";
+            this.ResumeLayout(false);
+            this.PerformLayout();
+        }
+    }
+}
