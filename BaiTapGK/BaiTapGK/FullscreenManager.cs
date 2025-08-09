@@ -5,7 +5,7 @@ using System.Windows.Forms;
 namespace BaiTapGK
 {
     /// <summary>
-    /// Manager class cho fullscreen functionality
+    /// Manager class cho fullscreen functionality v?i smooth transitions
     /// </summary>
     public static class FullscreenManager
     {
@@ -17,9 +17,10 @@ namespace BaiTapGK
         private static bool originalMaximizeBox;
         private static bool originalMinimizeBox;
         private static bool isFullscreen = false;
+        private static System.Windows.Forms.Timer? transitionTimer;
 
         /// <summary>
-        /// Toggle fullscreen mode cho form
+        /// Toggle fullscreen mode cho form v?i smooth transition
         /// </summary>
         public static void ToggleFullscreen(Form form)
         {
@@ -27,18 +28,18 @@ namespace BaiTapGK
 
             if (!isFullscreen)
             {
-                EnterFullscreen(form);
+                EnterFullscreenWithTransition(form);
             }
             else
             {
-                ExitFullscreen(form);
+                ExitFullscreenWithTransition(form);
             }
         }
 
         /// <summary>
-        /// Vao che do fullscreen
+        /// Vao che do fullscreen v?i smooth transition
         /// </summary>
-        public static void EnterFullscreen(Form form)
+        public static void EnterFullscreenWithTransition(Form form)
         {
             if (form == null || isFullscreen) return;
 
@@ -52,44 +53,116 @@ namespace BaiTapGK
             originalMaximizeBox = form.MaximizeBox;
             originalMinimizeBox = form.MinimizeBox;
 
-            // Chuyen sang fullscreen
-            form.FormBorderStyle = FormBorderStyle.None;
-            form.WindowState = FormWindowState.Maximized;
-            form.TopMost = true;
-            
-            isFullscreen = true;
-            
-            // Notify form about fullscreen change
-            if (form is IFullscreenAware fullscreenAware)
-            {
-                fullscreenAware.OnFullscreenEntered();
-            }
+            // Start transition animation
+            StartFullscreenTransition(form, true);
         }
 
         /// <summary>
-        /// Thoat che do fullscreen
+        /// Thoat che do fullscreen v?i smooth transition
         /// </summary>
-        public static void ExitFullscreen(Form form)
+        public static void ExitFullscreenWithTransition(Form form)
         {
             if (form == null || !isFullscreen) return;
 
-            // Khoi phuc trang thai ban Dau
-            form.TopMost = false;
-            form.FormBorderStyle = originalBorderStyle;
-            form.WindowState = originalWindowState;
-            form.Size = originalSize;
-            form.Location = originalLocation;
-            form.MaximizeBox = originalMaximizeBox;
-            form.MinimizeBox = originalMinimizeBox;
+            // Start transition animation
+            StartFullscreenTransition(form, false);
+        }
 
-            isFullscreen = false;
-            currentForm = null;
+        private static void StartFullscreenTransition(Form form, bool enterFullscreen)
+        {
+            // Stop any existing transition
+            transitionTimer?.Stop();
+            transitionTimer?.Dispose();
 
-            // Notify form about fullscreen change
-            if (form is IFullscreenAware fullscreenAware)
+            if (enterFullscreen)
             {
-                fullscreenAware.OnFullscreenExited();
+                // Immediate fullscreen setup
+                form.FormBorderStyle = FormBorderStyle.None;
+                form.WindowState = FormWindowState.Maximized;
+                form.TopMost = true;
+                
+                isFullscreen = true;
+                
+                // Notify form about fullscreen change
+                if (form is IFullscreenAware fullscreenAware)
+                {
+                    fullscreenAware.OnFullscreenEntered();
+                }
+
+                // Show transition effect
+                ShowFullscreenTransitionEffect(form);
             }
+            else
+            {
+                // Exit fullscreen
+                form.TopMost = false;
+                form.FormBorderStyle = originalBorderStyle;
+                form.WindowState = originalWindowState;
+                form.Size = originalSize;
+                form.Location = originalLocation;
+                form.MaximizeBox = originalMaximizeBox;
+                form.MinimizeBox = originalMinimizeBox;
+
+                isFullscreen = false;
+                currentForm = null;
+
+                // Notify form about fullscreen change
+                if (form is IFullscreenAware fullscreenAware)
+                {
+                    fullscreenAware.OnFullscreenExited();
+                }
+            }
+        }
+
+        private static void ShowFullscreenTransitionEffect(Form form)
+        {
+            // Create a simple fade-in effect
+            Label transitionLabel = new Label
+            {
+                Text = "FULLSCREEN MODE",
+                Font = new Font("Microsoft Sans Serif", 24, FontStyle.Bold),
+                ForeColor = Color.White,
+                BackColor = Color.Transparent,
+                AutoSize = true
+            };
+
+            form.Controls.Add(transitionLabel);
+            transitionLabel.BringToFront();
+            
+            // Position in center
+            transitionLabel.Location = new Point(
+                form.ClientSize.Width / 2 - transitionLabel.Width / 2,
+                form.ClientSize.Height / 2 - transitionLabel.Height / 2
+            );
+
+            // Fade out after 1 second
+            transitionTimer = new System.Windows.Forms.Timer();
+            transitionTimer.Interval = 1000;
+            transitionTimer.Tick += (s, e) =>
+            {
+                form.Controls.Remove(transitionLabel);
+                transitionLabel.Dispose();
+                transitionTimer.Stop();
+                transitionTimer.Dispose();
+                transitionTimer = null;
+            };
+            transitionTimer.Start();
+        }
+
+        /// <summary>
+        /// Vao che do fullscreen (method g?c, gi? l?i ?? compatibility)
+        /// </summary>
+        public static void EnterFullscreen(Form form)
+        {
+            EnterFullscreenWithTransition(form);
+        }
+
+        /// <summary>
+        /// Thoat che do fullscreen (method g?c, gi? l?i ?? compatibility)
+        /// </summary>
+        public static void ExitFullscreen(Form form)
+        {
+            ExitFullscreenWithTransition(form);
         }
 
         /// <summary>
@@ -98,7 +171,7 @@ namespace BaiTapGK
         public static bool IsFullscreen => isFullscreen;
 
         /// <summary>
-        /// Xu ly phim tat F11
+        /// Xu ly phim tat F11 và ESC
         /// </summary>
         public static bool HandleKeyPress(Form form, Keys key)
         {
@@ -107,7 +180,58 @@ namespace BaiTapGK
                 ToggleFullscreen(form);
                 return true; // Key da duoc xu ly
             }
+            else if (key == Keys.Escape && isFullscreen)
+            {
+                ExitFullscreenWithTransition(form);
+                return true;
+            }
             return false; // Key khong duoc xu ly
+        }
+
+        /// <summary>
+        /// Get recommended scale factor cho screen size
+        /// </summary>
+        public static float GetRecommendedScaleFactor(Size screenSize)
+        {
+            // 4K screens
+            if (screenSize.Width >= 3840 && screenSize.Height >= 2160)
+                return 2.0f;
+            
+            // 2K screens  
+            if (screenSize.Width >= 2560 && screenSize.Height >= 1440)
+                return 1.8f;
+                
+            // Full HD
+            if (screenSize.Width >= 1920 && screenSize.Height >= 1080)
+                return 1.5f;
+                
+            // HD
+            if (screenSize.Width >= 1366 && screenSize.Height >= 768)
+                return 1.3f;
+                
+            // Lower resolutions
+            return 1.1f;
+        }
+
+        /// <summary>
+        /// Check if current screen is high DPI
+        /// </summary>
+        public static bool IsHighDPIScreen()
+        {
+            using (Graphics g = Graphics.FromHwnd(IntPtr.Zero))
+            {
+                return g.DpiX > 96 || g.DpiY > 96;
+            }
+        }
+
+        /// <summary>
+        /// Cleanup khi application shutdown
+        /// </summary>
+        public static void Cleanup()
+        {
+            transitionTimer?.Stop();
+            transitionTimer?.Dispose();
+            transitionTimer = null;
         }
     }
 
@@ -121,12 +245,13 @@ namespace BaiTapGK
     }
 
     /// <summary>
-    /// Base class cho cac form co fullscreen support
+    /// Base class cho cac form co fullscreen support v?i enhanced features
     /// </summary>
     public class FullscreenSupportForm : Form, IFullscreenAware
     {
         private Label? fullscreenHint;
         private System.Windows.Forms.Timer? hintTimer;
+        private bool hasShownHint = false;
 
         public FullscreenSupportForm()
         {
@@ -134,37 +259,45 @@ namespace BaiTapGK
             
             // Setup fullscreen hint
             SetupFullscreenHint();
+            
+            // Handle DPI awareness
+            if (FullscreenManager.IsHighDPIScreen())
+            {
+                this.AutoScaleMode = AutoScaleMode.Dpi;
+            }
         }
 
         private void SetupFullscreenHint()
         {
             fullscreenHint = new Label
             {
-                Text = "Nhan F11 de chuyen che do toan man hinh",
-                Font = new Font("Microsoft Sans Serif", 8, FontStyle.Italic),
-                ForeColor = Color.Gray,
-                BackColor = Color.Transparent,
+                Text = "?? F11: Fullscreen | ESC: Exit",
+                Font = new Font("Segoe UI", 9, FontStyle.Italic),
+                ForeColor = Color.FromArgb(120, Color.DarkGray),
+                BackColor = Color.FromArgb(240, Color.White),
                 AutoSize = true,
-                Visible = false
+                Visible = false,
+                Padding = new Padding(8, 4, 8, 4),
+                BorderStyle = BorderStyle.FixedSingle
             };
 
             this.Controls.Add(fullscreenHint);
             
             // Position hint at bottom right
             this.Resize += (s, e) => PositionFullscreenHint();
-            PositionFullscreenHint();
-
-            // Show hint for 3 seconds when form loads
-            this.Load += (s, e) => ShowFullscreenHint();
+            this.Load += (s, e) => {
+                PositionFullscreenHint();
+                if (!hasShownHint) ShowFullscreenHint();
+            };
         }
 
         private void PositionFullscreenHint()
         {
-            if (fullscreenHint != null)
+            if (fullscreenHint != null && !FullscreenManager.IsFullscreen)
             {
                 fullscreenHint.Location = new Point(
-                    this.ClientSize.Width - fullscreenHint.Width - 10,
-                    this.ClientSize.Height - fullscreenHint.Height - 10
+                    this.ClientSize.Width - fullscreenHint.Width - 15,
+                    this.ClientSize.Height - fullscreenHint.Height - 15
                 );
                 fullscreenHint.BringToFront();
             }
@@ -172,16 +305,38 @@ namespace BaiTapGK
 
         private void ShowFullscreenHint()
         {
-            if (fullscreenHint == null || FullscreenManager.IsFullscreen) return;
+            if (fullscreenHint == null || FullscreenManager.IsFullscreen || hasShownHint) return;
 
+            hasShownHint = true;
             fullscreenHint.Visible = true;
             
-            // Auto hide after 3 seconds
+            // Fade in effect
+            fullscreenHint.ForeColor = Color.Transparent;
+            System.Windows.Forms.Timer fadeInTimer = new System.Windows.Forms.Timer();
+            fadeInTimer.Interval = 50;
+            int fadeStep = 0;
+            
+            fadeInTimer.Tick += (s, e) =>
+            {
+                fadeStep++;
+                double progress = Math.Min(fadeStep / 10.0, 1.0);
+                int alpha = (int)(120 * progress);
+                fullscreenHint.ForeColor = Color.FromArgb(alpha, Color.DarkGray);
+                
+                if (fadeStep >= 10)
+                {
+                    fadeInTimer.Stop();
+                    fadeInTimer.Dispose();
+                }
+            };
+            fadeInTimer.Start();
+            
+            // Auto hide after 4 seconds
             hintTimer = new System.Windows.Forms.Timer();
-            hintTimer.Interval = 3000;
+            hintTimer.Interval = 4000;
             hintTimer.Tick += (s, e) =>
             {
-                fullscreenHint.Visible = false;
+                FadeOutHint();
                 hintTimer.Stop();
                 hintTimer.Dispose();
                 hintTimer = null;
@@ -189,18 +344,38 @@ namespace BaiTapGK
             hintTimer.Start();
         }
 
+        private void FadeOutHint()
+        {
+            if (fullscreenHint == null) return;
+
+            System.Windows.Forms.Timer fadeOutTimer = new System.Windows.Forms.Timer();
+            fadeOutTimer.Interval = 50;
+            int fadeStep = 10;
+            
+            fadeOutTimer.Tick += (s, e) =>
+            {
+                fadeStep--;
+                if (fadeStep <= 0)
+                {
+                    fullscreenHint.Visible = false;
+                    fadeOutTimer.Stop();
+                    fadeOutTimer.Dispose();
+                }
+                else
+                {
+                    double progress = fadeStep / 10.0;
+                    int alpha = (int)(120 * progress);
+                    fullscreenHint.ForeColor = Color.FromArgb(alpha, Color.DarkGray);
+                }
+            };
+            fadeOutTimer.Start();
+        }
+
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             // Xu ly F11 key
             if (FullscreenManager.HandleKeyPress(this, keyData))
             {
-                return true;
-            }
-
-            // Xu ly ESC key de thoat fullscreen
-            if (keyData == Keys.Escape && FullscreenManager.IsFullscreen)
-            {
-                FullscreenManager.ExitFullscreen(this);
                 return true;
             }
 
@@ -221,6 +396,12 @@ namespace BaiTapGK
 
         public virtual void OnFullscreenExited()
         {
+            // Show hint briefly when exiting fullscreen
+            if (fullscreenHint != null)
+            {
+                PositionFullscreenHint();
+            }
+
             // Co the override trong derived classes
             AdjustLayoutForFullscreen(false);
         }

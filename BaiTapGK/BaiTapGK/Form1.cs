@@ -129,176 +129,182 @@ namespace BaiTapGK
         {
             if (isFullscreen)
             {
-                // Fullscreen mode - center everything and scale up
-                ApplyFullscreenLayout();
+                ApplyFullscreenMainMenuLayout();
             }
             else
             {
-                // Windowed mode - restore original layout
-                RestoreWindowedLayout();
+                RestoreWindowedMainMenuLayout();
             }
         }
 
-        private void ApplyFullscreenLayout()
+        private void ApplyFullscreenMainMenuLayout()
         {
-            // Tinh toan scale factor dua tren screen size
-            float baseWidth = 600f; // Original minimum width
-            float baseHeight = 400f; // Original minimum height
+            SuspendLayout();
+
+            // Calculate optimal scale factor
+            float baseWidth = 600f;
+            float baseHeight = 480f;
             
             float widthScale = this.ClientSize.Width / baseWidth;
             float heightScale = this.ClientSize.Height / baseHeight;
             
-            // Su dung scale factor nho hon de dam bao fit
-            float scaleFactor = Math.Min(widthScale, heightScale) * 0.7f; // 0.7f de co margin
-            scaleFactor = Math.Max(scaleFactor, 1.2f); // Minimum 1.2x scale
-            scaleFactor = Math.Min(scaleFactor, 2.5f); // Maximum 2.5x scale for better visibility
+            float scaleFactor = Math.Min(widthScale, heightScale) * 0.75f;
+            scaleFactor = Math.Max(scaleFactor, 1.2f);
+            scaleFactor = Math.Min(scaleFactor, 2.5f);
 
-            // Tao layout moi cho fullscreen
-            ApplyFullscreenLayoutWithScale(scaleFactor);
-        }
+            int centerX = this.ClientSize.Width / 2;
+            int centerY = this.ClientSize.Height / 2;
 
-        private void ApplyFullscreenLayoutWithScale(float scaleFactor)
-        {
-            SuspendLayout();
-
-            // Calculate center position for main content area
-            int contentWidth = (int)(400 * scaleFactor); // Base content width
-            int contentHeight = (int)(500 * scaleFactor); // Base content height
-            
-            int startX = (this.ClientSize.Width - contentWidth) / 2;
-            int startY = Math.Max(50, (this.ClientSize.Height - contentHeight) / 2);
-
-            // Position title at top center (if exists)
+            // Title - positioned at top center
             if (lblTitle != null)
             {
                 lblTitle.Font = new Font(lblTitle.Font.FontFamily, 
-                    lblTitle.Font.Size * scaleFactor, FontStyle.Bold);
-                
+                    Math.Max(lblTitle.Font.Size * scaleFactor, 18), FontStyle.Bold);
                 lblTitle.AutoSize = true;
                 lblTitle.Location = new Point(
-                    (this.ClientSize.Width - lblTitle.PreferredSize.Width) / 2,
-                    startY
+                    centerX - lblTitle.PreferredSize.Width / 2,
+                    (int)(50 * scaleFactor)
                 );
-                lblTitle.ForeColor = Color.DarkBlue;
             }
 
-            // Position welcome label below title
+            // Welcome label - below title
             if (lblWelcome != null)
             {
-                float welcomeFontSize = Math.Max(originalWelcomeFont?.Size ?? 12, 12) * scaleFactor;
-                welcomeFontSize = Math.Min(welcomeFontSize, 28); // Cap font size
-                
-                lblWelcome.Font = new Font(originalWelcomeFont?.FontFamily ?? FontFamily.GenericSansSerif, 
-                    welcomeFontSize, FontStyle.Bold);
-                
+                lblWelcome.Font = new Font(lblWelcome.Font.FontFamily,
+                    Math.Max(lblWelcome.Font.Size * scaleFactor, 12), FontStyle.Bold);
                 lblWelcome.AutoSize = true;
                 lblWelcome.Location = new Point(
-                    (this.ClientSize.Width - lblWelcome.PreferredSize.Width) / 2,
-                    startY + (int)(60 * scaleFactor)
+                    centerX - lblWelcome.PreferredSize.Width / 2,
+                    (int)(100 * scaleFactor)
                 );
-                lblWelcome.ForeColor = Color.DarkGreen;
             }
 
-            // Position picture box (if exists)
+            // Picture box - centered below welcome
             if (pictureBox1 != null)
             {
-                int picSize = (int)(100 * scaleFactor);
-                pictureBox1.Size = new Size(picSize, (int)(80 * scaleFactor));
+                int pictureSize = (int)(120 * scaleFactor);
+                pictureBox1.Size = new Size(pictureSize, (int)(pictureSize * 0.8f));
                 pictureBox1.Location = new Point(
-                    (this.ClientSize.Width - picSize) / 2,
-                    startY + (int)(120 * scaleFactor)
+                    centerX - pictureBox1.Width / 2,
+                    (int)(150 * scaleFactor)
                 );
             }
 
-            // Calculate button layout in vertical stack - centered and evenly spaced
-            var buttons = new[] { btnSinglePlayer, btnMultiPlayer, btnGameIntro, btnChangeUser, btnExit };
-            var validButtons = buttons.Where(b => b != null).ToArray();
+            // Main menu buttons - arranged vertically and centered
+            var menuButtons = new[] { btnSinglePlayer, btnMultiPlayer, btnGameIntro };
+            var validMenuButtons = menuButtons.Where(b => b != null).ToArray();
             
-            if (validButtons.Length > 0)
+            if (validMenuButtons.Length > 0)
             {
-                int buttonWidth = (int)(250 * scaleFactor); // Wider buttons
-                int buttonHeight = (int)(55 * scaleFactor); // Taller buttons
-                int buttonSpacing = (int)(25 * scaleFactor); // More spacing
-                
-                int totalButtonHeight = (validButtons.Length * buttonHeight) + ((validButtons.Length - 1) * buttonSpacing);
-                int buttonStartY = startY + (int)(220 * scaleFactor); // After picture box
-                
-                // Center buttons vertically in remaining space
-                int availableHeight = this.ClientSize.Height - buttonStartY - (int)(80 * scaleFactor);
-                if (totalButtonHeight < availableHeight)
-                {
-                    buttonStartY += (availableHeight - totalButtonHeight) / 2;
-                }
+                int buttonWidth = (int)(250 * scaleFactor);
+                int buttonHeight = (int)(50 * scaleFactor);
+                int buttonSpacing = (int)(20 * scaleFactor);
+                int startY = centerY - ((validMenuButtons.Length * buttonHeight + 
+                                       (validMenuButtons.Length - 1) * buttonSpacing) / 2);
 
-                for (int i = 0; i < validButtons.Length; i++)
+                for (int i = 0; i < validMenuButtons.Length; i++)
                 {
-                    var button = validButtons[i];
-                    
-                    // Scale button with better proportions
+                    var button = validMenuButtons[i];
                     button.Size = new Size(buttonWidth, buttonHeight);
-                    
-                    // Center horizontally, stack vertically
                     button.Location = new Point(
-                        (this.ClientSize.Width - buttonWidth) / 2,
-                        buttonStartY + (i * (buttonHeight + buttonSpacing))
+                        centerX - buttonWidth / 2,
+                        startY + (i * (buttonHeight + buttonSpacing))
                     );
                     
-                    // Scale font with better readability
-                    float buttonFontSize = Math.Max(button.Font.Size, 9) * scaleFactor;
-                    buttonFontSize = Math.Min(buttonFontSize, 16); // Cap button font size
+                    button.Font = new Font(button.Font.FontFamily,
+                        Math.Max(button.Font.Size * scaleFactor, 11), FontStyle.Bold);
+                }
+            }
+
+            // Control buttons - positioned at bottom center
+            var controlButtons = new[] { btnChangeUser, btnExit };
+            var validControlButtons = controlButtons.Where(b => b != null).ToArray();
+            
+            if (validControlButtons.Length > 0)
+            {
+                int controlButtonWidth = (int)(140 * scaleFactor);
+                int controlButtonHeight = (int)(40 * scaleFactor);
+                int controlButtonSpacing = (int)(30 * scaleFactor);
+                int totalControlWidth = (validControlButtons.Length * controlButtonWidth) + 
+                                       ((validControlButtons.Length - 1) * controlButtonSpacing);
+                int controlStartX = centerX - totalControlWidth / 2;
+                int controlY = this.ClientSize.Height - (int)(80 * scaleFactor);
+
+                for (int i = 0; i < validControlButtons.Length; i++)
+                {
+                    var button = validControlButtons[i];
+                    button.Size = new Size(controlButtonWidth, controlButtonHeight);
+                    button.Location = new Point(
+                        controlStartX + (i * (controlButtonWidth + controlButtonSpacing)),
+                        controlY
+                    );
                     
-                    button.Font = new Font(button.Font.FontFamily, 
-                        buttonFontSize, button.Font.Style);
-                    
-                    // Add some visual enhancement for fullscreen
-                    button.FlatStyle = FlatStyle.Flat;
-                    button.FlatAppearance.BorderSize = 2;
-                    button.FlatAppearance.BorderColor = Color.DarkGray;
+                    button.Font = new Font(button.Font.FontFamily,
+                        Math.Max(button.Font.Size * scaleFactor, 9), button.Font.Style);
                 }
             }
 
             ResumeLayout(true);
         }
 
-        private void RestoreWindowedLayout()
+        private void RestoreWindowedMainMenuLayout()
         {
             SuspendLayout();
 
-            // Restore original bounds and properties
-            foreach (var kvp in originalBounds)
-            {
-                if (kvp.Key != null && !kvp.Key.IsDisposed)
-                {
-                    kvp.Key.Bounds = kvp.Value;
-                    
-                    // Restore original font and style if it's a button
-                    if (kvp.Key is Button button)
-                    {
-                        // Restore original font size (estimate)
-                        float originalSize = button.Font.Size / GetCurrentScaleFactor();
-                        button.Font = new Font(button.Font.FontFamily, 
-                            Math.Max(originalSize, 8), FontStyle.Bold);
-                        
-                        // Restore original button style
-                        button.FlatStyle = FlatStyle.Standard;
-                        button.ForeColor = SystemColors.ControlText;
-                    }
-                }
-            }
-            
-            // Restore welcome label font and color
-            if (lblWelcome != null && originalWelcomeFont != null)
-            {
-                lblWelcome.Font = new Font(originalWelcomeFont.FontFamily, 
-                    originalWelcomeFont.Size, originalWelcomeFont.Style);
-                lblWelcome.ForeColor = Color.DarkGreen;
-            }
-
-            // Restore title if exists
+            // Restore original layout positions
             if (lblTitle != null)
             {
                 lblTitle.Font = new Font(lblTitle.Font.FontFamily, 24, FontStyle.Bold);
-                lblTitle.ForeColor = Color.DarkBlue;
+                lblTitle.Location = new Point(100, 30);
+            }
+
+            if (lblWelcome != null)
+            {
+                lblWelcome.Font = new Font(lblWelcome.Font.FontFamily, 14, FontStyle.Bold);
+                lblWelcome.Location = new Point(200, 80);
+            }
+
+            if (pictureBox1 != null)
+            {
+                pictureBox1.Size = new Size(100, 80);
+                pictureBox1.Location = new Point(250, 120);
+            }
+
+            // Restore menu buttons
+            if (btnSinglePlayer != null)
+            {
+                btnSinglePlayer.Size = new Size(200, 50);
+                btnSinglePlayer.Location = new Point(200, 220);
+                btnSinglePlayer.Font = new Font(btnSinglePlayer.Font.FontFamily, 14, FontStyle.Bold);
+            }
+
+            if (btnMultiPlayer != null)
+            {
+                btnMultiPlayer.Size = new Size(200, 50);
+                btnMultiPlayer.Location = new Point(200, 280);
+                btnMultiPlayer.Font = new Font(btnMultiPlayer.Font.FontFamily, 14, FontStyle.Bold);
+            }
+
+            if (btnGameIntro != null)
+            {
+                btnGameIntro.Size = new Size(200, 50);
+                btnGameIntro.Location = new Point(200, 340);
+                btnGameIntro.Font = new Font(btnGameIntro.Font.FontFamily, 14, FontStyle.Bold);
+            }
+
+            // Restore control buttons
+            if (btnChangeUser != null)
+            {
+                btnChangeUser.Size = new Size(120, 35);
+                btnChangeUser.Location = new Point(150, 420);
+                btnChangeUser.Font = new Font(btnChangeUser.Font.FontFamily, 10, FontStyle.Bold);
+            }
+
+            if (btnExit != null)
+            {
+                btnExit.Size = new Size(120, 35);
+                btnExit.Location = new Point(330, 420);
+                btnExit.Font = new Font(btnExit.Font.FontFamily, 10, FontStyle.Bold);
             }
 
             ResumeLayout(true);

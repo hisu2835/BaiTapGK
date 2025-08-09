@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\BaiTapGK.csproj": {}
+    "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\BaiTapGK\\BaiTapGK\\BaiTapGK.csproj": {}
   },
   "projects": {
-    "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\BaiTapGK.csproj": {
+    "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\BaiTapGK\\BaiTapGK\\BaiTapGK.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\BaiTapGK.csproj",
+        "projectUniqueName": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\BaiTapGK\\BaiTapGK\\BaiTapGK.csproj",
         "projectName": "BaiTapGK",
-        "projectPath": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\BaiTapGK.csproj",
+        "projectPath": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\BaiTapGK\\BaiTapGK\\BaiTapGK.csproj",
         "packagesPath": "C:\\Users\\NITRO\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\obj\\",
+        "outputPath": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\BaiTapGK\\BaiTapGK\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

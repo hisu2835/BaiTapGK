@@ -1,0 +1,129 @@
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace BaiTapGK
+{
+    public partial class GameIntroForm : FullscreenSupportForm
+    {
+        public GameIntroForm()
+        {
+            InitializeComponent();
+            this.StartPosition = FormStartPosition.CenterScreen;
+            this.FormBorderStyle = FormBorderStyle.Sizable;
+            this.MaximizeBox = true;
+            this.MinimizeBox = true;
+            this.MinimumSize = new Size(500, 440);
+        }
+
+        protected override void AdjustLayoutForFullscreen(bool isFullscreen)
+        {
+            if (isFullscreen)
+            {
+                ApplyFullscreenIntroLayout();
+            }
+            else
+            {
+                RestoreWindowedIntroLayout();
+            }
+        }
+
+        private void ApplyFullscreenIntroLayout()
+        {
+            SuspendLayout();
+
+            // Calculate scale factor
+            float baseWidth = 500f;
+            float baseHeight = 440f;
+            
+            float widthScale = this.ClientSize.Width / baseWidth;
+            float heightScale = this.ClientSize.Height / baseHeight;
+            
+            float scaleFactor = Math.Min(widthScale, heightScale) * 0.8f;
+            scaleFactor = Math.Max(scaleFactor, 1.2f);
+            scaleFactor = Math.Min(scaleFactor, 2.0f);
+
+            int centerX = this.ClientSize.Width / 2;
+            int topMargin = (int)(40 * scaleFactor);
+
+            // Title - top center
+            if (lblTitle != null)
+            {
+                lblTitle.Font = new Font(lblTitle.Font.FontFamily,
+                    Math.Max(lblTitle.Font.Size * scaleFactor, 14), FontStyle.Bold);
+                lblTitle.AutoSize = true;
+                lblTitle.Location = new Point(
+                    centerX - lblTitle.PreferredSize.Width / 2,
+                    topMargin
+                );
+            }
+
+            // Rich text box - centered with appropriate size
+            if (rtbGameRules != null)
+            {
+                int textBoxWidth = Math.Min((int)(600 * scaleFactor), this.ClientSize.Width - (int)(80 * scaleFactor));
+                int textBoxHeight = Math.Min((int)(350 * scaleFactor), this.ClientSize.Height - (int)(160 * scaleFactor));
+                
+                rtbGameRules.Size = new Size(textBoxWidth, textBoxHeight);
+                rtbGameRules.Location = new Point(
+                    centerX - textBoxWidth / 2,
+                    topMargin + (int)(60 * scaleFactor)
+                );
+                
+                rtbGameRules.Font = new Font(rtbGameRules.Font.FontFamily,
+                    Math.Max(rtbGameRules.Font.Size * scaleFactor, 9));
+            }
+
+            // Close button - bottom center
+            if (btnClose != null)
+            {
+                int buttonWidth = (int)(120 * scaleFactor);
+                int buttonHeight = (int)(40 * scaleFactor);
+                
+                btnClose.Size = new Size(buttonWidth, buttonHeight);
+                btnClose.Location = new Point(
+                    centerX - buttonWidth / 2,
+                    this.ClientSize.Height - (int)(60 * scaleFactor)
+                );
+                
+                btnClose.Font = new Font(btnClose.Font.FontFamily,
+                    Math.Max(btnClose.Font.Size * scaleFactor, 10), FontStyle.Bold);
+            }
+
+            ResumeLayout(true);
+        }
+
+        private void RestoreWindowedIntroLayout()
+        {
+            SuspendLayout();
+
+            // Restore original positions
+            if (lblTitle != null)
+            {
+                lblTitle.Font = new Font(lblTitle.Font.FontFamily, 16, FontStyle.Bold);
+                lblTitle.Location = new Point(130, 20);
+            }
+
+            if (rtbGameRules != null)
+            {
+                rtbGameRules.Size = new Size(460, 300);
+                rtbGameRules.Location = new Point(20, 60);
+                rtbGameRules.Font = new Font(rtbGameRules.Font.FontFamily, 10);
+            }
+
+            if (btnClose != null)
+            {
+                btnClose.Size = new Size(100, 40);
+                btnClose.Location = new Point(200, 380);
+                btnClose.Font = new Font(btnClose.Font.FontFamily, 12, FontStyle.Bold);
+            }
+
+            ResumeLayout(true);
+        }
+
+        private void btnClose_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+    }
+}

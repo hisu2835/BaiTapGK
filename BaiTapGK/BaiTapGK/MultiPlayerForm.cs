@@ -103,391 +103,226 @@ namespace BaiTapGK
             // Dieu chinh layout khi fullscreen cho multiplayer
             if (isFullscreen)
             {
-                AdjustMultiplayerLayoutForFullscreen(true);
+                ApplyAdvancedFullscreenLayout();
             }
             else
             {
-                AdjustMultiplayerLayoutForFullscreen(false);
+                RestoreWindowedLayout();
             }
         }
 
-        private void AdjustMultiplayerLayoutForFullscreen(bool isFullscreen)
+        private void ApplyAdvancedFullscreenLayout()
         {
-            if (isFullscreen)
+            // Tao cau hinh responsive layout cho multiplayer
+            var config = new ResponsiveLayoutConfig
             {
-                ApplyFullscreenMultiplayerLayout();
-            }
-            else
-            {
-                RestoreWindowedMultiplayerLayout();
-            }
-        }
-
-        private void ApplyFullscreenMultiplayerLayout()
-        {
-            SuspendLayout();
-
-            // Calculate optimal scale factor
-            float baseWidth = 540f;
-            float baseHeight = 600f;
-            
-            float widthScale = this.ClientSize.Width / baseWidth;
-            float heightScale = this.ClientSize.Height / baseHeight;
-            
-            float scaleFactor = Math.Min(widthScale, heightScale) * 0.75f; // More conservative scaling
-            scaleFactor = Math.Max(scaleFactor, 1.2f);
-            scaleFactor = Math.Min(scaleFactor, 2.0f);
-
-            int centerX = this.ClientSize.Width / 2;
-            int topMargin = (int)(30 * scaleFactor);
-
-            // Top section - player info and connection status
-            if (lblPlayerName != null)
-            {
-                lblPlayerName.Font = new Font(lblPlayerName.Font.FontFamily, lblPlayerName.Font.Size * scaleFactor, FontStyle.Bold);
-                lblPlayerName.AutoSize = true;
-                lblPlayerName.Location = new Point(centerX - lblPlayerName.PreferredSize.Width / 2, topMargin);
-            }
-
-            if (lblStatus != null)
-            {
-                lblStatus.Font = new Font(lblStatus.Font.FontFamily, lblStatus.Font.Size * scaleFactor);
-                lblStatus.AutoSize = true;
-                lblStatus.Location = new Point(centerX - lblStatus.PreferredSize.Width / 2, topMargin + (int)(35 * scaleFactor));
-            }
-
-            // Network controls section - centered layout
-            int networkY = topMargin + (int)(80 * scaleFactor);
-            int controlWidth = (int)(150 * scaleFactor);
-            int controlHeight = (int)(30 * scaleFactor);
-            int controlSpacing = (int)(20 * scaleFactor);
-
-            // Arrange network controls in a more organized manner
-            var networkControls = new[]
-            {
-                new { Control = txtServerIP as Control, Label = "Server IP:" },
-                new { Control = txtPort as Control, Label = "Port:" },
-                new { Control = txtRoomId as Control, Label = "Room ID:" }
-            };
-
-            int networkStartX = centerX - (controlWidth * 3 + controlSpacing * 2) / 2;
-            
-            for (int i = 0; i < networkControls.Length; i++)
-            {
-                if (networkControls[i].Control != null)
+                BaseSize = new Size(540, 600),
+                
+                // Header section - thong tin player va status
+                HeaderSection = new LayoutSection
                 {
-                    networkControls[i].Control.Size = new Size(controlWidth, controlHeight);
-                    networkControls[i].Control.Location = new Point(
-                        networkStartX + (i * (controlWidth + controlSpacing)),
-                        networkY
-                    );
-                    
-                    if (networkControls[i].Control is TextBox textBox)
-                    {
-                        textBox.Font = new Font(textBox.Font.FontFamily, Math.Max(textBox.Font.Size * scaleFactor, 9));
-                    }
+                    Controls = new List<string> { "lblPlayerName", "lblOpponent", "lblConnectionInfo", "lblStatus" },
+                    TopMargin = 30,
+                    Spacing = 15
+                },
+                
+                // Control section - network controls
+                ControlSection = new LayoutSection
+                {
+                    Controls = new List<string> { "txtServerIP", "txtPort", "txtRoomId" },
+                    TopMargin = 160,
+                    Spacing = 20,
+                    ControlSize = new Size(120, 30)
+                },
+                
+                // Game section - buttons
+                GameSection = new LayoutSection
+                {
+                    Controls = new List<string> { "btnRock", "btnPaper", "btnScissors" },
+                    TopMargin = 320,
+                    Spacing = 40,
+                    ControlSize = new Size(80, 80)
+                },
+                
+                // Footer section
+                FooterSection = new LayoutSection
+                {
+                    Controls = new List<string> { "btnBack" },
+                    TopMargin = 60,
+                    ControlSize = new Size(120, 40)
                 }
-            }
-
-            // Network buttons - centered below text boxes
-            var networkButtons = new[] { btnCreateRoom, btnJoinRoom };
-            var validNetworkButtons = networkButtons.Where(b => b != null).ToArray();
+            };
             
-            if (validNetworkButtons.Length > 0)
-            {
-                int networkButtonWidth = (int)(140 * scaleFactor);
-                int networkButtonHeight = (int)(40 * scaleFactor);
-                int networkButtonSpacing = (int)(30 * scaleFactor);
-                int totalNetworkButtonWidth = (validNetworkButtons.Length * networkButtonWidth) + ((validNetworkButtons.Length - 1) * networkButtonSpacing);
-                int networkButtonStartX = centerX - totalNetworkButtonWidth / 2;
-                int networkButtonY = networkY + controlHeight + (int)(20 * scaleFactor);
+            // Ap dung responsive layout
+            ResponsiveLayoutManager.ApplyResponsiveLayout(this, config);
+            
+            // Xu ly cac control dac biet
+            ApplySpecialFullscreenControls();
+        }
 
-                for (int i = 0; i < validNetworkButtons.Length; i++)
+        private void ApplySpecialFullscreenControls()
+        {
+            var scaleFactor = ResponsiveLayoutManager.CalculateOptimalScaleFactor(
+                this.ClientSize, new Size(540, 600));
+            var centerX = this.ClientSize.Width / 2;
+            
+            // Network buttons section - dat ben duoi text boxes
+            var networkButtons = new[] { btnCreateRoom, btnJoinRoom };
+            var networkButtonY = (int)(220 * scaleFactor);
+            var networkButtonWidth = (int)(140 * scaleFactor);
+            var networkButtonHeight = (int)(35 * scaleFactor);
+            var networkButtonSpacing = (int)(30 * scaleFactor);
+            
+            var totalNetworkWidth = (networkButtons.Length * networkButtonWidth) + 
+                                   ((networkButtons.Length - 1) * networkButtonSpacing);
+            var networkStartX = centerX - totalNetworkWidth / 2;
+            
+            for (int i = 0; i < networkButtons.Length; i++)
+            {
+                if (networkButtons[i] != null)
                 {
-                    var button = validNetworkButtons[i];
-                    button.Size = new Size(networkButtonWidth, networkButtonHeight);
-                    button.Location = new Point(
-                        networkButtonStartX + (i * (networkButtonWidth + networkButtonSpacing)),
+                    ResponsiveLayoutManager.SaveOriginalState(networkButtons[i]);
+                    networkButtons[i].Size = new Size(networkButtonWidth, networkButtonHeight);
+                    networkButtons[i].Location = new Point(
+                        networkStartX + (i * (networkButtonWidth + networkButtonSpacing)),
                         networkButtonY
                     );
-                    button.Font = new Font(button.Font.FontFamily, Math.Max(button.Font.Size * scaleFactor, 9));
+                    networkButtons[i].Font = new Font(networkButtons[i].Font.FontFamily,
+                        Math.Max(networkButtons[i].Font.Size * scaleFactor, 9), FontStyle.Bold);
                 }
             }
-
-            // Game buttons section - centered horizontally
-            int gameButtonY = networkY + (int)(140 * scaleFactor);
-            var gameButtons = new[] { btnRock, btnPaper, btnScissors };
-            var validGameButtons = gameButtons.Where(b => b != null).ToArray();
             
-            if (validGameButtons.Length > 0)
+            // Wireshark buttons - smaller, positioned below network buttons
+            var wiresharkButtons = new[] { btnOpenWireshark, btnWiresharkHelp };
+            var wiresharkButtonY = networkButtonY + networkButtonHeight + (int)(15 * scaleFactor);
+            var wiresharkButtonWidth = (int)(100 * scaleFactor);
+            var wiresharkButtonHeight = (int)(28 * scaleFactor);
+            var wiresharkButtonSpacing = (int)(20 * scaleFactor);
+            
+            var totalWiresharkWidth = (wiresharkButtons.Length * wiresharkButtonWidth) + 
+                                     ((wiresharkButtons.Length - 1) * wiresharkButtonSpacing);
+            var wiresharkStartX = centerX - totalWiresharkWidth / 2;
+            
+            for (int i = 0; i < wiresharkButtons.Length; i++)
             {
-                int gameButtonSize = (int)(70 * scaleFactor);
-                int gameButtonSpacing = (int)(40 * scaleFactor);
-                int totalGameButtonWidth = (validGameButtons.Length * gameButtonSize) + ((validGameButtons.Length - 1) * gameButtonSpacing);
-                int gameButtonStartX = centerX - totalGameButtonWidth / 2;
-
-                for (int i = 0; i < validGameButtons.Length; i++)
+                if (wiresharkButtons[i] != null)
                 {
-                    var button = validGameButtons[i];
-                    button.Size = new Size(gameButtonSize, gameButtonSize);
-                    button.Location = new Point(
-                        gameButtonStartX + (i * (gameButtonSize + gameButtonSpacing)),
-                        gameButtonY
+                    ResponsiveLayoutManager.SaveOriginalState(wiresharkButtons[i]);
+                    wiresharkButtons[i].Size = new Size(wiresharkButtonWidth, wiresharkButtonHeight);
+                    wiresharkButtons[i].Location = new Point(
+                        wiresharkStartX + (i * (wiresharkButtonWidth + wiresharkButtonSpacing)),
+                        wiresharkButtonY
                     );
-                    button.Font = new Font(button.Font.FontFamily, Math.Max(button.Font.Size * scaleFactor, 9));
+                    wiresharkButtons[i].Font = new Font(wiresharkButtons[i].Font.FontFamily,
+                        Math.Max(wiresharkButtons[i].Font.Size * scaleFactor, 8));
                 }
             }
-
-            // Gesture controls - symmetric positioning
-            int gestureY = gameButtonY + (int)(100 * scaleFactor);
-            int gestureSize = (int)(120 * scaleFactor);
-            int gestureSpacing = this.ClientSize.Width / 4;
-
+            
+            // Gesture controls - symmetric positioning with better spacing
+            var gestureY = (int)(420 * scaleFactor);
+            var gestureSize = (int)(120 * scaleFactor);
+            var gestureSpacing = this.ClientSize.Width / 3; // More dynamic spacing
+            
             if (playerGestureControl != null)
             {
+                ResponsiveLayoutManager.SaveOriginalState(playerGestureControl);
                 playerGestureControl.Size = new Size(gestureSize, gestureSize);
                 playerGestureControl.Location = new Point(
                     gestureSpacing - gestureSize / 2,
                     gestureY
                 );
             }
-
+            
             if (opponentGestureControl != null)
             {
+                ResponsiveLayoutManager.SaveOriginalState(opponentGestureControl);
                 opponentGestureControl.Size = new Size(gestureSize, gestureSize);
                 opponentGestureControl.Location = new Point(
                     this.ClientSize.Width - gestureSpacing - gestureSize / 2,
                     gestureY
                 );
             }
-
-            // Player choice labels
-            int choiceLabelY = gestureY + gestureSize + (int)(15 * scaleFactor);
+            
+            // Choice labels - positioned below gesture controls
+            var choiceLabelY = gestureY + gestureSize + (int)(15 * scaleFactor);
             
             if (lblPlayerChoice != null)
             {
-                lblPlayerChoice.Font = new Font(lblPlayerChoice.Font.FontFamily, lblPlayerChoice.Font.Size * scaleFactor);
+                ResponsiveLayoutManager.SaveOriginalState(lblPlayerChoice);
+                lblPlayerChoice.Font = new Font(lblPlayerChoice.Font.FontFamily,
+                    Math.Max(lblPlayerChoice.Font.Size * scaleFactor, 10));
                 lblPlayerChoice.AutoSize = true;
                 lblPlayerChoice.Location = new Point(
                     gestureSpacing - lblPlayerChoice.PreferredSize.Width / 2,
                     choiceLabelY
                 );
             }
-
+            
             if (lblOpponentChoice != null)
             {
-                lblOpponentChoice.Font = new Font(lblOpponentChoice.Font.FontFamily, lblOpponentChoice.Font.Size * scaleFactor);
+                ResponsiveLayoutManager.SaveOriginalState(lblOpponentChoice);
+                lblOpponentChoice.Font = new Font(lblOpponentChoice.Font.FontFamily,
+                    Math.Max(lblOpponentChoice.Font.Size * scaleFactor, 10));
                 lblOpponentChoice.AutoSize = true;
                 lblOpponentChoice.Location = new Point(
                     this.ClientSize.Width - gestureSpacing - lblOpponentChoice.PreferredSize.Width / 2,
                     choiceLabelY
                 );
             }
-
-            // Game result and score - centered
+            
+            // Game result và score - centered between gestures
+            var resultY = choiceLabelY + (int)(40 * scaleFactor);
+            
             if (lblGameResult != null)
             {
-                lblGameResult.Font = new Font(lblGameResult.Font.FontFamily, lblGameResult.Font.Size * scaleFactor, FontStyle.Bold);
+                ResponsiveLayoutManager.SaveOriginalState(lblGameResult);
+                lblGameResult.Font = new Font(lblGameResult.Font.FontFamily,
+                    Math.Max(lblGameResult.Font.Size * scaleFactor, 12), FontStyle.Bold);
                 lblGameResult.AutoSize = true;
                 lblGameResult.Location = new Point(
                     centerX - lblGameResult.PreferredSize.Width / 2,
-                    choiceLabelY + (int)(40 * scaleFactor)
+                    resultY
                 );
             }
-
+            
             if (lblScore != null)
             {
-                lblScore.Font = new Font(lblScore.Font.FontFamily, lblScore.Font.Size * scaleFactor, FontStyle.Bold);
+                ResponsiveLayoutManager.SaveOriginalState(lblScore);
+                lblScore.Font = new Font(lblScore.Font.FontFamily,
+                    Math.Max(lblScore.Font.Size * scaleFactor, 11), FontStyle.Bold);
                 lblScore.AutoSize = true;
                 lblScore.Location = new Point(
                     centerX - lblScore.PreferredSize.Width / 2,
-                    choiceLabelY + (int)(70 * scaleFactor)
+                    resultY + (int)(30 * scaleFactor)
                 );
             }
-
-            // Control buttons at bottom
-            var controlButtons = new[] { btnBack };
-            if (controlButtons[0] != null)
-            {
-                int controlButtonWidth = (int)(120 * scaleFactor);
-                int controlButtonHeight = (int)(40 * scaleFactor);
-                controlButtons[0].Size = new Size(controlButtonWidth, controlButtonHeight);
-                controlButtons[0].Location = new Point(
-                    centerX - controlButtonWidth / 2,
-                    this.ClientSize.Height - (int)(60 * scaleFactor)
-                );
-                controlButtons[0].Font = new Font(controlButtons[0].Font.FontFamily, Math.Max(controlButtons[0].Font.Size * scaleFactor, 9));
-            }
-
-            // Wireshark buttons - position near network controls
-            var wiresharkButtons = new[] { btnOpenWireshark, btnWiresharkHelp };
-            var validWiresharkButtons = wiresharkButtons.Where(b => b != null).ToArray();
             
-            if (validWiresharkButtons.Length > 0)
-            {
-                int wiresharkButtonWidth = (int)(100 * scaleFactor);
-                int wiresharkButtonHeight = (int)(30 * scaleFactor);
-                int wiresharkButtonSpacing = (int)(15 * scaleFactor);
-                int totalWiresharkWidth = (validWiresharkButtons.Length * wiresharkButtonWidth) + ((validWiresharkButtons.Length - 1) * wiresharkButtonSpacing);
-                int wiresharkStartX = centerX - totalWiresharkWidth / 2;
-                int wiresharkY = networkY + controlHeight + (int)(70 * scaleFactor);
-
-                for (int i = 0; i < validWiresharkButtons.Length; i++)
-                {
-                    var button = validWiresharkButtons[i];
-                    button.Size = new Size(wiresharkButtonWidth, wiresharkButtonHeight);
-                    button.Location = new Point(
-                        wiresharkStartX + (i * (wiresharkButtonWidth + wiresharkButtonSpacing)),
-                        wiresharkY
-                    );
-                    button.Font = new Font(button.Font.FontFamily, Math.Max(button.Font.Size * scaleFactor, 8));
-                }
-            }
-
             // Scale battle result control
             if (battleResultControl != null)
             {
                 battleResultControl.ScaleForFullscreen(scaleFactor);
             }
-
-            ResumeLayout(true);
         }
 
-        private void RestoreWindowedMultiplayerLayout()
+        private void RestoreWindowedLayout()
         {
-            SuspendLayout();
-
-            // Restore approximate original positions
-            if (lblPlayerName != null)
-            {
-                lblPlayerName.Font = new Font(lblPlayerName.Font.FontFamily, 10, FontStyle.Bold);
-                lblPlayerName.Location = new Point(20, 20);
-            }
-
-            if (lblStatus != null)
-            {
-                lblStatus.Font = new Font(lblStatus.Font.FontFamily, 9);
-                lblStatus.Location = new Point(20, 50);
-            }
-
-            // Restore network controls
-            if (txtServerIP != null)
-            {
-                txtServerIP.Size = new Size(120, 25);
-                txtServerIP.Location = new Point(20, 80);
-                txtServerIP.Font = new Font(txtServerIP.Font.FontFamily, 9);
-            }
-
-            if (txtPort != null)
-            {
-                txtPort.Size = new Size(80, 25);
-                txtPort.Location = new Point(160, 80);
-                txtPort.Font = new Font(txtPort.Font.FontFamily, 9);
-            }
-
-            if (txtRoomId != null)
-            {
-                txtRoomId.Size = new Size(100, 25);
-                txtRoomId.Location = new Point(260, 80);
-                txtRoomId.Font = new Font(txtRoomId.Font.FontFamily, 9);
-            }
-
-            // Restore network buttons
-            if (btnCreateRoom != null)
-            {
-                btnCreateRoom.Size = new Size(100, 30);
-                btnCreateRoom.Location = new Point(20, 120);
-                btnCreateRoom.Font = new Font(btnCreateRoom.Font.FontFamily, 9);
-            }
-
-            if (btnJoinRoom != null)
-            {
-                btnJoinRoom.Size = new Size(100, 30);
-                btnJoinRoom.Location = new Point(140, 120);
-                btnJoinRoom.Font = new Font(btnJoinRoom.Font.FontFamily, 9);
-            }
-
-            // Restore game buttons
-            var gameButtons = new[] { btnRock, btnPaper, btnScissors };
-            int[] buttonXPositions = { 50, 180, 310 };
+            // Khoi phuc layout windowed mode bang cach su dung ResponsiveLayoutManager
+            var allControls = this.Controls.Cast<Control>().ToList();
             
-            for (int i = 0; i < gameButtons.Length && i < buttonXPositions.Length; i++)
+            foreach (var control in allControls)
             {
-                if (gameButtons[i] != null)
-                {
-                    gameButtons[i].Size = new Size(70, 70);
-                    gameButtons[i].Location = new Point(buttonXPositions[i], 180);
-                    gameButtons[i].Font = new Font(gameButtons[i].Font.FontFamily, 9);
-                }
+                ResponsiveLayoutManager.RestoreOriginalState(control);
             }
-
-            // Restore gesture controls
+            
+            // Restore special controls that might not be in main Controls collection
             if (playerGestureControl != null)
-            {
-                playerGestureControl.Size = new Size(100, 100);
-                playerGestureControl.Location = new Point(50, 360);
-            }
-
+                ResponsiveLayoutManager.RestoreOriginalState(playerGestureControl);
+            
             if (opponentGestureControl != null)
-            {
-                opponentGestureControl.Size = new Size(100, 100);
-                opponentGestureControl.Location = new Point(370, 360);
-            }
-
-            // Restore labels
-            if (lblPlayerChoice != null)
-            {
-                lblPlayerChoice.Font = new Font(lblPlayerChoice.Font.FontFamily, 9);
-                lblPlayerChoice.Location = new Point(50, 470);
-            }
-
-            if (lblOpponentChoice != null)
-            {
-                lblOpponentChoice.Font = new Font(lblOpponentChoice.Font.FontFamily, 9);
-                lblOpponentChoice.Location = new Point(370, 470);
-            }
-
-            if (lblGameResult != null)
-            {
-                lblGameResult.Font = new Font(lblGameResult.Font.FontFamily, 11, FontStyle.Bold);
-                lblGameResult.Location = new Point(200, 500);
-            }
-
-            if (lblScore != null)
-            {
-                lblScore.Font = new Font(lblScore.Font.FontFamily, 10, FontStyle.Bold);
-                lblScore.Location = new Point(150, 530);
-            }
-
-            if (btnBack != null)
-            {
-                btnBack.Size = new Size(100, 35);
-                btnBack.Location = new Point(220, 560);
-                btnBack.Font = new Font(btnBack.Font.FontFamily, 9);
-            }
-
-            // Restore Wireshark buttons
-            if (btnOpenWireshark != null)
-            {
-                btnOpenWireshark.Size = new Size(80, 25);
-                btnOpenWireshark.Location = new Point(270, 120);
-                btnOpenWireshark.Font = new Font(btnOpenWireshark.Font.FontFamily, 8);
-            }
-
-            if (btnWiresharkHelp != null)
-            {
-                btnWiresharkHelp.Size = new Size(80, 25);
-                btnWiresharkHelp.Location = new Point(360, 120);
-                btnWiresharkHelp.Font = new Font(btnWiresharkHelp.Font.FontFamily, 8);
-            }
-
-            // Restore battle result control
+                ResponsiveLayoutManager.RestoreOriginalState(opponentGestureControl);
+            
             if (battleResultControl != null)
-            {
                 battleResultControl.ScaleForFullscreen(1.0f);
-            }
-
-            ResumeLayout(true);
         }
 
         private void AdjustGestureControlsForFullscreen(float scaleFactor)
