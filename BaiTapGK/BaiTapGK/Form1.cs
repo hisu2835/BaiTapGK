@@ -15,6 +15,9 @@ namespace BaiTapGK
         private Dictionary<Control, Rectangle> originalBounds = new Dictionary<Control, Rectangle>();
         private Font? originalWelcomeFont;
 
+        // Language selection button
+        private Button? btnLanguage;
+
         public Form1()
         {
             InitializeComponent();
@@ -27,7 +30,186 @@ namespace BaiTapGK
             this.MinimumSize = new Size(600, 400);
             
             // Store original layout information
-            this.Load += (s, e) => StoreOriginalLayout();
+            this.Load += Form1_Load;
+            
+            // Subscribe to language change events
+            LanguageManager.OnLanguageChanged += OnLanguageChanged;
+            
+            // Add language selection button
+            AddLanguageButton();
+            
+            // Apply initial language
+            ApplyCurrentLanguage();
+        }
+
+        private void Form1_Load(object? sender, EventArgs e)
+        {
+            StoreOriginalLayout();
+            // Hien thi form dang nhap khi form load
+            ShowLoginForm();
+        }
+
+        private void AddLanguageButton()
+        {
+            btnLanguage = new Button
+            {
+                Text = "?? " + LanguageManager.GetText("Language"),
+                Font = new Font("Segoe UI", 9, FontStyle.Bold),
+                Size = new Size(120, 30),
+                Location = new Point(10, 10),
+                BackColor = Color.FromArgb(63, 81, 181),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                UseVisualStyleBackColor = false,
+                Cursor = Cursors.Hand,
+                TabIndex = 0,
+                Name = "btnLanguage"
+            };
+            
+            btnLanguage.FlatAppearance.BorderSize = 0;
+            btnLanguage.FlatAppearance.MouseOverBackColor = Color.FromArgb(57, 73, 171);
+            btnLanguage.Click += BtnLanguage_Click;
+            
+            // Add hover effects
+            btnLanguage.MouseEnter += (s, e) => btnLanguage.BackColor = Color.FromArgb(57, 73, 171);
+            btnLanguage.MouseLeave += (s, e) => btnLanguage.BackColor = Color.FromArgb(63, 81, 181);
+            
+            this.Controls.Add(btnLanguage);
+            btnLanguage.BringToFront();
+        }
+
+        private void BtnLanguage_Click(object? sender, EventArgs e)
+        {
+            // Show language selection dialog
+            if (LanguageSelectionForm.ShowLanguageSelection(this))
+            {
+                // Language was changed, refresh the current form
+                ApplyCurrentLanguage();
+                
+                // If logged in, update welcome message
+                if (isLoggedIn && !string.IsNullOrEmpty(playerName))
+                {
+                    UpdateWelcomeMessage();
+                }
+            }
+        }
+
+        private void OnLanguageChanged(string newLanguage)
+        {
+            // This will be called when language changes
+            ApplyCurrentLanguage();
+        }
+
+        private void ApplyCurrentLanguage()
+        {
+            try
+            {
+                // Update form title
+                this.Text = LanguageManager.GetText("MainMenuTitle");
+                
+                // Update language button text
+                if (btnLanguage != null)
+                {
+                    btnLanguage.Text = "?? " + LanguageManager.GetText("Language");
+                }
+                
+                // Apply language to all controls using helper
+                LanguageHelper.ApplyLanguage(this);
+                
+                // Update specific controls that need special handling
+                UpdateMainMenuSpecificTexts();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error applying language to Form1: {ex.Message}");
+            }
+        }
+
+        private void UpdateMainMenuSpecificTexts()
+        {
+            // Update title
+            if (lblTitle != null)
+            {
+                lblTitle.Text = LanguageManager.GetText("MainMenuTitle");
+            }
+            
+            // Update menu buttons
+            if (btnSinglePlayer != null)
+            {
+                btnSinglePlayer.Text = LanguageManager.GetText("SinglePlayer");
+            }
+            
+            if (btnMultiPlayer != null)
+            {
+                btnMultiPlayer.Text = LanguageManager.GetText("MultiPlayer");
+            }
+            
+            if (btnGameIntro != null)
+            {
+                btnGameIntro.Text = LanguageManager.GetText("GameRules");
+            }
+            
+            if (btnExit != null)
+            {
+                btnExit.Text = LanguageManager.GetText("Exit");
+            }
+            
+            if (btnChangeUser != null)
+            {
+                btnChangeUser.Text = LanguageManager.GetText("Login"); // Re-login
+            }
+            
+            // Update welcome message if logged in
+            if (isLoggedIn && !string.IsNullOrEmpty(playerName))
+            {
+                UpdateWelcomeMessage();
+            }
+        }
+
+        private void UpdateWelcomeMessage()
+        {
+            if (lblWelcome != null && isLoggedIn)
+            {
+                // Create a welcome message in current language
+                string welcome = "";
+                switch (LanguageManager.CurrentLanguage)
+                {
+                    case "vi":
+                        welcome = $"Chào m?ng, {playerName}!";
+                        break;
+                    case "en":
+                        welcome = $"Welcome, {playerName}!";
+                        break;
+                    case "zh":
+                        welcome = $"??, {playerName}!";
+                        break;
+                    case "ja":
+                        welcome = $"????, {playerName}??!";
+                        break;
+                    case "ko":
+                        welcome = $"?????, {playerName}?!";
+                        break;
+                    case "es":
+                        welcome = $"¡Bienvenido, {playerName}!";
+                        break;
+                    case "fr":
+                        welcome = $"Bienvenue, {playerName}!";
+                        break;
+                    case "de":
+                        welcome = $"Willkommen, {playerName}!";
+                        break;
+                    case "pt":
+                        welcome = $"Bem-vindo, {playerName}!";
+                        break;
+                    case "ru":
+                        welcome = $"????? ??????????, {playerName}!";
+                        break;
+                    default:
+                        welcome = $"Welcome, {playerName}!";
+                        break;
+                }
+                lblWelcome.Text = welcome;
+            }
         }
 
         private void StoreOriginalLayout()
@@ -48,28 +230,25 @@ namespace BaiTapGK
             }
         }
 
-        protected override void OnLoad(EventArgs e)
-        {
-            base.OnLoad(e);
-            // Hien thi form dang nhap khi form load
-            ShowLoginForm();
-        }
-
         private void ShowLoginForm()
         {
-            LoginForm loginForm = new LoginForm();
-            if (loginForm.ShowDialog() == DialogResult.OK)
+            using (LoginForm loginForm = new LoginForm())
             {
-                playerName = loginForm.PlayerName;
-                isLoggedIn = true;
-                if (lblWelcome != null)
-                    lblWelcome.Text = $"Chao mung, {playerName}!";
-                EnableGameButtons(true);
-            }
-            else
-            {
-                // Neu nguoi dung huy dang nhap, dong ung dung
-                Application.Exit();
+                // Apply current language to login form
+                LanguageHelper.ApplyLanguage(loginForm);
+                
+                if (loginForm.ShowDialog() == DialogResult.OK)
+                {
+                    playerName = loginForm.PlayerName;
+                    isLoggedIn = true;
+                    UpdateWelcomeMessage();
+                    EnableGameButtons(true);
+                }
+                else
+                {
+                    // Neu nguoi dung huy dang nhap, dong ung dung
+                    Application.Exit();
+                }
             }
         }
 
@@ -87,30 +266,46 @@ namespace BaiTapGK
         {
             if (!isLoggedIn)
             {
-                MessageBox.Show("Vui long dang nhap truoc!", "Thong bao", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                string message = LanguageManager.GetText("EnterPlayerName");
+                string title = LanguageManager.GetText("Warning");
+                MessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            SinglePlayerForm singlePlayerForm = new SinglePlayerForm(playerName);
-            singlePlayerForm.ShowDialog();
+            using (SinglePlayerForm singlePlayerForm = new SinglePlayerForm(playerName))
+            {
+                // Apply current language to single player form
+                LanguageHelper.ApplyLanguage(singlePlayerForm);
+                singlePlayerForm.ShowDialog();
+            }
         }
 
         private void btnMultiPlayer_Click(object sender, EventArgs e)
         {
             if (!isLoggedIn)
             {
-                MessageBox.Show("Vui long dang nhap truoc!", "Thong bao", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                string message = LanguageManager.GetText("EnterPlayerName");
+                string title = LanguageManager.GetText("Warning");
+                MessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            MultiPlayerForm multiPlayerForm = new MultiPlayerForm(playerName);
-            multiPlayerForm.ShowDialog();
+            using (MultiPlayerForm multiPlayerForm = new MultiPlayerForm(playerName))
+            {
+                // Apply current language to multiplayer form
+                LanguageHelper.ApplyLanguage(multiPlayerForm);
+                multiPlayerForm.ShowDialog();
+            }
         }
 
         private void btnGameIntro_Click(object sender, EventArgs e)
         {
-            GameIntroForm gameIntroForm = new GameIntroForm();
-            gameIntroForm.ShowDialog();
+            using (GameIntroForm gameIntroForm = new GameIntroForm())
+            {
+                // Apply current language to game intro form
+                LanguageHelper.ApplyLanguage(gameIntroForm);
+                gameIntroForm.ShowDialog();
+            }
         }
 
         private void btnExit_Click(object sender, EventArgs e)
@@ -122,6 +317,10 @@ namespace BaiTapGK
         {
             isLoggedIn = false;
             EnableGameButtons(false);
+            if (lblWelcome != null)
+            {
+                lblWelcome.Text = LanguageManager.GetText("SelectLanguage");
+            }
             ShowLoginForm();
         }
 
@@ -154,6 +353,15 @@ namespace BaiTapGK
 
             int centerX = this.ClientSize.Width / 2;
             int centerY = this.ClientSize.Height / 2;
+
+            // Language button - keep at top left, but scaled
+            if (btnLanguage != null)
+            {
+                btnLanguage.Size = new Size((int)(120 * scaleFactor), (int)(30 * scaleFactor));
+                btnLanguage.Location = new Point((int)(15 * scaleFactor), (int)(15 * scaleFactor));
+                btnLanguage.Font = new Font(btnLanguage.Font.FontFamily,
+                    Math.Max(btnLanguage.Font.Size * scaleFactor, 8), btnLanguage.Font.Style);
+            }
 
             // Title - positioned at top center
             if (lblTitle != null)
@@ -251,6 +459,14 @@ namespace BaiTapGK
         {
             SuspendLayout();
 
+            // Language button - restore to top left
+            if (btnLanguage != null)
+            {
+                btnLanguage.Size = new Size(120, 30);
+                btnLanguage.Location = new Point(10, 10);
+                btnLanguage.Font = new Font(btnLanguage.Font.FontFamily, 9, FontStyle.Bold);
+            }
+
             // Restore original layout positions
             if (lblTitle != null)
             {
@@ -327,8 +543,13 @@ namespace BaiTapGK
         // Cleanup method to be called from Dispose in Designer.cs
         private void CleanupCustomResources()
         {
+            // Unsubscribe from language change events
+            LanguageManager.OnLanguageChanged -= OnLanguageChanged;
+            
             originalWelcomeFont?.Dispose();
             originalBounds.Clear();
+            
+            btnLanguage?.Dispose();
         }
     }
 }

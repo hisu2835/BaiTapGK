@@ -13,6 +13,9 @@
     <Compile Update="HandGestureAnimationControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Update="LanguageSelectionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="LoginForm.cs">
       <SubType>Form</SubType>
     </Compile>

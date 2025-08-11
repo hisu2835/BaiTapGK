@@ -33,7 +33,10 @@ namespace BaiTapGK
         {
             InitializeComponent();
             this.playerName = playerName;
-            lblPlayerName.Text = $"Nguoi choi: {playerName}";
+            
+            // Apply current language first
+            ApplyCurrentLanguage();
+            
             this.StartPosition = FormStartPosition.CenterScreen;
             this.FormBorderStyle = FormBorderStyle.Sizable; // Cho phep resize
             this.MaximizeBox = true; // Cho phep maximize
@@ -53,6 +56,131 @@ namespace BaiTapGK
             
             // Thiet lap hover effects cho cac button
             SetupButtonEffects();
+            
+            // Subscribe to language change events
+            LanguageManager.OnLanguageChanged += OnLanguageChanged;
+        }
+
+        private void OnLanguageChanged(string newLanguage)
+        {
+            ApplyCurrentLanguage();
+        }
+
+        private void ApplyCurrentLanguage()
+        {
+            try
+            {
+                // Update form title
+                this.Text = LanguageManager.GetText("MultiPlayerTitle");
+                
+                // Update player name label
+                lblPlayerName.Text = $"{LanguageManager.GetText("Player")}: {playerName}";
+                
+                // Update other labels
+                if (lblOpponent != null)
+                {
+                    string opponentName = lblOpponent.Text.Replace("Doi thu: ", "").Replace("Opponent: ", "");
+                    if (opponentName == "---" || string.IsNullOrEmpty(opponentName))
+                    {
+                        lblOpponent.Text = $"{LanguageManager.GetText("Opponent")}: ---";
+                    }
+                    else
+                    {
+                        lblOpponent.Text = $"{LanguageManager.GetText("Opponent")}: {opponentName}";
+                    }
+                }
+                
+                // Update choice labels
+                UpdateChoiceLabels();
+                
+                // Update status and result labels
+                UpdateStatusLabels();
+                
+                // Update button texts using helper
+                LanguageHelper.ApplyLanguage(this);
+                
+                // Update score display
+                UpdateScoreDisplay();
+                
+                // Update local IP info
+                ShowLocalIPInfo();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error applying language to MultiPlayerForm: {ex.Message}");
+            }
+        }
+
+        private void UpdateChoiceLabels()
+        {
+            if (lblPlayerChoice != null)
+            {
+                if (string.IsNullOrEmpty(playerChoice))
+                {
+                    lblPlayerChoice.Text = $"{LanguageManager.GetText("YourChoice")}: ---";
+                }
+                else
+                {
+                    string translatedChoice = LanguageHelper.GetChoiceText(playerChoice);
+                    lblPlayerChoice.Text = $"{LanguageManager.GetText("YourChoice")}: {translatedChoice}";
+                }
+            }
+
+            if (lblOpponentChoice != null)
+            {
+                string opponentText = LanguageManager.GetText("Opponent");
+                if (string.IsNullOrEmpty(opponentChoice))
+                {
+                    lblOpponentChoice.Text = $"{opponentText}: ---";
+                }
+                else
+                {
+                    string translatedChoice = LanguageHelper.GetChoiceText(opponentChoice);
+                    lblOpponentChoice.Text = $"{opponentText}: {translatedChoice}";
+                }
+            }
+        }
+
+        private void UpdateStatusLabels()
+        {
+            if (lblGameResult != null)
+            {
+                if (lblGameResult.Text.Contains("Chon lua chon") || lblGameResult.Text.Contains("Choose your move"))
+                {
+                    lblGameResult.Text = LanguageManager.GetText("ChooseYourMove");
+                }
+                else if (lblGameResult.Text.Contains("Dang cho") || lblGameResult.Text.Contains("Waiting"))
+                {
+                    lblGameResult.Text = LanguageManager.GetText("WaitingForOpponent");
+                }
+            }
+
+            if (lblStatus != null)
+            {
+                string currentStatus = lblStatus.Text.ToLower();
+                if (currentStatus.Contains("nhap thong tin") || currentStatus.Contains("enter"))
+                {
+                    lblStatus.Text = LanguageManager.GetText("EnterServerInfo");
+                }
+                else if (currentStatus.Contains("dang cho") || currentStatus.Contains("waiting"))
+                {
+                    lblStatus.Text = LanguageManager.GetText("WaitingForConnection");
+                }
+                else if (currentStatus.Contains("da ket noi") || currentStatus.Contains("connected"))
+                {
+                    lblStatus.Text = LanguageManager.GetText("Connected");
+                }
+            }
+        }
+
+        private void UpdateScoreDisplay()
+        {
+            if (lblScore != null)
+            {
+                string playerText = LanguageManager.GetText("Player");
+                string opponentText = LanguageManager.GetText("Opponent");
+                lblScore.Text = $"{LanguageManager.GetText("Score")} - {playerText}: {playerScore} | {opponentText}: {opponentScore}";
+            }
         }
 
         private void SetupButtonEffects()
@@ -460,7 +588,9 @@ namespace BaiTapGK
                 
                 if (!NetworkUtils.IsPortAvailable(port))
                 {
-                    MessageBox.Show($"Port {port} dang duoc su dung!", "Loi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    string message = LanguageManager.GetFormattedText("PortInUse", port);
+                    string title = LanguageManager.GetText("Error");
+                    MessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
@@ -472,7 +602,7 @@ namespace BaiTapGK
                 tcpListenerThread.IsBackground = true;
                 tcpListenerThread.Start();
                 
-                lblStatus.Text = $"Dang cho nguoi choi ket noi den {NetworkUtils.GetLocalIPAddress()}:{port}";
+                lblStatus.Text = LanguageManager.GetText("WaitingForConnection") + $" {NetworkUtils.GetLocalIPAddress()}:{port}";
                 lblStatus.ForeColor = Color.Orange;
                 btnCreateRoom.Enabled = false;
                 btnJoinRoom.Enabled = false;
@@ -482,22 +612,62 @@ namespace BaiTapGK
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Loi khi tao phong: {ex.Message}", "Loi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                string message = LanguageManager.GetText("Error") + $": {ex.Message}";
+                string title = LanguageManager.GetText("Error");
+                MessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         private void ShowConnectionInfo(int port)
         {
             string localIP = NetworkUtils.GetLocalIPAddress();
-            string message = $"THONG TIN KET NOI:\n\n" +
+            string title = LanguageManager.GetText("ConnectionInfo");
+            string message = $"{LanguageManager.GetText("ConnectionInfo")}:\n\n" +
                            $"Server IP: {localIP}\n" +
                            $"Port: {port}\n" +
                            $"Room ID: {roomId}\n\n" +
-                           $"Gui thong tin nay cho ban be de ho ket noi!\n\n" +
-                           $"Su dung Wireshark de monitor traffic:\n" +
-                           $"Filter: tcp port {port}";
+                           $"{GetConnectionInstructions()}\n\n" +
+                           $"{GetWiresharkInstructions(port)}";
             
-            MessageBox.Show(message, "Thong tin Server", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private string GetConnectionInstructions()
+        {
+            return LanguageManager.CurrentLanguage switch
+            {
+                "vi" => "G?i thông tin này cho b?n bè ?? h? k?t n?i!",
+                "en" => "Send this information to friends so they can connect!",
+                "zh" => "????????????????",
+                "ja" => "????????????????????????",
+                "ko" => "???? ??? ? ??? ? ??? ?????!",
+                "es" => "¡Envía esta información a tus amigos para que puedan conectarse!",
+                "fr" => "Envoyez ces informations à vos amis pour qu'ils puissent se connecter !",
+                "de" => "Senden Sie diese Informationen an Freunde, damit sie sich verbinden können!",
+                "pt" => "Envie esta informação para amigos para que eles possam se conectar!",
+                "ru" => "????????? ??? ?????????? ???????, ????? ??? ????? ????????????!",
+                _ => "Send this information to friends so they can connect!"
+            };
+        }
+
+        private string GetWiresharkInstructions(int port)
+        {
+            string filterText = LanguageManager.CurrentLanguage switch
+            {
+                "vi" => "S? d?ng Wireshark ?? monitor traffic:\nFilter: tcp port",
+                "en" => "Use Wireshark to monitor traffic:\nFilter: tcp port",
+                "zh" => "??Wireshark?????\n???: tcp port",
+                "ja" => "Wireshark???????????????\n?????: tcp port",
+                "ko" => "Wireshark? ???? ??? ?????\n??: tcp port",
+                "es" => "Usar Wireshark para monitorear tráfico:\nFiltro: tcp port",
+                "fr" => "Utiliser Wireshark pour surveiller le trafic :\nFiltre : tcp port",
+                "de" => "Wireshark zum Überwachen des Verkehrs verwenden:\nFilter: tcp port",
+                "pt" => "Use Wireshark para monitorar tráfego:\nFiltro: tcp port",
+                "ru" => "??????????? Wireshark ??? ??????????? ???????:\n??????: tcp port",
+                _ => "Use Wireshark to monitor traffic:\nFilter: tcp port"
+            };
+
+            return $"{filterText} {port}";
         }
 
         private void btnJoinRoom_Click(object sender, EventArgs e)
@@ -508,13 +678,17 @@ namespace BaiTapGK
             
             if (string.IsNullOrEmpty(serverIP) || string.IsNullOrEmpty(portText))
             {
-                MessageBox.Show("Vui long nhap day du thong tin server!", "Thong bao", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                string message = LanguageManager.GetText("EnterServerInfo");
+                string title = LanguageManager.GetText("Warning");
+                MessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             if (!int.TryParse(portText, out int port))
             {
-                MessageBox.Show("Port khong hop le!", "Loi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                string message = LanguageManager.GetText("InvalidPort");
+                string title = LanguageManager.GetText("Error");
+                MessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -532,7 +706,7 @@ namespace BaiTapGK
                 // Gui ten nguoi choi
                 SendMessage($"PLAYER:{playerName}");
                 
-                lblStatus.Text = $"Da ket noi den {serverIP}:{port}! San sang choi.";
+                lblStatus.Text = LanguageManager.GetText("Connected");
                 lblStatus.ForeColor = Color.Green;
                 btnCreateRoom.Enabled = false;
                 btnJoinRoom.Enabled = false;
@@ -541,8 +715,10 @@ namespace BaiTapGK
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Khong the ket noi den server {serverIP}:{port}\n\nLoi: {ex.Message}", 
-                    "Loi ket noi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                string message = LanguageManager.GetFormattedText("CannotConnect", serverIP, port) + 
+                               $"\n\n{LanguageManager.GetText("Error")}: {ex.Message}";
+                string title = LanguageManager.GetText("Error");
+                MessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -655,7 +831,7 @@ namespace BaiTapGK
                         
                         this.Invoke((MethodInvoker)delegate
                         {
-                            lblStatus.Text = "Nguoi choi da tham gia! San sang choi.";
+                            lblStatus.Text = LanguageManager.GetText("PlayerJoined");
                             lblStatus.ForeColor = Color.Green;
                             EnableGameButtons(true);
                             gameStarted = true;
@@ -669,7 +845,7 @@ namespace BaiTapGK
             {
                 this.Invoke((MethodInvoker)delegate
                 {
-                    lblStatus.Text = $"Loi server: {ex.Message}";
+                    lblStatus.Text = $"{LanguageManager.GetText("ServerError")}: {ex.Message}";
                     lblStatus.ForeColor = Color.Red;
                 });
             }
@@ -733,7 +909,7 @@ namespace BaiTapGK
             }
             catch (Exception ex)
             {
-                lblStatus.Text = $"Loi gui tin nhan: {ex.Message}";
+                lblStatus.Text = $"{LanguageManager.GetText("SendMessageError")}: {ex.Message}";
                 lblStatus.ForeColor = Color.Red;
             }
         }
@@ -795,11 +971,12 @@ namespace BaiTapGK
         private void MakeChoice(string choice)
         {
             playerChoice = choice;
-            lblPlayerChoice.Text = $"Ban chon: {choice}";
+            string translatedChoice = LanguageHelper.GetChoiceText(choice);
+            lblPlayerChoice.Text = $"{LanguageManager.GetText("YourChoice")}: {translatedChoice}";
             SendMessage($"CHOICE:{choice}");
             
             EnableGameButtons(false);
-            lblGameResult.Text = "Dang cho doi thu...";
+            lblGameResult.Text = LanguageManager.GetText("WaitingForOpponent");
             
             CheckGameResult();
         }
@@ -968,23 +1145,23 @@ namespace BaiTapGK
         private string GetGameResult(string player, string opponent)
         {
             if (player == opponent)
-                return "Hoa!";
+                return LanguageManager.GetText("Draw");
 
             if ((player == "Da" && opponent == "Keo") ||
                 (player == "Giay" && opponent == "Da") ||
                 (player == "Keo" && opponent == "Giay"))
             {
-                return "Ban thang!";
+                return LanguageManager.GetText("YouWin");
             }
             else
             {
-                return "Ban thua!";
+                return LanguageManager.GetText("YouLose");
             }
         }
 
         private void UpdateScore()
         {
-            lblScore.Text = $"Ty so - Ban: {playerScore} | Doi thu: {opponentScore}";
+            UpdateScoreDisplay();
         }
 
         private void EnableGameButtons(bool enabled)
@@ -1042,6 +1219,9 @@ namespace BaiTapGK
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
+            // Unsubscribe from language change events
+            LanguageManager.OnLanguageChanged -= OnLanguageChanged;
+            
             // Stop animations before closing
             ButtonAnimationHelper.StopCurrentAnimation();
             

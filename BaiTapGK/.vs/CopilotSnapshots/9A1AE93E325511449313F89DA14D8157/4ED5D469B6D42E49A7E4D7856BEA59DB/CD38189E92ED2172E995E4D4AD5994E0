@@ -1,0 +1,510 @@
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace BaiTapGK
+{
+    /// <summary>
+    /// Helper class to apply language translations to forms and controls
+    /// Automatically updates UI text based on current language
+    /// </summary>
+    public static class LanguageHelper
+    {
+        /// <summary>
+        /// Apply translations to MultiPlayerForm
+        /// </summary>
+        public static void ApplyLanguage(MultiPlayerForm form)
+        {
+            if (form == null) return;
+
+            try
+            {
+                // Form title and window text
+                form.Text = LanguageManager.GetText("MultiPlayerTitle");
+
+                // Find and update controls by their names or types
+                foreach (Control control in form.Controls)
+                {
+                    ApplyControlTranslation(control);
+                }
+
+                // Specific control updates that might not be caught by automatic detection
+                UpdateMultiPlayerSpecificControls(form);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error applying language to MultiPlayerForm: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Apply translations to SinglePlayerForm
+        /// </summary>
+        public static void ApplyLanguage(SinglePlayerForm form)
+        {
+            if (form == null) return;
+
+            try
+            {
+                form.Text = LanguageManager.GetText("SinglePlayerTitle");
+
+                foreach (Control control in form.Controls)
+                {
+                    ApplyControlTranslation(control);
+                }
+
+                UpdateSinglePlayerSpecificControls(form);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error applying language to SinglePlayerForm: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Apply translations to LoginForm
+        /// </summary>
+        public static void ApplyLanguage(LoginForm form)
+        {
+            if (form == null) return;
+
+            try
+            {
+                form.Text = LanguageManager.GetText("LoginTitle");
+
+                foreach (Control control in form.Controls)
+                {
+                    ApplyControlTranslation(control);
+                }
+
+                UpdateLoginSpecificControls(form);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error applying language to LoginForm: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Apply translations to GameIntroForm
+        /// </summary>
+        public static void ApplyLanguage(GameIntroForm form)
+        {
+            if (form == null) return;
+
+            try
+            {
+                form.Text = LanguageManager.GetText("GameRulesTitle");
+
+                foreach (Control control in form.Controls)
+                {
+                    ApplyControlTranslation(control);
+                }
+
+                UpdateGameIntroSpecificControls(form);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error applying language to GameIntroForm: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Apply translations to Main Menu Form (Form1)
+        /// </summary>
+        public static void ApplyLanguage(Form form)
+        {
+            if (form == null) return;
+
+            try
+            {
+                // Check if this is the main menu form
+                if (form.GetType().Name == "Form1")
+                {
+                    form.Text = LanguageManager.GetText("MainMenuTitle");
+                    
+                    foreach (Control control in form.Controls)
+                    {
+                        ApplyControlTranslation(control);
+                    }
+
+                    UpdateMainMenuSpecificControls(form);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error applying language to main form: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Apply translation to a single control based on its name, text, or type
+        /// </summary>
+        private static void ApplyControlTranslation(Control control)
+        {
+            if (control == null) return;
+
+            // Handle different control types
+            switch (control)
+            {
+                case Button button:
+                    ApplyButtonTranslation(button);
+                    break;
+                case Label label:
+                    ApplyLabelTranslation(label);
+                    break;
+                case TextBox textBox:
+                    ApplyTextBoxTranslation(textBox);
+                    break;
+                case RichTextBox richTextBox:
+                    ApplyRichTextBoxTranslation(richTextBox);
+                    break;
+            }
+
+            // Recursively apply to child controls
+            foreach (Control childControl in control.Controls)
+            {
+                ApplyControlTranslation(childControl);
+            }
+        }
+
+        private static void ApplyButtonTranslation(Button button)
+        {
+            string translationKey = GetButtonTranslationKey(button.Name, button.Text);
+            if (!string.IsNullOrEmpty(translationKey))
+            {
+                string translatedText = LanguageManager.GetText(translationKey);
+                if (!translatedText.StartsWith("["))
+                {
+                    button.Text = translatedText;
+                }
+            }
+
+            // Special handling for game choice buttons
+            if (button.Name?.Contains("Rock") == true || button.Text.Contains("DA") || button.Text.Contains("✊"))
+            {
+                button.Text = $"{LanguageManager.GetText("RockEmoji")}\n{LanguageManager.GetText("Rock").ToUpper()}";
+            }
+            else if (button.Name?.Contains("Paper") == true || button.Text.Contains("GIAY") || button.Text.Contains("✋"))
+            {
+                button.Text = $"{LanguageManager.GetText("PaperEmoji")}\n{LanguageManager.GetText("Paper").ToUpper()}";
+            }
+            else if (button.Name?.Contains("Scissors") == true || button.Text.Contains("KEO") || button.Text.Contains("✌"))
+            {
+                button.Text = $"{LanguageManager.GetText("ScissorsEmoji")}\n{LanguageManager.GetText("Scissors").ToUpper()}";
+            }
+        }
+
+        private static void ApplyLabelTranslation(Label label)
+        {
+            string translationKey = GetLabelTranslationKey(label.Name, label.Text);
+            if (!string.IsNullOrEmpty(translationKey))
+            {
+                string translatedText = LanguageManager.GetText(translationKey);
+                if (!translatedText.StartsWith("["))
+                {
+                    label.Text = translatedText;
+                }
+            }
+        }
+
+        private static void ApplyTextBoxTranslation(TextBox textBox)
+        {
+            string translationKey = GetTextBoxTranslationKey(textBox.Name, textBox.PlaceholderText);
+            if (!string.IsNullOrEmpty(translationKey))
+            {
+                string translatedText = LanguageManager.GetText(translationKey);
+                if (!translatedText.StartsWith("["))
+                {
+                    textBox.PlaceholderText = translatedText;
+                }
+            }
+        }
+
+        private static void ApplyRichTextBoxTranslation(RichTextBox richTextBox)
+        {
+            if (richTextBox.Name?.Contains("GameRules") == true)
+            {
+                richTextBox.Text = LanguageManager.GetText("GameRulesContent");
+            }
+        }
+
+        private static string GetButtonTranslationKey(string? name, string text)
+        {
+            // Map button names/text to translation keys
+            return name?.ToLower() switch
+            {
+                var n when n?.Contains("create") == true => "CreateRoom",
+                var n when n?.Contains("join") == true => "JoinRoom",
+                var n when n?.Contains("back") == true => "Back",
+                var n when n?.Contains("reset") == true => "Reset",
+                var n when n?.Contains("login") == true => "Login",
+                var n when n?.Contains("cancel") == true => "Cancel",
+                var n when n?.Contains("close") == true => "Close",
+                var n when n?.Contains("rock") == true => "Rock",
+                var n when n?.Contains("paper") == true => "Paper",
+                var n when n?.Contains("scissors") == true => "Scissors",
+                var n when n?.Contains("wireshark") == true => "OpenWireshark",
+                _ => GetButtonTranslationByText(text)
+            };
+        }
+
+        private static string GetButtonTranslationByText(string text)
+        {
+            string lowerText = text.ToLower();
+            
+            if (lowerText.Contains("tao phong") || lowerText.Contains("create")) return "CreateRoom";
+            if (lowerText.Contains("vao phong") || lowerText.Contains("join")) return "JoinRoom";
+            if (lowerText.Contains("quay lai") || lowerText.Contains("back")) return "Back";
+            if (lowerText.Contains("dat lai") || lowerText.Contains("reset")) return "Reset";
+            if (lowerText.Contains("dang nhap") || lowerText.Contains("login")) return "Login";
+            if (lowerText.Contains("huy") || lowerText.Contains("cancel")) return "Cancel";
+            if (lowerText.Contains("dong") || lowerText.Contains("close")) return "Close";
+            if (lowerText.Contains("wireshark")) return "OpenWireshark";
+            if (lowerText.Contains("choi don") || lowerText.Contains("single")) return "SinglePlayer";
+            if (lowerText.Contains("choi doi") || lowerText.Contains("multi")) return "MultiPlayer";
+            if (lowerText.Contains("luat choi") || lowerText.Contains("rules")) return "GameRules";
+            if (lowerText.Contains("thoat") || lowerText.Contains("exit")) return "Exit";
+
+            return "";
+        }
+
+        private static string GetLabelTranslationKey(string? name, string text)
+        {
+            string lowerText = text.ToLower();
+            
+            if (lowerText.Contains("nguoi choi") || lowerText.Contains("player")) return "Player";
+            if (lowerText.Contains("doi thu") || lowerText.Contains("opponent")) return "Opponent";
+            if (lowerText.Contains("ty so") || lowerText.Contains("score")) return "Score";
+            if (lowerText.Contains("ket qua") || lowerText.Contains("result")) return "GameResult";
+            if (lowerText.Contains("thong tin ket noi")) return "ConnectionInfo";
+            if (lowerText.Contains("ban chon")) return "YourChoice";
+            if (lowerText.Contains("may chon")) return "ComputerChoice";
+            if (lowerText.Contains("chon lua chon")) return "ChooseYourMove";
+
+            return "";
+        }
+
+        private static string GetTextBoxTranslationKey(string? name, string placeholder)
+        {
+            string lowerPlaceholder = placeholder.ToLower();
+            
+            if (lowerPlaceholder.Contains("ip server")) return "ServerIPPlaceholder";
+            if (lowerPlaceholder.Contains("port")) return "PortPlaceholder";
+            if (lowerPlaceholder.Contains("room")) return "RoomIDPlaceholder";
+
+            return "";
+        }
+
+        private static void UpdateMultiPlayerSpecificControls(MultiPlayerForm form)
+        {
+            // Update specific controls that need special handling
+            try
+            {
+                // Update score display if visible
+                UpdateScoreLabel(form);
+                
+                // Update choice labels if they exist
+                UpdateChoiceLabels(form);
+                
+                // Update status labels
+                UpdateStatusLabels(form);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error updating multiplayer specific controls: {ex.Message}");
+            }
+        }
+
+        private static void UpdateSinglePlayerSpecificControls(SinglePlayerForm form)
+        {
+            try
+            {
+                UpdateScoreLabel(form);
+                UpdateChoiceLabels(form);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error updating single player specific controls: {ex.Message}");
+            }
+        }
+
+        private static void UpdateLoginSpecificControls(LoginForm form)
+        {
+            try
+            {
+                // Update player name label
+                var lblPlayerName = FindControlByName(form, "lblPlayerName") as Label;
+                if (lblPlayerName != null)
+                {
+                    lblPlayerName.Text = LanguageManager.GetText("PlayerNameLabel");
+                }
+
+                var lblTitle = FindControlByName(form, "lblTitle") as Label;
+                if (lblTitle != null)
+                {
+                    lblTitle.Text = LanguageManager.GetText("LoginTitle");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error updating login specific controls: {ex.Message}");
+            }
+        }
+
+        private static void UpdateGameIntroSpecificControls(GameIntroForm form)
+        {
+            try
+            {
+                var lblTitle = FindControlByName(form, "lblTitle") as Label;
+                if (lblTitle != null)
+                {
+                    lblTitle.Text = LanguageManager.GetText("GameRulesTitle");
+                }
+
+                var rtbGameRules = FindControlByName(form, "rtbGameRules") as RichTextBox;
+                if (rtbGameRules != null)
+                {
+                    rtbGameRules.Text = LanguageManager.GetText("GameRulesContent");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error updating game intro specific controls: {ex.Message}");
+            }
+        }
+
+        private static void UpdateMainMenuSpecificControls(Form form)
+        {
+            try
+            {
+                // Update main menu buttons if they exist
+                var btnSinglePlayer = FindControlByName(form, "btnSinglePlayer") as Button;
+                if (btnSinglePlayer != null)
+                {
+                    btnSinglePlayer.Text = LanguageManager.GetText("SinglePlayer");
+                }
+
+                var btnMultiPlayer = FindControlByName(form, "btnMultiPlayer") as Button;
+                if (btnMultiPlayer != null)
+                {
+                    btnMultiPlayer.Text = LanguageManager.GetText("MultiPlayer");
+                }
+
+                var btnGameRules = FindControlByName(form, "btnGameRules") as Button;
+                if (btnGameRules != null)
+                {
+                    btnGameRules.Text = LanguageManager.GetText("GameRules");
+                }
+
+                var btnExit = FindControlByName(form, "btnExit") as Button;
+                if (btnExit != null)
+                {
+                    btnExit.Text = LanguageManager.GetText("Exit");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error updating main menu specific controls: {ex.Message}");
+            }
+        }
+
+        private static void UpdateScoreLabel(Form form)
+        {
+            var lblScore = FindControlByName(form, "lblScore") as Label;
+            if (lblScore != null && lblScore.Text.Contains(":"))
+            {
+                // Extract the score numbers and rebuild with translated text
+                var parts = lblScore.Text.Split('-', '|');
+                if (parts.Length >= 2)
+                {
+                    // For single player: "Ty so - PlayerName: X | Computer: Y"
+                    // For multiplayer: "Ty so - Player: X | Opponent: Y"
+                    
+                    string scorePrefix = LanguageManager.GetText("Score");
+                    string playerText = LanguageManager.GetText("Player");
+                    string opponentText = form is SinglePlayerForm ? 
+                        LanguageManager.GetText("Computer") : 
+                        LanguageManager.GetText("Opponent");
+
+                    // Try to extract current scores (this is a simplified approach)
+                    // In practice, you might want to store scores separately
+                    lblScore.Text = $"{scorePrefix} - {playerText}: 0 | {opponentText}: 0";
+                }
+            }
+        }
+
+        private static void UpdateChoiceLabels(Form form)
+        {
+            var lblPlayerChoice = FindControlByName(form, "lblPlayerChoice") as Label;
+            if (lblPlayerChoice != null)
+            {
+                lblPlayerChoice.Text = $"{LanguageManager.GetText("YourChoice")}: ---";
+            }
+
+            var lblOpponentChoice = FindControlByName(form, "lblOpponentChoice") as Label ??
+                                   FindControlByName(form, "lblComputerChoice") as Label;
+            if (lblOpponentChoice != null)
+            {
+                string opponentText = form is SinglePlayerForm ? 
+                    LanguageManager.GetText("ComputerChoice") : 
+                    LanguageManager.GetText("Opponent");
+                lblOpponentChoice.Text = $"{opponentText}: ---";
+            }
+        }
+
+        private static void UpdateStatusLabels(Form form)
+        {
+            var lblGameResult = FindControlByName(form, "lblGameResult") as Label;
+            if (lblGameResult != null && !lblGameResult.Text.Contains("!"))
+            {
+                lblGameResult.Text = LanguageManager.GetText("ChooseYourMove");
+            }
+        }
+
+        /// <summary>
+        /// Find a control by name recursively
+        /// </summary>
+        private static Control? FindControlByName(Control parent, string name)
+        {
+            if (parent.Name == name) return parent;
+
+            foreach (Control child in parent.Controls)
+            {
+                var found = FindControlByName(child, name);
+                if (found != null) return found;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Get localized game result text
+        /// </summary>
+        public static string GetGameResultText(string result)
+        {
+            if (result.Contains("thang") || result.ToLower().Contains("win"))
+                return LanguageManager.GetText("YouWin");
+            if (result.Contains("thua") || result.ToLower().Contains("lose"))
+                return LanguageManager.GetText("YouLose");
+            if (result.Contains("hoa") || result.ToLower().Contains("draw"))
+                return LanguageManager.GetText("Draw");
+
+            return result;
+        }
+
+        /// <summary>
+        /// Get localized choice text
+        /// </summary>
+        public static string GetChoiceText(string choice)
+        {
+            return choice.ToLower() switch
+            {
+                "da" or "rock" => LanguageManager.GetText("Rock"),
+                "giay" or "paper" => LanguageManager.GetText("Paper"),
+                "keo" or "scissors" => LanguageManager.GetText("Scissors"),
+                _ => choice
+            };
+        }
+    }
+}

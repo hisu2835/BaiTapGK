@@ -1,0 +1,294 @@
+﻿using System;
+using System.Drawing;
+using System.Linq;
+using System.Windows.Forms;
+
+namespace BaiTapGK
+{
+    /// <summary>
+    /// Form chon ngon ngu voi giao dien dep va responsive
+    /// Language selection form with beautiful and responsive UI
+    /// </summary>
+    public partial class LanguageSelectionForm : FullscreenSupportForm
+    {
+        private Label lblTitle;
+        private ComboBox cmbLanguages;
+        private Label lblPreview;
+        private Button btnApply;
+        private Button btnCancel;
+        private Panel pnlLanguageInfo;
+        private Label lblCurrentLanguage;
+        private Label lblLanguageInfo;
+        
+        public string SelectedLanguage { get; private set; } = "";
+        public bool LanguageChanged { get; private set; } = false;
+
+        public LanguageSelectionForm()
+        {
+            InitializeComponent();
+            SetupForm();
+            LoadLanguages();
+            UpdatePreview();
+            
+            this.StartPosition = FormStartPosition.CenterParent;
+            this.FormBorderStyle = FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.ShowInTaskbar = false;
+        }
+
+        private void SetupForm()
+        {
+            this.Size = new Size(450, 320);
+            this.BackColor = Color.FromArgb(245, 248, 255);
+            this.Text = LanguageManager.GetText("SelectLanguage");
+        }
+
+        private void InitializeComponent()
+        {
+            // Title
+            lblTitle = new Label
+            {
+                Text = LanguageManager.GetText("SelectLanguage"),
+                Font = new Font("Segoe UI", 16, FontStyle.Bold),
+                ForeColor = Color.FromArgb(41, 84, 144),
+                TextAlign = ContentAlignment.MiddleCenter,
+                Location = new Point(50, 20),
+                Size = new Size(350, 35),
+                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
+            };
+
+            // Current language info panel
+            pnlLanguageInfo = new Panel
+            {
+                Location = new Point(30, 70),
+                Size = new Size(390, 45),
+                BackColor = Color.FromArgb(230, 240, 255),
+                BorderStyle = BorderStyle.FixedSingle,
+                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
+            };
+
+            lblCurrentLanguage = new Label
+            {
+                Text = LanguageManager.GetText("Language") + ":",
+                Font = new Font("Segoe UI", 9, FontStyle.Bold),
+                Location = new Point(10, 8),
+                Size = new Size(60, 20),
+                ForeColor = Color.FromArgb(51, 51, 51)
+            };
+
+            var currentLang = LanguageManager.GetCurrentLanguageInfo();
+            lblLanguageInfo = new Label
+            {
+                Text = $"{currentLang.Flag} {currentLang.NativeName} ({currentLang.EnglishName})",
+                Font = new Font("Segoe UI", 9),
+                Location = new Point(80, 8),
+                Size = new Size(300, 20),
+                ForeColor = Color.FromArgb(51, 51, 51)
+            };
+
+            pnlLanguageInfo.Controls.AddRange(new Control[] { lblCurrentLanguage, lblLanguageInfo });
+
+            // Language selection
+            var lblSelect = new Label
+            {
+                Text = LanguageManager.GetText("SelectLanguage") + ":",
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                Location = new Point(30, 135),
+                Size = new Size(150, 22),
+                ForeColor = Color.FromArgb(51, 51, 51)
+            };
+
+            cmbLanguages = new ComboBox
+            {
+                Font = new Font("Segoe UI", 10),
+                Location = new Point(30, 160),
+                Size = new Size(390, 25),
+                DropDownStyle = ComboBoxStyle.DropDownList,
+                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
+            };
+            cmbLanguages.SelectedIndexChanged += CmbLanguages_SelectedIndexChanged;
+
+            // Preview
+            lblPreview = new Label
+            {
+                Text = "",
+                Font = new Font("Segoe UI", 9, FontStyle.Italic),
+                Location = new Point(30, 195),
+                Size = new Size(390, 40),
+                ForeColor = Color.FromArgb(100, 100, 100),
+                TextAlign = ContentAlignment.TopLeft,
+                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
+            };
+
+            // Buttons
+            btnApply = new Button
+            {
+                Text = LanguageManager.GetText("OK"),
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                Location = new Point(240, 250),
+                Size = new Size(90, 35),
+                BackColor = Color.FromArgb(76, 175, 80),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                UseVisualStyleBackColor = false,
+                Cursor = Cursors.Hand
+            };
+            btnApply.FlatAppearance.BorderSize = 0;
+            btnApply.Click += BtnApply_Click;
+
+            btnCancel = new Button
+            {
+                Text = LanguageManager.GetText("Cancel"),
+                Font = new Font("Segoe UI", 10),
+                Location = new Point(340, 250),
+                Size = new Size(80, 35),
+                BackColor = Color.FromArgb(158, 158, 158),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                UseVisualStyleBackColor = false,
+                Cursor = Cursors.Hand
+            };
+            btnCancel.FlatAppearance.BorderSize = 0;
+            btnCancel.Click += BtnCancel_Click;
+
+            // Add hover effects
+            SetupButtonHoverEffects();
+
+            // Add all controls to form
+            this.Controls.AddRange(new Control[] {
+                lblTitle,
+                pnlLanguageInfo,
+                lblSelect,
+                cmbLanguages,
+                lblPreview,
+                btnApply,
+                btnCancel
+            });
+        }
+
+        private void SetupButtonHoverEffects()
+        {
+            // Apply button hover effect
+            btnApply.MouseEnter += (s, e) => btnApply.BackColor = Color.FromArgb(67, 160, 71);
+            btnApply.MouseLeave += (s, e) => btnApply.BackColor = Color.FromArgb(76, 175, 80);
+
+            // Cancel button hover effect  
+            btnCancel.MouseEnter += (s, e) => btnCancel.BackColor = Color.FromArgb(140, 140, 140);
+            btnCancel.MouseLeave += (s, e) => btnCancel.BackColor = Color.FromArgb(158, 158, 158);
+
+            // ComboBox hover effect
+            cmbLanguages.MouseEnter += (s, e) => cmbLanguages.BackColor = Color.FromArgb(250, 252, 255);
+            cmbLanguages.MouseLeave += (s, e) => cmbLanguages.BackColor = Color.White;
+        }
+
+        private void LoadLanguages()
+        {
+            var languages = LanguageManager.GetLanguageList();
+            cmbLanguages.Items.Clear();
+            
+            foreach (var lang in languages)
+            {
+                cmbLanguages.Items.Add(lang);
+            }
+
+            // Select current language
+            var currentLang = languages.FirstOrDefault(l => l.Code == LanguageManager.CurrentLanguage);
+            if (currentLang != null)
+            {
+                cmbLanguages.SelectedItem = currentLang;
+            }
+        }
+
+        private void CmbLanguages_SelectedIndexChanged(object? sender, EventArgs e)
+        {
+            UpdatePreview();
+        }
+
+        private void UpdatePreview()
+        {
+            if (cmbLanguages.SelectedItem is LanguageDisplayItem selectedLang)
+            {
+                // Temporarily set language to show preview
+                string originalLang = LanguageManager.CurrentLanguage;
+                LanguageManager.SetLanguage(selectedLang.Code);
+
+                // Show preview of key texts
+                string preview = $"🎮 {LanguageManager.GetText("AppTitle")}\n" +
+                               $"👤 {LanguageManager.GetText("Player")}: John\n" +
+                               $"🎯 {LanguageManager.GetText("YouWin")} | {LanguageManager.GetText("YouLose")} | {LanguageManager.GetText("Draw")}\n" +
+                               $"✊ {LanguageManager.GetText("Rock")} | ✋ {LanguageManager.GetText("Paper")} | ✌️ {LanguageManager.GetText("Scissors")}";
+
+                lblPreview.Text = preview;
+
+                // Restore original language
+                LanguageManager.SetLanguage(originalLang);
+            }
+        }
+
+        private void BtnApply_Click(object? sender, EventArgs e)
+        {
+            if (cmbLanguages.SelectedItem is LanguageDisplayItem selectedLang)
+            {
+                SelectedLanguage = selectedLang.Code;
+                
+                if (SelectedLanguage != LanguageManager.CurrentLanguage)
+                {
+                    LanguageChanged = true;
+                    
+                    // Apply the language change
+                    LanguageManager.SetLanguage(SelectedLanguage);
+                    
+                    // Show confirmation
+                    string message = LanguageManager.GetFormattedText("LanguageChanged", selectedLang.NativeName) + 
+                                   "\n\n" + LanguageManager.GetText("RestartRequired");
+                    
+                    MessageBox.Show(message, LanguageManager.GetText("Information"), 
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                
+                this.DialogResult = DialogResult.OK;
+                this.Close();
+            }
+        }
+
+        private void BtnCancel_Click(object? sender, EventArgs e)
+        {
+            this.DialogResult = DialogResult.Cancel;
+            this.Close();
+        }
+
+        protected override void AdjustLayoutForFullscreen(bool isFullscreen)
+        {
+            // Language selection form should remain modal and centered
+            // No special fullscreen layout needed
+        }
+
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            base.OnPaint(e);
+            
+            // Add subtle gradient background
+            using (var brush = new System.Drawing.Drawing2D.LinearGradientBrush(
+                this.ClientRectangle,
+                Color.FromArgb(245, 248, 255),
+                Color.FromArgb(235, 242, 255),
+                System.Drawing.Drawing2D.LinearGradientMode.Vertical))
+            {
+                e.Graphics.FillRectangle(brush, this.ClientRectangle);
+            }
+        }
+
+        /// <summary>
+        /// Show language selection dialog
+        /// </summary>
+        public static bool ShowLanguageSelection(IWin32Window? owner = null)
+        {
+            using (var form = new LanguageSelectionForm())
+            {
+                var result = form.ShowDialog(owner);
+                return result == DialogResult.OK && form.LanguageChanged;
+            }
+        }
+    }
+}

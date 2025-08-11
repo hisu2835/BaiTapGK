@@ -1,334 +1,268 @@
 # Game Oan Tu Ti (Rock Paper Scissors) - C# WinForms
 
-## ?? Gioi thieu
-Day la tro choi Oan Tu Ti (Rock Paper Scissors) duoc phat trien bang C# WinForms voi day du cac tinh nang va **hieu ung dong sieu sinh dong** va **?? che do toan man hinh**:
+## ?? NGÔN NG? ?A QU?C GIA (NEW!)
 
-### ?? Tinh nang chinh:
-- **Dang nhap**: He thong dang nhap voi ten nguoi choi
-- **Choi don**: Choi voi may tinh (AI ngau nhien) voi hieu ung "quoi quoi" giong nhu doi that
-- **Choi doi**: Choi online voi nguoi khac qua TCP/IP (LAN hoac Internet) voi dong bo hieu ung
-- **?? Che do toan man hinh**: Nhan F11 de chuyen che do fullscreen, ESC de thoat
-- **Gioi thieu game**: Huong dan cach choi va luat game
-- **Wireshark Integration**: Tich hop Wireshark de monitor network traffic thuc te
-- **Hieu ung dong sieu dep**: Animation "quoi quoi" giong choi that, countdown "San-Ko-Ho", sound effects
-- **Responsive layout**: Tu dong dieu chinh layout cho moi kich thuoc man hinh
-- **Khong dau tieng Viet**: Tat ca text su dung tieng Viet khong dau de tranh loi hien thi
+### ??? H? tr? 10 ngôn ng? ph? bi?n nh?t:
+- **???? Ti?ng Vi?t** - Ngôn ng? m?c ??nh
+- **???? English** - Chu?n qu?c t?
+- **???? ??** - Ngôn ng? s? d?ng nhi?u nh?t
+- **???? ???** - Th? tr??ng game l?n
+- **???? ???** - Esports phát tri?n
+- **???? Español** - 500M+ ng??i dùng
+- **???? Français** - Ngôn ng? qu?c t?
+- **???? Deutsch** - Th? tr??ng Châu Âu
+- **???? Português** - Th? tr??ng m?i n?i
+- **???? ???????** - ?ông Âu m? r?ng
 
-## ??? Che do toan man hinh moi
+### ? Tính n?ng ngôn ng?:
+- **Chuy?n ??i t?c thì**: Không c?n kh?i ??ng l?i
+- **Giao di?n ??p**: Ch?n ngôn ng? v?i c? qu?c gia
+- **Xem tr??c**: Preview ngôn ng? tr??c khi áp d?ng
+- **L?u cài ??t**: Ghi nh? ngôn ng? ?ã ch?n
+- **D?ch toàn di?n**: 1000+ t?/c?m t? ???c d?ch
+- **Thông minh**: T? ??ng fallback n?u thi?u b?n d?ch
 
-### ? Fullscreen Experience:
-- **F11 Toggle**: Nhan F11 de chuyen che do toan man hinh
-- **ESC Exit**: Nhan ESC de thoat fullscreen
-- **Auto-scaling**: Tat ca components tu dong scale cho fullscreen
-- **Responsive positioning**: Elements tu dong reposition
-- **Immersive gaming**: Trai nghiem game khong bi phan tam
-- **Professional quality**: Giong nhu cac game AAA
+### ?? Cách s? d?ng:
+1. **Click nút ?? Language** ? góc trên menu chính
+2. **Ch?n ngôn ng?** t? danh sách có c?
+3. **Xem preview** các t? game quan tr?ng
+4. **Click OK** ?? áp d?ng
+5. **Enjoy!** Toàn b? game chuy?n sang ngôn ng? m?i
 
-### ?? Cac che do hien thi:
-- **Windowed mode**: Che do cua so binh thuong, co the resize
-- **Maximized mode**: Phong to toi da nhung van co border
-- **Fullscreen mode**: Toan man hinh, an taskbar va borders
-- **Auto-hint**: Hien thi hint "Nhan F11 de chuyen che do toan man hinh"
+## ?? Gi?i thi?u
+?ây là trò ch?i O?n Tù Tì (Rock Paper Scissors) ???c phát tri?n b?ng C# WinForms v?i ??y ?? các tính n?ng và **hi?u ?ng ??ng siêu sinh ??ng** và **??? ch? ?? toàn màn hình**:
 
-## ?? Hieu ung dong moi
+### ?? Tính n?ng chính:
+- **?? ?a ngôn ng?**: 10 ngôn ng? ph? bi?n nh?t th? gi?i
+- **??ng nh?p**: H? th?ng ??ng nh?p v?i tên ng??i ch?i
+- **Ch?i ??n**: Ch?i v?i máy tính (AI ng?u nhiên) v?i hi?u ?ng "qu?i qu?i" gi?ng nh? ??i th?t
+- **Ch?i ?ôi**: Ch?i online v?i ng??i khác qua TCP/IP (LAN ho?c Internet) v?i ??ng b? hi?u ?ng
+- **??? Ch? ?? toàn màn hình**: Nh?n F11 ?? chuy?n ch? ?? fullscreen, ESC ?? thoát
+- **Gi?i thi?u game**: H??ng d?n cách ch?i và lu?t game
+- **Wireshark Integration**: Tích h?p Wireshark ?? monitor network traffic th?c t?
+- **Hi?u ?ng ??ng siêu ??p**: Animation "qu?i qu?i" gi?ng ch?i th?t, countdown "S?n-Sàng-Ch?i", sound effects
+- **Responsive layout**: T? ??ng ?i?u ch?nh layout cho m?i kích th??c màn hình
+- **Không d?u ti?ng Vi?t**: T?t c? text s? d?ng ti?ng Vi?t không d?u ?? tránh l?i hi?n th?
 
-### ? Animation "Quoi Quoi" thuc te:
-- **Countdown "San-Ko-Ho"**: Giong nhu choi that ngoai doi
-- **Shake Animation**: Hai tay quoi quoi dong thoi truoc khi ra luat
-- **Gesture Control**: Hien thi ban tay dong thay vi icon tinh
-- **Suspense Effect**: Tam dung truoc khi show ket qua
-- **Sound Effects**: Am thanh cho moi hanh dong
-- **?? Fullscreen optimization**: Scale perfect cho toan man hinh
+## ???? H? th?ng ngôn ng? m?i
 
-### ?? Cac loai hieu ung:
-- **Button Click**: Phong to, sang mau khi click
-- **Hover Effects**: Sang mau khi di chuot qua
-- **Choice Confirmation**: Nhap nhay vang khi chon
-- **Win Celebration**: Flash mau vang khi thang
-- **Score Animation**: Phong to score khi cap nhat
-- **Reset Animation**: Fade effect khi reset
-- **?? Fullscreen transitions**: Smooth scaling animations
+### ?? Giao di?n ch?n ngôn ng?:
+- **Dropdown ??p** v?i c? qu?c gia và tên g?c
+- **Preview t?c thì** hi?n th? m?u b?n d?ch
+- **Hover effects** m??t mà
+- **Modal dialog** c?n gi?a hoàn h?o
 
-## ?? Cach chay ung dung
+### ?? Công ngh? d?ch:
+- **LanguageManager**: H? th?ng d?ch t?p trung
+- **LanguageHelper**: T? ??ng áp d?ng cho m?i form
+- **Event-driven**: C?p nh?t t?c thì khi ??i ngôn ng?
+- **Fallback thông minh**: Hi?n ? English ? Vietnamese ? Key
+- **JSON storage**: L?u cài ??t b?n v?ng
 
-### Yeu cau he thong:
+### ?? Coverage d?ch thu?t:
+- **Game elements**: Rock/Paper/Scissors, Win/Lose/Draw
+- **UI components**: Buttons, labels, menus, dialogs
+- **Game states**: Waiting, connecting, playing
+- **Error messages**: Network, validation, system
+- **Cultural greetings**: Welcome messages phù h?p v?n hóa
+
+## ???? Tr?i nghi?m ?a ngôn ng?
+
+### Ví d? d?ch game elements:? Rock = ?á/??/??/??/Piedra/Pierre/Stein/Pedra/??????
+? Paper = Gi?y/?/??/?/Papel/Papier/Papier/Papel/??????  
+?? Scissors = Kéo/??/???/??/Tijera/Ciseaux/Schere/Tesoura/???????
+### Cultural welcome messages:
+- **Vietnamese**: "Chào m?ng, [Name]!"
+- **English**: "Welcome, [Name]!"
+- **Chinese**: "??, [Name]!"
+- **Japanese**: "????, [Name]??!"
+- **Korean**: "?????, [Name]?!"
+- **Spanish**: "¡Bienvenido, [Name]!"
+- **French**: "Bienvenue, [Name]!"
+- **German**: "Willkommen, [Name]!"
+- **Portuguese**: "Bem-vindo, [Name]!"
+- **Russian**: "????? ??????????, [Name]!"
+
+## ???? Fullscreen Experience (?? Enhanced):
+- **F11 Toggle**: Nh?n F11 ?? chuy?n ch? ?? toàn màn hình
+- **ESC Exit**: Nh?n ESC ?? thoát fullscreen
+- **Auto-scaling**: T?t c? components t? ??ng scale cho fullscreen
+- **Responsive positioning**: Elements t? ??ng reposition
+- **Immersive gaming**: Tr?i nghi?m game không b? phân tâm
+- **Professional quality**: Gi?ng nh? các game AAA
+
+### ???? Fullscreen + Multi-language:
+- **Language button** v?n hi?n th? và ho?t ??ng trong fullscreen
+- **Scaled UI elements** cho m?i ngôn ng?
+- **Text scaling** thông minh cho ?? dài khác nhau
+- **Cultural layout** t?i ?u cho t?ng ngôn ng?
+
+## ?? Cách ch?y ?ng d?ng
+
+### Yêu c?u h? th?ng:
 - .NET 9 SDK
 - Windows OS (7, 8.1, 10, 11)
-- Visual Studio 2022 hoac VS Code
-- **Wireshark** (tuy chon, cho network monitoring)
-- **Monitor resolution**: Toi thieu 1024x768, toi uu 1920x1080+
+- Visual Studio 2022 ho?c VS Code
+- **Wireshark** (tùy ch?n, cho network monitoring)
+- **Monitor resolution**: T?i thi?u 1024x768, t?i ?u 1920x1080+
 
-### Chay ung dung:
-1. Mo Terminal/Command Prompt
-2. Navigate den thu muc du an
-3. Chay lenh: `dotnet run`
-4. **Nhan F11** de chuyen che do toan man hinh bat ky luc nao!
+### Ch?y ?ng d?ng:
+1. M? Terminal/Command Prompt
+2. Navigate ??n th? m?c d? án
+3. Ch?y l?nh: `dotnet run`
+4. **Click ??** ?? ch?n ngôn ng? yêu thích!
+5. **Nh?n F11** ?? chuy?n ch? ?? toàn màn hình b?t k? lúc nào!
 
-## ?? Huong dan su dung
+## ?? H??ng d?n s? d?ng
 
-### 1. Dang nhap
-- Khi khoi dong app, form dang nhap se xuat hien
-- Nhap ten nguoi choi
-- Click "DANG NHAP" hoac nhan Enter
+### 0. ?? Ch?n ngôn ng? (M?I!)
+- **Click nút ?? Language** ? góc trên bên trái
+- **Ch?n ngôn ng?** t? dropdown v?i c? qu?c gia
+- **Xem preview** các t? khóa game quan tr?ng
+- **Click OK** ?? áp d?ng ngay l?p t?c
+- Toàn b? game s? chuy?n sang ngôn ng? ?ã ch?n!
 
-### 2. Menu chinh
-Sau khi dang nhap thanh cong, ban co 3 lua chon:
+### 1. ??ng nh?p
+- Khi kh?i ??ng app, form ??ng nh?p s? xu?t hi?n (theo ngôn ng? ?ã ch?n)
+- Nh?p tên ng??i ch?i
+- Click "??NG NH?P" ho?c nh?n Enter
 
-#### ?? Choi don (Single Player)
-- **Gameplay sinh dong**: Click chon Da/Giay/Keo
-- **?? F11 fullscreen**: Immersive single-player experience
-- **Countdown**: "San-Ko-Ho" truoc khi choi
-- **Shake Animation**: Ca ban va may quoi quoi dong thoi
-- **Real-time Result**: Ket qua hien thi voi hieu ung dep
-- **Score Tracking**: Diem so cap nhat voi animation
-- **Sound Effects**: Am thanh cho moi hanh dong
+### 2. Menu chính (?? Multi-language)
+Sau khi ??ng nh?p thành công, b?n có 3 l?a ch?n:
 
-#### ?? Choi doi (Multi Player)
-- **Network Setup**: Nhap IP server, port
-- **?? Fullscreen multiplayer**: Toan man hinh cho 2 nguoi choi
-- **Synchronized Animation**: Dong bo hieu ung giua 2 nguoi choi
-- **Real-time Gesture**: Thay hieu ung tay cua doi thu
+#### ?? Ch?i ??n (Single Player)
+- **Gameplay sinh ??ng**: Click ch?n Rock/Paper/Scissors
+- **??? F11 fullscreen**: Immersive single-player experience  
+- **Countdown**: "Ready-Set-Go" tr??c khi ch?i (theo ngôn ng?)
+- **Shake Animation**: C? b?n và máy qu?i qu?i ??ng th?i
+- **Real-time Result**: K?t qu? hi?n th? v?i hi?u ?ng ??p
+- **Score Tracking**: ?i?m s? c?p nh?t v?i animation
+- **Sound Effects**: Âm thanh cho m?i hành ??ng
+
+#### ?? Ch?i ?ôi (Multi Player) 
+- **Network Setup**: Nh?p IP server, port
+- **??? Fullscreen multiplayer**: Toàn màn hình cho 2 ng??i ch?i
+- **Synchronized Animation**: ??ng b? hi?u ?ng gi?a 2 ng??i ch?i
+- **Real-time Gesture**: Th?y hi?u ?ng tay c?a ??i th?
 - **Wireshark Integration**: Monitor network traffic
-- **Cross-platform**: Choi qua LAN hoac Internet
+- **Cross-platform**: Ch?i qua LAN ho?c Internet
+- **?? Multi-language support**: M?i ng??i có th? dùng ngôn ng? khác nhau
 
-#### ?? Gioi thieu game
-- **?? Fullscreen presentation**: Xem gioi thieu toan man hinh
-- Xem luat choi va cach thuc hoat dong
-- Huong dan chi tiet ve game va hieu ung
+#### ?? Gi?i thi?u game
+- **??? Fullscreen presentation**: Xem gi?i thi?u toàn màn hình
+- Xem lu?t ch?i và cách th?c ho?t ??ng (theo ngôn ng? ?ã ch?n)
+- H??ng d?n chi ti?t v? game và hi?u ?ng
 
-### 3. ?? Phim tat moi
-- **F11**: Toggle fullscreen mode (tat ca forms)
-- **ESC**: Thoat fullscreen (chi khi dang fullscreen)
-- **Alt+Tab**: Switch giua windows (windowed mode)
+### 3. ?? Phím t?t m?i
+- **?? Language button**: ??i ngôn ng? b?t k? lúc nào
+- **F11**: Toggle fullscreen mode (t?t c? forms)
+- **ESC**: Thoát fullscreen (ch? khi ?ang fullscreen)
+- **Alt+Tab**: Switch gi?a windows (windowed mode)
 - **Enter**: Confirm actions trong dialogs
 
-## ?? Cau truc ma nguon
+## ?? C?u trúc mã ngu?n (?? Updated)
 
-### Cac file chinh:
-- `Form1.cs` - Form menu chinh voi fullscreen support
-- `LoginForm.cs` - Form dang nhap
-- `SinglePlayerForm.cs` - Form choi don voi adaptive fullscreen layout
-- `MultiPlayerForm.cs` - Form choi doi voi scaled fullscreen components
-- `FullscreenManager.cs` - ?? Quan ly che do toan man hinh
-- `HandGestureAnimationControl.cs` - Control xu ly hieu ung "quoi quoi"
-- `BattleResultControl.cs` - ?? Control hien thi ket qua voi fullscreen scaling
+### ?? Language System Files (NEW):
+- `LanguageManager.cs` - **?? H? th?ng d?ch t?p trung** v?i 10 ngôn ng?
+- `LanguageHelper.cs` - **?? Auto-apply d?ch** cho m?i form
+- `LanguageSelectionForm.cs` - **?? Giao di?n ch?n ngôn ng?** ??p
+- `language_settings.json` - **?? L?u cài ??t** ngôn ng? ng??i dùng
+
+### Core Files:
+- `Form1.cs` - Form menu chính v?i fullscreen support + **?? language button**
+- `LoginForm.cs` - Form ??ng nh?p (?? multi-language)
+- `SinglePlayerForm.cs` - Form ch?i ??n v?i adaptive fullscreen layout
+- `MultiPlayerForm.cs` - Form ch?i ?ôi v?i scaled fullscreen components
+- `FullscreenManager.cs` - ??? Qu?n lý ch? ?? toàn màn hình
+- `HandGestureAnimationControl.cs` - Control x? lý hi?u ?ng "qu?i qu?i"
+- `BattleResultControl.cs` - ??? Control hi?n th? k?t qu? v?i fullscreen scaling
 - `ButtonAnimationHelper.cs` - Helper cho button animations
 - `SoundEffectHelper.cs` - Helper cho sound effects
-- `CountdownAnimationHelper.cs` - Helper cho countdown "San-Ko-Ho"
-- `GameIntroForm.cs` - Form gioi thieu
-- `GameConfig.cs` - Cac cau hinh game va Wireshark
-- `NetworkUtils.cs` - Tien ich network
-- `WiresharkIntegration.cs` - Tich hop Wireshark
-- `ErrorHandler.cs` - ?? Xu ly loi an toan
+- `CountdownAnimationHelper.cs` - Helper cho countdown
+- `GameIntroForm.cs` - Form gi?i thi?u (?? multi-language)
+- `GameConfig.cs` - Các c?u hình game và Wireshark
+- `NetworkUtils.cs` - Ti?n ích network
+- `WiresharkIntegration.cs` - Tích h?p Wireshark
+- `ErrorHandler.cs` - ??? X? lý l?i an toàn
 
-### Cong nghe su dung:
-- **Frontend**: Windows Forms voi custom UserControls va fullscreen support
-- **?? Fullscreen System**: FullscreenManager + FullscreenSupportForm base class
-- **Animation**: Timer-based frame animation voi auto-scaling
-- **Sound**: SystemSounds va SoundPlayer
+### ?? Translation Coverage:
+- **1000+ translation keys** covering all UI elements
+- **Game-specific terminology** for each language
+- **Cultural adaptations** for greetings and expressions
+- **Error messages** localized for better UX
+- **Network status** messages in native languages
+
+### Technology Stack (?? Enhanced):
+- **Frontend**: Windows Forms v?i custom UserControls, fullscreen support, **+ Multi-language system**
+- **?? Localization**: LanguageManager + LanguageHelper architecture
+- **??? Fullscreen System**: FullscreenManager + FullscreenSupportForm base class
+- **Animation**: Timer-based frame animation v?i auto-scaling
+- **Sound**: SystemSounds và SoundPlayer
 - **Networking**: TCP/IP Socket (LAN + Internet)
-- **Threading**: Multi-threading cho server/client va animations
-- **Graphics**: GDI+ cho custom drawing voi responsive scaling
+- **Threading**: Multi-threading cho server/client và animations
+- **Graphics**: GDI+ cho custom drawing v?i responsive scaling
 - **Network Analysis**: Wireshark integration
-- **?? Responsive Design**: Auto-adapt layout cho moi screen size
+- **??? Responsive Design**: Auto-adapt layout cho m?i screen size
+- **?? Settings**: JSON-based persistent configuration
 
-## ?? Gameplay Flow
+## ?? Global Gaming Experience
 
-### Single Player Flow (?? Enhanced):1. Click chon (Da/Giay/Keo) ? Button animation
-2. [Optional] Nhan F11 ? Fullscreen immersive mode
-3. Countdown "San-Ko-Ho" ? 3 giay countdown scaled for screen
-4. Shake Animation ? Ca hai ben quoi quoi, perfect scaling
-5. Reveal Results ? Show gesture va ket qua enlarged
-6. Score Update ? Animation cap nhat diem prominently
-7. Reset ? Sau 3 giay tu dong reset, optimal timing
-### Multi Player Flow (?? Enhanced):1. Setup Connection ? Nhap IP/Port, ket noi
-2. [Optional] F11 ? Synchronized fullscreen cho ca hai
-3. Synchronized Countdown ? Ca hai ben thay countdown scaled
-4. Player Choice ? Quoi quoi dong thoi, coordinated layout
-5. Network Sync ? Gui/nhan choice qua TCP, low-latency
-6. Result Display ? Dong bo hien thi ket qua enlarged
-7. Score Sync ? Cap nhat diem ca hai ben prominently
-## ?? Che do Multiplayer (?? Enhanced)
+### ?? Popular Language Markets:
+1. **???? Chinese**: 1.1B+ speakers, huge gaming market
+2. **???? English**: Global standard, 1.5B speakers
+3. **???? Spanish**: 500M+ speakers, growing market
+4. **???? Japanese**: 125M speakers, gaming culture leader
+5. **???? Korean**: 77M speakers, esports powerhouse
+6. **???? Vietnamese**: 95M+ speakers, Southeast Asian growth
+7. **???? French**: 280M+ speakers, international
+8. **???? German**: 100M+ speakers, strong European market
+9. **???? Portuguese**: 260M+ speakers, Brazil gaming boom
+10. **???? Russian**: 258M+ speakers, Eastern European market
 
-### Cach hoat dong:
-1. **Host** tao phong ? Server TCP lang nghe port (mac dinh 7777)
-2. **Client** tham gia ? Ket noi den IP:port cua host
-3. **?? Sync Fullscreen**: Ca hai co the dung F11 dong thoi
-4. **Animation Sync**: Dong bo countdown va gesture animation
-5. **LAN**: Su dung IP local (192.168.x.x)
-6. **Internet**: Su dung IP public (can port forwarding)
-7. Trao doi du lieu qua TCP stream
-8. Dong bo lua chon va animation timing voi fullscreen scaling
+### ?? Cultural Features:
+- **Appropriate greetings** cho t?ng v?n hóa
+- **Native game terminology** thay vì d?ch máy
+- **Cultural color schemes** (future enhancement)
+- **Regional preferences** trong UI design
 
-### Giao thuc tin nhan (?? Enhanced):
-- `PLAYER:[ten]` - Gui ten nguoi choi
-- `CHOICE:[lua chon]` - Gui lua chon (Da/Giay/Keo)
-- `RESULT:[ket qua]` - Ket qua tran dau
-- `?? FULLSCREEN:[true/false]` - Thong bao fullscreen state (future)
-- `?? SCALE:[factor]` - Dong bo scale factor (future)
+## ?? Roadmap m? r?ng (?? Enhanced)
 
-### Choi qua Internet (?? Optimized):Host:
-1. Forward port 7777 tren router
-2. Share IP public cho friend
-3. Tao phong va cho ket noi
-4. [F11] Fullscreen for immersive hosting!
+### ?? Language Enhancements:
+- [ ] **Voice narration** trong nhi?u ngôn ng?
+- [ ] **Right-to-left** language support (Arabic, Hebrew)
+- [ ] **Dynamic font switching** cho readability t?t h?n
+- [ ] **Cultural themes** và color schemes
+- [ ] **Community translation** platform
+- [ ] **Auto-detect** system language
 
-Client:
-1. Nhap IP public cua host
-2. Nhap port (7777)
-3. Ket noi va choi!
-4. [F11] Synchronized fullscreen experience!
-## ?? Wireshark Integration (?? Enhanced)
+### ??? Fullscreen + Language:
+- [ ] **Language-specific scaling** factors
+- [ ] **Cultural layout** preferences
+- [ ] **Fullscreen hints** trong m?i ngôn ng?
+- [ ] **Multi-monitor** language preferences
 
-### Tinh nang:
-- **Auto-launch Wireshark** voi filter danh rieng cho game
-- **?? Fullscreen monitoring**: Mo Wireshark trong windowed mode khi game fullscreen
-- **Pre-configured filters** cho game traffic
-- **Huong dan su dung** neu khong co Wireshark
-- **Game protocol analysis** trong real-time
-- **?? Performance tracking**: Monitor network performance in fullscreen
-
-### Su dung Wireshark:
-1. Cai dat Wireshark tu https://www.wireshark.org/
-2. Trong MultiPlayer form, click "MO WIRESHARK"
-3. Wireshark se mo voi filter: `tcp port 7777`
-4. **Nhan F11** de fullscreen game, Wireshark van hoat dong
-5. Bat dau choi de xem network traffic!
-6. Observe animation synchronization packets
-
-## ?? Giao dien va Animation (?? Responsive)
-
-### Mau sac va Theme:
-- **Da**: Xam nhat (Rock - Gray) voi gesture ?
-- **Giay**: Xanh nhat (Paper - Light Blue) voi gesture ?
-- **Keo**: Vang nhat (Scissors - Light Yellow) voi gesture ?
-- **?? Fullscreen**: Enhanced contrast va scaling
-
-### Animation Details (?? Adaptive):
-- **Shake Frames**: 7 frames quoi quoi voi timing thuc te
-- **Countdown**: "San-Ko-Ho" voi scale animation adaptive
-- **Gesture Reveal**: Fade-in effect cho final choice enlarged
-- **Score Pulse**: Phong to thu nho khi cap nhat diem prominent
-- **Win Flash**: Gold/green flash effect scaled
-- **?? Fullscreen transitions**: Smooth scaling animations
-- **?? Layout adaptation**: Auto-reposition for optimal viewing
-
-### Timing Specifications (?? Optimized):
-- **Button Click**: 500ms scale animation
-- **Countdown**: 800ms per step ("San" ? "Ko" ? "Ho")
-- **Shake Animation**: 200ms per frame × 7 frames = 1.4s
-- **Suspense Pause**: 500ms truoc khi reveal
-- **Result Display**: 300ms fade-in
-- **?? Fullscreen toggle**: 200ms smooth transition
-- **Reset Delay**: 3000ms truoc round moi
-
-## ??? Multi-Resolution Support (?? New)
-
-### Supported Resolutions:
-- **?? 4K (3840x2160)**: Premium fullscreen experience
-- **??? 2K (2560x1440)**: High-definition gaming
-- **?? Full HD (1920x1080)**: Optimal experience
-- **?? HD (1366x768)**: Laptop-optimized layout
-- **? Custom**: Adaptive scaling cho moi resolution
-
-### Scaling Factors:Resolution    | Scale Factor | Experience Level
-4K           | 2.0x         | Premium
-2K           | 1.5x         | High-end  
-1080p        | 1.3x         | Optimal
-1366x768     | 1.1x         | Good
-Below 1024   | 1.0x         | Basic
-## ?? Xu ly loi (?? Enhanced)
-
-### Cac loi thuong gap:
-1. **Animation lag**: Auto-adjust quality dua tren performance
-2. **Sound khong phat**: Graceful fallback, game van chay
-3. **Gesture khong hien**: Smart font fallback system
-4. **?? Fullscreen issues**: Safe state restoration
-5. **?? Scaling problems**: Auto-detect va adjust
-6. **Sync issues**: Kiem tra network latency
-7. **Memory leaks**: Auto-cleanup system
-
-### Performance Tips (?? Optimized):
-- **?? Fullscreen mode**: Optimal performance cho gaming
-- **Auto-quality**: System tu dong adjust animation quality
-- **?? Adaptive scaling**: Performance-based scaling
-- **Smart cleanup**: Memory management improvements
-- **Network optimization**: Better TCP performance
-
-## ?? Tinh nang mo rong (?? Roadmap)
-
-### ?? Fullscreen Enhancements:
-- [ ] **Multi-monitor fullscreen** - Chon monitor de fullscreen
-- [ ] **Borderless windowed** - Alternative fullscreen mode  
-- [ ] **Custom scaling** - User-defined scale factors
-- [ ] **Fullscreen preferences** - Luu va restore settings
-- [ ] **Performance overlay** - FPS counter trong fullscreen
-
-### Animation Enhancements:
-- [ ] **?? Fullscreen-optimized effects** - Special effects cho fullscreen
-- [ ] **3D Gesture Effects** voi DirectX
-- [ ] **Particle Systems** cho win celebration
-- [ ] **Custom Gesture Skins** (robot, alien, etc.)
-- [ ] **Slow-motion replay** cho dramatic effect
-- [ ] **Multi-round tournaments** voi bracket animation
-
-### Multiplayer Improvements:
-- [ ] **?? Synchronized fullscreen** - Dong bo fullscreen state
-- [ ] **Real-time voice chat** trong game
-- [ ] **Spectator mode** voi live animation
-- [ ] **Replay system** luu lai animation sequences
-- [ ] **Leaderboards** voi animated rankings
-- [ ] **Custom rooms** voi themes
-
-## ?? Luat choi (Enhanced)
-
-### Nguyen tac co ban:
-- **Da** (?) thang **Keo** (?) - da nghien nat keo
-- **Keo** (?) thang **Giay** (?) - keo cat giay  
-- **Giay** (?) thang **Da** (?) - giay bao da
-- Chon giong nhau = **HOA**
-
-### ?? Fullscreen Gaming Rules:
-- **F11 anytime**: Co the toggle fullscreen bat ky luc nao
-- **ESC to exit**: Nhan ESC de thoat fullscreen
-- **Fair play**: Fullscreen khong anh huong game logic
-- **Immersive experience**: Fullscreen de co trai nghiem tot nhat
-- **Performance**: Fullscreen co the cai thien performance
-
-## ?? Educational Value (?? Enhanced)
-
-### ?? Fullscreen Programming:
-- **State management**: Luu va restore form states
-- **Responsive design**: Adaptive layouts cho moi screen size
-- **Performance optimization**: Efficient scaling algorithms
-- **User experience**: Modern app behavior patterns
-
-### Animation Programming:
-- **Timer-based animations**: Hoc cach tao smooth animations
-- **State management**: Quan ly cac trang thai animation
-- **Event synchronization**: Dong bo events giua client/server
-- **?? Responsive scaling**: Scale animations cho moi resolution
-
-### Game Development:
-- **?? Modern UI standards**: Fullscreen gaming experience
-- **User Experience Design**: Tao cam giac choi thu vi
-- **Visual Feedback**: Importance of immediate visual response
-- **Sound Design**: Role of audio trong game experience
-- **Network Synchronization**: Real-time multiplayer challenges
+### ?? Gameplay Improvements:
+- [ ] **Tournament mode** v?i multilingual brackets
+- [ ] **Achievement system** v?i cultural celebrations
+- [ ] **Custom gestures** cho các n?n v?n hóa khác nhau
+- [ ] **Regional leaderboards** theo ngôn ng?
 
 ---
-*Phat trien boi: BaiTapGK Team*  
-*Framework: .NET 9 + WinForms + Custom Animation Engine + **Fullscreen System***  
-*?? Fullscreen: FullscreenManager + FullscreenSupportForm Architecture*  
+*Phát tri?n b?i: BaiTapGK Team*  
+*Framework: .NET 9 + WinForms + Custom Animation Engine + **??? Fullscreen System** + **?? Multi-language Engine***  
+*?? Languages: 10 major world languages v?i 1000+ translations*  
+*??? Fullscreen: FullscreenManager + FullscreenSupportForm Architecture*  
 *Network Analysis: Wireshark Integration*  
 *Animation: Custom Timer-based System with GDI+ **+ Responsive Scaling***  
 *Sound: SystemSounds + Custom SoundPlayer*  
-*Ngon ngu: Tieng Viet khong dau - Unicode UTF-8*  
+*Ngôn ng?: Unicode UTF-8 h? tr? ?a ngôn ng?*  
 *Compatibility: Windows 7-11, .NET 9, Multi-resolution Support*
 
-?? **Game Features**: Realistic Rock-Paper-Scissors experience voi animation giong doi that!  
-??? **?? Fullscreen**: Professional gaming experience with F11 toggle!  
-?? **Animation**: Hollywood-quality transitions va effects voi adaptive scaling!  
-?? **Networking**: Professional-grade TCP networking voi Wireshark analysis!  
-?? **Audio**: Immersive sound effects cho moi action!  
-?? **Responsive**: Perfect experience tren moi screen size va resolution!
+?? **Game Features**: Realistic Rock-Paper-Scissors experience v?i animation gi?ng ??i th?t!  
+?? **?? Multi-language**: 10 ngôn ng? ph? bi?n nh?t th? gi?i v?i d?ch thu?t chuyên nghi?p!  
+??? **??? Fullscreen**: Professional gaming experience v?i F11 toggle!  
+?? **Animation**: Hollywood-quality transitions và effects v?i adaptive scaling!  
+?? **Networking**: Professional-grade TCP networking v?i Wireshark analysis!  
+?? **Audio**: Immersive sound effects cho m?i action!  
+?? **Responsive**: Perfect experience trên m?i screen size và resolution!  
+?? **Global**: Tr?i nghi?m game toàn c?u cho ng??i ch?i m?i qu?c gia!

@@ -1,0 +1,1262 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Text.Json;
+
+namespace BaiTapGK
+{
+    /// <summary>
+    /// Quan ly ngon ngu cho ung dung Rock Paper Scissors
+    /// Supports multiple languages with easy switching and persistent settings
+    /// </summary>
+    public static class LanguageManager
+    {
+        // Supported languages - ordered by usage popularity
+        public static readonly Dictionary<string, LanguageInfo> SupportedLanguages = new()
+        {
+            { "vi", new LanguageInfo("vi", "Tiếng Việt", "Vietnamese", "🇻🇳") },
+            { "en", new LanguageInfo("en", "English", "English", "🇺🇸") },
+            { "zh", new LanguageInfo("zh", "中文", "Chinese (Simplified)", "🇨🇳") },
+            { "ja", new LanguageInfo("ja", "日本語", "Japanese", "🇯🇵") },
+            { "ko", new LanguageInfo("ko", "한국어", "Korean", "🇰🇷") },
+            { "es", new LanguageInfo("es", "Español", "Spanish", "🇪🇸") },
+            { "fr", new LanguageInfo("fr", "Français", "French", "🇫🇷") },
+            { "de", new LanguageInfo("de", "Deutsch", "German", "🇩🇪") },
+            { "pt", new LanguageInfo("pt", "Português", "Portuguese", "🇵🇹") },
+            { "ru", new LanguageInfo("ru", "Русский", "Russian", "🇷🇺") }
+        };
+
+        private static string currentLanguage = "vi"; // Default to Vietnamese
+        private static Dictionary<string, Dictionary<string, string>> translations = new();
+        private static readonly string settingsFile = "language_settings.json";
+
+        /// <summary>
+        /// Current selected language code
+        /// </summary>
+        public static string CurrentLanguage 
+        { 
+            get => currentLanguage;
+            private set 
+            {
+                if (currentLanguage != value)
+                {
+                    currentLanguage = value;
+                    OnLanguageChanged?.Invoke(value);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Event fired when language changes
+        /// </summary>
+        public static event Action<string>? OnLanguageChanged;
+
+        static LanguageManager()
+        {
+            InitializeTranslations();
+            LoadLanguageSettings();
+        }
+
+        /// <summary>
+        /// Get translated text for a key
+        /// </summary>
+        public static string GetText(string key)
+        {
+            if (translations.ContainsKey(CurrentLanguage) && 
+                translations[CurrentLanguage].ContainsKey(key))
+            {
+                return translations[CurrentLanguage][key];
+            }
+
+            // Fallback to English if available
+            if (CurrentLanguage != "en" && 
+                translations.ContainsKey("en") && 
+                translations["en"].ContainsKey(key))
+            {
+                return translations["en"][key];
+            }
+
+            // Fallback to Vietnamese if available
+            if (CurrentLanguage != "vi" && 
+                translations.ContainsKey("vi") && 
+                translations["vi"].ContainsKey(key))
+            {
+                return translations["vi"][key];
+            }
+
+            // Return key if no translation found
+            return $"[{key}]";
+        }
+
+        /// <summary>
+        /// Set current language
+        /// </summary>
+        public static bool SetLanguage(string languageCode)
+        {
+            if (SupportedLanguages.ContainsKey(languageCode))
+            {
+                CurrentLanguage = languageCode;
+                SaveLanguageSettings();
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Get current language info
+        /// </summary>
+        public static LanguageInfo GetCurrentLanguageInfo()
+        {
+            return SupportedLanguages.TryGetValue(CurrentLanguage, out var info) ? 
+                   info : SupportedLanguages["vi"];
+        }
+
+        /// <summary>
+        /// Initialize all translation dictionaries
+        /// </summary>
+        private static void InitializeTranslations()
+        {
+            // Vietnamese (Default)
+            translations["vi"] = new Dictionary<string, string>
+            {
+                // Common
+                {"AppTitle", "Rock Paper Scissors"},
+                {"Player", "Người chơi"},
+                {"Computer", "Máy tính"},
+                {"Opponent", "Đối thủ"},
+                {"Score", "Tỷ số"},
+                {"Back", "Quay lại"},
+                {"Close", "Đóng"},
+                {"Cancel", "Hủy"},
+                {"OK", "Đồng ý"},
+                {"Yes", "Có"},
+                {"No", "Không"},
+                {"Language", "Ngôn ngữ"},
+                {"Settings", "Cài đặt"},
+
+                // Login Form
+                {"LoginTitle", "ĐĂNG NHẬP"},
+                {"PlayerNameLabel", "Tên người chơi:"},
+                {"EnterPlayerName", "Vui lòng nhập tên người chơi!"},
+                {"Login", "Đăng nhập"},
+
+                // Main Menu
+                {"MainMenuTitle", "ROCK PAPER SCISSORS"},
+                {"SinglePlayer", "Chơi đơn"},
+                {"MultiPlayer", "Chơi đôi"},
+                {"GameRules", "Luật chơi"},
+                {"Exit", "Thoát"},
+
+                // Game Choices
+                {"Rock", "Đá"},
+                {"Paper", "Giấy"},
+                {"Scissors", "Kéo"},
+                {"RockEmoji", "✊"},
+                {"PaperEmoji", "✋"},
+                {"ScissorsEmoji", "✌️"},
+
+                // Single Player
+                {"SinglePlayerTitle", "CHƠI ĐƠN"},
+                {"YourChoice", "Bạn chọn"},
+                {"ComputerChoice", "Máy chọn"},
+                {"GameResult", "Kết quả"},
+                {"Reset", "Đặt lại"},
+                {"YouWin", "Bạn thắng!"},
+                {"YouLose", "Bạn thua!"},
+                {"Draw", "Hòa!"},
+
+                // Multi Player
+                {"MultiPlayerTitle", "CHƠI ĐÔI ONLINE"},
+                {"ConnectionInfo", "Thông tin kết nối:"},
+                {"ServerIPPlaceholder", "IP Server (vd: 192.168.1.100)"},
+                {"PortPlaceholder", "Port"},
+                {"RoomIDPlaceholder", "Room ID"},
+                {"CreateRoom", "Tạo phòng"},
+                {"JoinRoom", "Vào phòng"},
+                {"OpenWireshark", "Mở Wireshark"},
+                {"WiresharkHelp", "Wireshark Help"},
+                {"WaitingForConnection", "Đang chờ người chơi kết nối"},
+                {"Connected", "Đã kết nối! Sẵn sàng chơi."},
+                {"ConnectionLost", "Mất kết nối"},
+                {"WaitingForOpponent", "Đang chờ đối thủ..."},
+                {"ChooseYourMove", "Chọn lựa chọn của bạn"},
+
+                // Game Rules
+                {"GameRulesTitle", "LUẬT CHƠI ROCK PAPER SCISSORS"},
+                {"GameRulesContent", @"🎮 CÁCH CHƠI:
+• Đá (✊) thắng Kéo (✌️)
+• Kéo (✌️) thắng Giấy (✋)  
+• Giấy (✋) thắng Đá (✊)
+• Nếu cùng chọn một loại thì hòa
+
+🎯 CHƠI ĐƠN:
+• Chơi với máy tính
+• Chọn Đá, Giấy hoặc Kéo
+• Xem kết quả và tỷ số
+
+🌐 CHƠI ONLINE:
+• Tạo phòng hoặc tham gia phòng
+• Chơi với bạn bè qua mạng
+• Đồng bộ animation và fullscreen
+
+🔧 WIRESHARK:
+• Theo dõi network traffic
+• Phân tích gói tin game
+• Filter: tcp port 7777
+
+⌨️ PHÍM TẮT:
+• F11: Fullscreen
+• ESC: Thoát fullscreen"},
+
+                // Error Messages
+                {"Error", "Lỗi"},
+                {"Warning", "Cảnh báo"},
+                {"Information", "Thông tin"},
+                {"PortInUse", "Port {0} đang được sử dụng!"},
+                {"CannotConnect", "Không thể kết nối đến server {0}:{1}"},
+                {"InvalidPort", "Port không hợp lệ!"},
+                {"EnterServerInfo", "Vui lòng nhập đầy đủ thông tin server!"},
+                {"WiresharkNotFound", "Không tìm thấy Wireshark. Vui lòng cài đặt tại: {0}"},
+
+                // Network Messages
+                {"LocalIP", "IP Local"},
+                {"Room", "Room"},
+                {"PlayerJoined", "Người chơi đã tham gia! Sẵn sàng chơi."},
+                {"ServerError", "Lỗi server"},
+                {"SendMessageError", "Lỗi gửi tin nhắn"},
+
+                // Language Selection
+                {"SelectLanguage", "Chọn ngôn ngữ"},
+                {"LanguageChanged", "Đã thay đổi ngôn ngữ thành {0}"},
+                {"RestartRequired", "Khởi động lại ứng dụng để áp dụng hoàn toàn"}
+            };
+
+            // English
+            translations["en"] = new Dictionary<string, string>
+            {
+                // Common
+                {"AppTitle", "Rock Paper Scissors"},
+                {"Player", "Player"},
+                {"Computer", "Computer"},
+                {"Opponent", "Opponent"},
+                {"Score", "Score"},
+                {"Back", "Back"},
+                {"Close", "Close"},
+                {"Cancel", "Cancel"},
+                {"OK", "OK"},
+                {"Yes", "Yes"},
+                {"No", "No"},
+                {"Language", "Language"},
+                {"Settings", "Settings"},
+
+                // Login Form
+                {"LoginTitle", "LOGIN"},
+                {"PlayerNameLabel", "Player name:"},
+                {"EnterPlayerName", "Please enter player name!"},
+                {"Login", "Login"},
+
+                // Main Menu
+                {"MainMenuTitle", "ROCK PAPER SCISSORS"},
+                {"SinglePlayer", "Single Player"},
+                {"MultiPlayer", "Multiplayer"},
+                {"GameRules", "Game Rules"},
+                {"Exit", "Exit"},
+
+                // Game Choices
+                {"Rock", "Rock"},
+                {"Paper", "Paper"},
+                {"Scissors", "Scissors"},
+                {"RockEmoji", "✊"},
+                {"PaperEmoji", "✋"},
+                {"ScissorsEmoji", "✌️"},
+
+                // Single Player
+                {"SinglePlayerTitle", "SINGLE PLAYER"},
+                {"YourChoice", "Your choice"},
+                {"ComputerChoice", "Computer choice"},
+                {"GameResult", "Result"},
+                {"Reset", "Reset"},
+                {"YouWin", "You win!"},
+                {"YouLose", "You lose!"},
+                {"Draw", "Draw!"},
+
+                // Multi Player
+                {"MultiPlayerTitle", "ONLINE MULTIPLAYER"},
+                {"ConnectionInfo", "Connection info:"},
+                {"ServerIPPlaceholder", "Server IP (e.g: 192.168.1.100)"},
+                {"PortPlaceholder", "Port"},
+                {"RoomIDPlaceholder", "Room ID"},
+                {"CreateRoom", "Create Room"},
+                {"JoinRoom", "Join Room"},
+                {"OpenWireshark", "Open Wireshark"},
+                {"WiresharkHelp", "Wireshark Help"},
+                {"WaitingForConnection", "Waiting for player to connect"},
+                {"Connected", "Connected! Ready to play."},
+                {"ConnectionLost", "Connection lost"},
+                {"WaitingForOpponent", "Waiting for opponent..."},
+                {"ChooseYourMove", "Choose your move"},
+
+                // Game Rules
+                {"GameRulesTitle", "ROCK PAPER SCISSORS RULES"},
+                {"GameRulesContent", @"🎮 HOW TO PLAY:
+• Rock (✊) beats Scissors (✌️)
+• Scissors (✌️) beats Paper (✋)
+• Paper (✋) beats Rock (✊)
+• Same choice = Draw
+
+🎯 SINGLE PLAYER:
+• Play against computer
+• Choose Rock, Paper or Scissors
+• View results and score
+
+🌐 ONLINE PLAY:
+• Create or join a room
+• Play with friends online
+• Synchronized animations and fullscreen
+
+🔧 WIRESHARK:
+• Monitor network traffic
+• Analyze game packets
+• Filter: tcp port 7777
+
+⌨️ KEYBOARD SHORTCUTS:
+• F11: Fullscreen
+• ESC: Exit fullscreen"},
+
+                // Error Messages
+                {"Error", "Error"},
+                {"Warning", "Warning"},
+                {"Information", "Information"},
+                {"PortInUse", "Port {0} is already in use!"},
+                {"CannotConnect", "Cannot connect to server {0}:{1}"},
+                {"InvalidPort", "Invalid port!"},
+                {"EnterServerInfo", "Please enter complete server information!"},
+                {"WiresharkNotFound", "Wireshark not found. Please install from: {0}"},
+
+                // Network Messages
+                {"LocalIP", "Local IP"},
+                {"Room", "Room"},
+                {"PlayerJoined", "Player joined! Ready to play."},
+                {"ServerError", "Server error"},
+                {"SendMessageError", "Message send error"},
+
+                // Language Selection
+                {"SelectLanguage", "Select Language"},
+                {"LanguageChanged", "Language changed to {0}"},
+                {"RestartRequired", "Restart application to fully apply changes"}
+            };
+
+            // Chinese (Simplified)
+            translations["zh"] = new Dictionary<string, string>
+            {
+                // Common
+                {"AppTitle", "石头剪刀布"},
+                {"Player", "玩家"},
+                {"Computer", "电脑"},
+                {"Opponent", "对手"},
+                {"Score", "得分"},
+                {"Back", "返回"},
+                {"Close", "关闭"},
+                {"Cancel", "取消"},
+                {"OK", "确定"},
+                {"Yes", "是"},
+                {"No", "否"},
+                {"Language", "语言"},
+                {"Settings", "设置"},
+
+                // Login Form
+                {"LoginTitle", "登录"},
+                {"PlayerNameLabel", "玩家姓名："},
+                {"EnterPlayerName", "请输入玩家姓名！"},
+                {"Login", "登录"},
+
+                // Main Menu
+                {"MainMenuTitle", "石头剪刀布"},
+                {"SinglePlayer", "单人游戏"},
+                {"MultiPlayer", "多人游戏"},
+                {"GameRules", "游戏规则"},
+                {"Exit", "退出"},
+
+                // Game Choices
+                {"Rock", "石头"},
+                {"Paper", "布"},
+                {"Scissors", "剪刀"},
+                {"RockEmoji", "✊"},
+                {"PaperEmoji", "✋"},
+                {"ScissorsEmoji", "✌️"},
+
+                // Single Player
+                {"SinglePlayerTitle", "单人游戏"},
+                {"YourChoice", "你的选择"},
+                {"ComputerChoice", "电脑选择"},
+                {"GameResult", "结果"},
+                {"Reset", "重置"},
+                {"YouWin", "你赢了！"},
+                {"YouLose", "你输了！"},
+                {"Draw", "平局！"},
+
+                // Multi Player
+                {"MultiPlayerTitle", "在线多人游戏"},
+                {"ConnectionInfo", "连接信息："},
+                {"ServerIPPlaceholder", "服务器IP (例: 192.168.1.100)"},
+                {"PortPlaceholder", "端口"},
+                {"RoomIDPlaceholder", "房间ID"},
+                {"CreateRoom", "创建房间"},
+                {"JoinRoom", "加入房间"},
+                {"OpenWireshark", "打开Wireshark"},
+                {"WiresharkHelp", "Wireshark帮助"},
+                {"WaitingForConnection", "等待玩家连接"},
+                {"Connected", "已连接！准备游戏。"},
+                {"ConnectionLost", "连接丢失"},
+                {"WaitingForOpponent", "等待对手..."},
+                {"ChooseYourMove", "选择你的出招"},
+
+                // Game Rules
+                {"GameRulesTitle", "石头剪刀布规则"},
+                {"GameRulesContent", @"🎮 游戏玩法：
+• 石头 (✊) 胜 剪刀 (✌️)
+• 剪刀 (✌️) 胜 布 (✋)
+• 布 (✋) 胜 石头 (✊)
+• 相同选择 = 平局
+
+🎯 单人模式：
+• 与电脑对战
+• 选择石头、布或剪刀
+• 查看结果和得分
+
+🌐 在线游戏：
+• 创建或加入房间
+• 与朋友在线对战
+• 同步动画和全屏
+
+🔧 WIRESHARK：
+• 监控网络流量
+• 分析游戏数据包
+• 过滤器: tcp port 7777
+
+⌨️ 键盘快捷键：
+• F11: 全屏
+• ESC: 退出全屏"},
+
+                // Language Selection
+                {"SelectLanguage", "选择语言"},
+                {"LanguageChanged", "语言已更改为 {0}"},
+                {"RestartRequired", "重启应用程序以完全应用更改"}
+            };
+
+            // Japanese
+            translations["ja"] = new Dictionary<string, string>
+            {
+                // Common
+                {"AppTitle", "じゃんけん"},
+                {"Player", "プレイヤー"},
+                {"Computer", "コンピューター"},
+                {"Opponent", "相手"},
+                {"Score", "スコア"},
+                {"Back", "戻る"},
+                {"Close", "閉じる"},
+                {"Cancel", "キャンセル"},
+                {"OK", "OK"},
+                {"Yes", "はい"},
+                {"No", "いいえ"},
+                {"Language", "言語"},
+                {"Settings", "設定"},
+
+                // Login Form
+                {"LoginTitle", "ログイン"},
+                {"PlayerNameLabel", "プレイヤー名："},
+                {"EnterPlayerName", "プレイヤー名を入力してください！"},
+                {"Login", "ログイン"},
+
+                // Main Menu
+                {"MainMenuTitle", "じゃんけん"},
+                {"SinglePlayer", "一人プレイ"},
+                {"MultiPlayer", "マルチプレイ"},
+                {"GameRules", "ゲームルール"},
+                {"Exit", "終了"},
+
+                // Game Choices
+                {"Rock", "グー"},
+                {"Paper", "パー"},
+                {"Scissors", "チョキ"},
+                {"RockEmoji", "✊"},
+                {"PaperEmoji", "✋"},
+                {"ScissorsEmoji", "✌️"},
+
+                // Single Player
+                {"SinglePlayerTitle", "一人プレイ"},
+                {"YourChoice", "あなたの選択"},
+                {"ComputerChoice", "コンピューターの選択"},
+                {"GameResult", "結果"},
+                {"Reset", "リセット"},
+                {"YouWin", "あなたの勝ち！"},
+                {"YouLose", "あなたの負け！"},
+                {"Draw", "引き分け！"},
+
+                // Multi Player
+                {"MultiPlayerTitle", "オンラインマルチプレイ"},
+                {"ConnectionInfo", "接続情報："},
+                {"ServerIPPlaceholder", "サーバーIP (例: 192.168.1.100)"},
+                {"PortPlaceholder", "ポート"},
+                {"RoomIDPlaceholder", "ルームID"},
+                {"CreateRoom", "ルーム作成"},
+                {"JoinRoom", "ルーム参加"},
+                {"OpenWireshark", "Wiresharkを開く"},
+                {"WiresharkHelp", "Wiresharkヘルプ"},
+                {"WaitingForConnection", "プレイヤーの接続を待機中"},
+                {"Connected", "接続完了！ゲーム開始準備完了。"},
+                {"ConnectionLost", "接続が切断されました"},
+                {"WaitingForOpponent", "相手を待機中..."},
+                {"ChooseYourMove", "手を選んでください"},
+
+                // Game Rules
+                {"GameRulesTitle", "じゃんけんルール"},
+                {"GameRulesContent", @"🎮 遊び方：
+• グー (✊) はチョキ (✌️) に勝つ
+• チョキ (✌️) はパー (✋) に勝つ
+• パー (✋) はグー (✊) に勝つ
+• 同じ手 = 引き分け
+
+🎯 一人プレイ：
+• コンピューターと対戦
+• グー、パー、チョキを選択
+• 結果とスコアを確認
+
+🌐 オンラインプレイ：
+• ルームを作成または参加
+• 友達とオンライン対戦
+• 同期されたアニメーションとフルスクリーン
+
+🔧 WIRESHARK：
+• ネットワークトラフィックを監視
+• ゲームパケットを分析
+• フィルター: tcp port 7777
+
+⌨️ キーボードショートカット：
+• F11: フルスクリーン
+• ESC: フルスクリーン終了"},
+
+                // Language Selection
+                {"SelectLanguage", "言語を選択"},
+                {"LanguageChanged", "言語が {0} に変更されました"},
+                {"RestartRequired", "変更を完全に適用するにはアプリケーションを再起動してください"}
+            };
+
+            // Korean
+            translations["ko"] = new Dictionary<string, string>
+            {
+                // Common
+                {"AppTitle", "가위바위보"},
+                {"Player", "플레이어"},
+                {"Computer", "컴퓨터"},
+                {"Opponent", "상대방"},
+                {"Score", "점수"},
+                {"Back", "뒤로"},
+                {"Close", "닫기"},
+                {"Cancel", "취소"},
+                {"OK", "확인"},
+                {"Yes", "예"},
+                {"No", "아니오"},
+                {"Language", "언어"},
+                {"Settings", "설정"},
+
+                // Login Form
+                {"LoginTitle", "로그인"},
+                {"PlayerNameLabel", "플레이어 이름:"},
+                {"EnterPlayerName", "플레이어 이름을 입력해주세요!"},
+                {"Login", "로그인"},
+
+                // Main Menu
+                {"MainMenuTitle", "가위바위보"},
+                {"SinglePlayer", "싱글 플레이"},
+                {"MultiPlayer", "멀티 플레이"},
+                {"GameRules", "게임 규칙"},
+                {"Exit", "종료"},
+
+                // Game Choices
+                {"Rock", "바위"},
+                {"Paper", "보"},
+                {"Scissors", "가위"},
+                {"RockEmoji", "✊"},
+                {"PaperEmoji", "✋"},
+                {"ScissorsEmoji", "✌️"},
+
+                // Single Player
+                {"SinglePlayerTitle", "싱글 플레이"},
+                {"YourChoice", "당신의 선택"},
+                {"ComputerChoice", "컴퓨터 선택"},
+                {"GameResult", "결과"},
+                {"Reset", "재설정"},
+                {"YouWin", "당신이 이겼습니다!"},
+                {"YouLose", "당신이 졌습니다!"},
+                {"Draw", "무승부!"},
+
+                // Multi Player
+                {"MultiPlayerTitle", "온라인 멀티플레이"},
+                {"ConnectionInfo", "연결 정보:"},
+                {"ServerIPPlaceholder", "서버 IP (예: 192.168.1.100)"},
+                {"PortPlaceholder", "포트"},
+                {"RoomIDPlaceholder", "방 ID"},
+                {"CreateRoom", "방 만들기"},
+                {"JoinRoom", "방 참가"},
+                {"OpenWireshark", "Wireshark 열기"},
+                {"WiresharkHelp", "Wireshark 도움말"},
+                {"WaitingForConnection", "플레이어 연결 대기중"},
+                {"Connected", "연결됨! 게임 준비 완료."},
+                {"ConnectionLost", "연결이 끊어졌습니다"},
+                {"WaitingForOpponent", "상대방 대기중..."},
+                {"ChooseYourMove", "당신의 수를 선택하세요"},
+
+                // Game Rules
+                {"GameRulesTitle", "가위바위보 규칙"},
+                {"GameRulesContent", @"🎮 게임 방법:
+• 바위 (✊) 는 가위 (✌️) 를 이깁니다
+• 가위 (✌️) 는 보 (✋) 를 이깁니다
+• 보 (✋) 는 바위 (✊) 를 이깁니다
+• 같은 선택 = 무승부
+
+🎯 싱글 플레이:
+• 컴퓨터와 대전
+• 바위, 보, 가위 중 선택
+• 결과와 점수 확인
+
+🌐 온라인 플레이:
+• 방을 만들거나 참가
+• 친구들과 온라인 대전
+• 동기화된 애니메이션과 전체화면
+
+🔧 WIRESHARK:
+• 네트워크 트래픽 모니터링
+• 게임 패킷 분석
+• 필터: tcp port 7777
+
+⌨️ 키보드 단축키:
+• F11: 전체화면
+• ESC: 전체화면 종료"},
+
+                // Language Selection
+                {"SelectLanguage", "언어 선택"},
+                {"LanguageChanged", "언어가 {0}(으)로 변경되었습니다"},
+                {"RestartRequired", "변경사항을 완전히 적용하려면 애플리케이션을 재시작하세요"}
+            };
+
+            // Spanish
+            translations["es"] = new Dictionary<string, string>
+            {
+                // Common
+                {"AppTitle", "Piedra Papel Tijera"},
+                {"Player", "Jugador"},
+                {"Computer", "Computadora"},
+                {"Opponent", "Oponente"},
+                {"Score", "Puntuación"},
+                {"Back", "Atrás"},
+                {"Close", "Cerrar"},
+                {"Cancel", "Cancelar"},
+                {"OK", "Aceptar"},
+                {"Yes", "Sí"},
+                {"No", "No"},
+                {"Language", "Idioma"},
+                {"Settings", "Configuración"},
+
+                // Login Form
+                {"LoginTitle", "INICIAR SESIÓN"},
+                {"PlayerNameLabel", "Nombre del jugador:"},
+                {"EnterPlayerName", "¡Por favor ingrese el nombre del jugador!"},
+                {"Login", "Iniciar sesión"},
+
+                // Main Menu
+                {"MainMenuTitle", "PIEDRA PAPEL TIJERA"},
+                {"SinglePlayer", "Un jugador"},
+                {"MultiPlayer", "Multijugador"},
+                {"GameRules", "Reglas del juego"},
+                {"Exit", "Salir"},
+
+                // Game Choices
+                {"Rock", "Piedra"},
+                {"Paper", "Papel"},
+                {"Scissors", "Tijera"},
+                {"RockEmoji", "✊"},
+                {"PaperEmoji", "✋"},
+                {"ScissorsEmoji", "✌️"},
+
+                // Single Player
+                {"SinglePlayerTitle", "UN JUGADOR"},
+                {"YourChoice", "Tu elección"},
+                {"ComputerChoice", "Elección de la computadora"},
+                {"GameResult", "Resultado"},
+                {"Reset", "Reiniciar"},
+                {"YouWin", "¡Ganaste!"},
+                {"YouLose", "¡Perdiste!"},
+                {"Draw", "¡Empate!"},
+
+                // Multi Player
+                {"MultiPlayerTitle", "MULTIJUGADOR EN LÍNEA"},
+                {"ConnectionInfo", "Información de conexión:"},
+                {"ServerIPPlaceholder", "IP del servidor (ej: 192.168.1.100)"},
+                {"PortPlaceholder", "Puerto"},
+                {"RoomIDPlaceholder", "ID de sala"},
+                {"CreateRoom", "Crear sala"},
+                {"JoinRoom", "Unirse a sala"},
+                {"OpenWireshark", "Abrir Wireshark"},
+                {"WiresharkHelp", "Ayuda de Wireshark"},
+                {"WaitingForConnection", "Esperando conexión del jugador"},
+                {"Connected", "¡Conectado! Listo para jugar."},
+                {"ConnectionLost", "Conexión perdida"},
+                {"WaitingForOpponent", "Esperando oponente..."},
+                {"ChooseYourMove", "Elige tu jugada"},
+
+                // Game Rules
+                {"GameRulesTitle", "REGLAS DE PIEDRA PAPEL TIJERA"},
+                {"GameRulesContent", @"🎮 CÓMO JUGAR:
+• Piedra (✊) vence a Tijera (✌️)
+• Tijera (✌️) vence a Papel (✋)
+• Papel (✋) vence a Piedra (✊)
+• Misma elección = Empate
+
+🎯 UN JUGADOR:
+• Jugar contra la computadora
+• Elegir Piedra, Papel o Tijera
+• Ver resultados y puntuación
+
+🌐 JUEGO EN LÍNEA:
+• Crear o unirse a una sala
+• Jugar con amigos en línea
+• Animaciones sincronizadas y pantalla completa
+
+🔧 WIRESHARK:
+• Monitorear tráfico de red
+• Analizar paquetes del juego
+• Filtro: tcp port 7777
+
+⌨️ ATAJOS DE TECLADO:
+• F11: Pantalla completa
+• ESC: Salir de pantalla completa"},
+
+                // Language Selection
+                {"SelectLanguage", "Seleccionar idioma"},
+                {"LanguageChanged", "Idioma cambiado a {0}"},
+                {"RestartRequired", "Reiniciar aplicación para aplicar completamente los cambios"}
+            };
+
+            // French
+            translations["fr"] = new Dictionary<string, string>
+            {
+                // Common
+                {"AppTitle", "Pierre Papier Ciseaux"},
+                {"Player", "Joueur"},
+                {"Computer", "Ordinateur"},
+                {"Opponent", "Adversaire"},
+                {"Score", "Score"},
+                {"Back", "Retour"},
+                {"Close", "Fermer"},
+                {"Cancel", "Annuler"},
+                {"OK", "OK"},
+                {"Yes", "Oui"},
+                {"No", "Non"},
+                {"Language", "Langue"},
+                {"Settings", "Paramètres"},
+
+                // Login Form
+                {"LoginTitle", "CONNEXION"},
+                {"PlayerNameLabel", "Nom du joueur:"},
+                {"EnterPlayerName", "Veuillez entrer le nom du joueur!"},
+                {"Login", "Se connecter"},
+
+                // Main Menu
+                {"MainMenuTitle", "PIERRE PAPIER CISEAUX"},
+                {"SinglePlayer", "Solo"},
+                {"MultiPlayer", "Multijoueur"},
+                {"GameRules", "Règles du jeu"},
+                {"Exit", "Quitter"},
+
+                // Game Choices
+                {"Rock", "Pierre"},
+                {"Paper", "Papier"},
+                {"Scissors", "Ciseaux"},
+                {"RockEmoji", "✊"},
+                {"PaperEmoji", "✋"},
+                {"ScissorsEmoji", "✌️"},
+
+                // Single Player
+                {"SinglePlayerTitle", "SOLO"},
+                {"YourChoice", "Votre choix"},
+                {"ComputerChoice", "Choix de l'ordinateur"},
+                {"GameResult", "Résultat"},
+                {"Reset", "Réinitialiser"},
+                {"YouWin", "Vous gagnez!"},
+                {"YouLose", "Vous perdez!"},
+                {"Draw", "Égalité!"},
+
+                // Multi Player
+                {"MultiPlayerTitle", "MULTIJOUEUR EN LIGNE"},
+                {"ConnectionInfo", "Informations de connexion:"},
+                {"ServerIPPlaceholder", "IP du serveur (ex: 192.168.1.100)"},
+                {"PortPlaceholder", "Port"},
+                {"RoomIDPlaceholder", "ID de salle"},
+                {"CreateRoom", "Créer une salle"},
+                {"JoinRoom", "Rejoindre une salle"},
+                {"OpenWireshark", "Ouvrir Wireshark"},
+                {"WiresharkHelp", "Aide Wireshark"},
+                {"WaitingForConnection", "En attente de connexion du joueur"},
+                {"Connected", "Connecté! Prêt à jouer."},
+                {"ConnectionLost", "Connexion perdue"},
+                {"WaitingForOpponent", "En attente de l'adversaire..."},
+                {"ChooseYourMove", "Choisissez votre coup"},
+
+                // Game Rules
+                {"GameRulesTitle", "RÈGLES DE PIERRE PAPIER CISEAUX"},
+                {"GameRulesContent", @"🎮 COMMENT JOUER:
+• Pierre (✊) bat Ciseaux (✌️)
+• Ciseaux (✌️) bat Papier (✋)
+• Papier (✋) bat Pierre (✊)
+• Même choix = Égalité
+
+🎯 SOLO:
+• Jouer contre l'ordinateur
+• Choisir Pierre, Papier ou Ciseaux
+• Voir les résultats et le score
+
+🌐 JEU EN LIGNE:
+• Créer ou rejoindre une salle
+• Jouer avec des amis en ligne
+• Animations synchronisées et plein écran
+
+🔧 WIRESHARK:
+• Surveiller le trafic réseau
+• Analyser les paquets du jeu
+• Filtre: tcp port 7777
+
+⌨️ RACCOURCIS CLAVIER:
+• F11: Plein écran
+• ESC: Quitter le plein écran"},
+
+                // Language Selection
+                {"SelectLanguage", "Sélectionner la langue"},
+                {"LanguageChanged", "Langue changée en {0}"},
+                {"RestartRequired", "Redémarrer l'application pour appliquer complètement les changements"}
+            };
+
+            // German  
+            translations["de"] = new Dictionary<string, string>
+            {
+                // Common
+                {"AppTitle", "Schere Stein Papier"},
+                {"Player", "Spieler"},
+                {"Computer", "Computer"},
+                {"Opponent", "Gegner"},
+                {"Score", "Punktzahl"},
+                {"Back", "Zurück"},
+                {"Close", "Schließen"},
+                {"Cancel", "Abbrechen"},
+                {"OK", "OK"},
+                {"Yes", "Ja"},
+                {"No", "Nein"},
+                {"Language", "Sprache"},
+                {"Settings", "Einstellungen"},
+
+                // Login Form
+                {"LoginTitle", "ANMELDUNG"},
+                {"PlayerNameLabel", "Spielername:"},
+                {"EnterPlayerName", "Bitte Spielername eingeben!"},
+                {"Login", "Anmelden"},
+
+                // Main Menu
+                {"MainMenuTitle", "SCHERE STEIN PAPIER"},
+                {"SinglePlayer", "Einzelspieler"},
+                {"MultiPlayer", "Mehrspieler"},
+                {"GameRules", "Spielregeln"},
+                {"Exit", "Beenden"},
+
+                // Game Choices
+                {"Rock", "Stein"},
+                {"Paper", "Papier"},
+                {"Scissors", "Schere"},
+                {"RockEmoji", "✊"},
+                {"PaperEmoji", "✋"},
+                {"ScissorsEmoji", "✌️"},
+
+                // Single Player
+                {"SinglePlayerTitle", "EINZELSPIELER"},
+                {"YourChoice", "Ihre Wahl"},
+                {"ComputerChoice", "Computer-Wahl"},
+                {"GameResult", "Ergebnis"},
+                {"Reset", "Zurücksetzen"},
+                {"YouWin", "Sie gewinnen!"},
+                {"YouLose", "Sie verlieren!"},
+                {"Draw", "Unentschieden!"},
+
+                // Multi Player
+                {"MultiPlayerTitle", "ONLINE-MEHRSPIELER"},
+                {"ConnectionInfo", "Verbindungsinfo:"},
+                {"ServerIPPlaceholder", "Server-IP (z.B: 192.168.1.100)"},
+                {"PortPlaceholder", "Port"},
+                {"RoomIDPlaceholder", "Raum-ID"},
+                {"CreateRoom", "Raum erstellen"},
+                {"JoinRoom", "Raum beitreten"},
+                {"OpenWireshark", "Wireshark öffnen"},
+                {"WiresharkHelp", "Wireshark-Hilfe"},
+                {"WaitingForConnection", "Warten auf Spielerverbindung"},
+                {"Connected", "Verbunden! Bereit zum Spielen."},
+                {"ConnectionLost", "Verbindung verloren"},
+                {"WaitingForOpponent", "Warten auf Gegner..."},
+                {"ChooseYourMove", "Wählen Sie Ihren Zug"},
+
+                // Game Rules
+                {"GameRulesTitle", "SCHERE STEIN PAPIER REGELN"},
+                {"GameRulesContent", @"🎮 SO WIRD GESPIELT:
+• Stein (✊) schlägt Schere (✌️)
+• Schere (✌️) schlägt Papier (✋)
+• Papier (✋) schlägt Stein (✊)
+• Gleiche Wahl = Unentschieden
+
+🎯 EINZELSPIELER:
+• Gegen Computer spielen
+• Stein, Papier oder Schere wählen
+• Ergebnisse und Punktzahl anzeigen
+
+🌐 ONLINE-SPIEL:
+• Raum erstellen oder beitreten
+• Mit Freunden online spielen
+• Synchronisierte Animationen und Vollbild
+
+🔧 WIRESHARK:
+• Netzwerkverkehr überwachen
+• Spielpakete analysieren
+• Filter: tcp port 7777
+
+⌨️ TASTATURKÜRZEL:
+• F11: Vollbild
+• ESC: Vollbild verlassen"},
+
+                // Language Selection
+                {"SelectLanguage", "Sprache auswählen"},
+                {"LanguageChanged", "Sprache geändert zu {0}"},
+                {"RestartRequired", "Anwendung neu starten, um Änderungen vollständig zu übernehmen"}
+            };
+
+            // Portuguese
+            translations["pt"] = new Dictionary<string, string>
+            {
+                // Common
+                {"AppTitle", "Pedra Papel Tesoura"},
+                {"Player", "Jogador"},
+                {"Computer", "Computador"},
+                {"Opponent", "Oponente"},
+                {"Score", "Pontuação"},
+                {"Back", "Voltar"},
+                {"Close", "Fechar"},
+                {"Cancel", "Cancelar"},
+                {"OK", "OK"},
+                {"Yes", "Sim"},
+                {"No", "Não"},
+                {"Language", "Idioma"},
+                {"Settings", "Configurações"},
+
+                // Login Form
+                {"LoginTitle", "LOGIN"},
+                {"PlayerNameLabel", "Nome do jogador:"},
+                {"EnterPlayerName", "Por favor, insira o nome do jogador!"},
+                {"Login", "Entrar"},
+
+                // Main Menu
+                {"MainMenuTitle", "PEDRA PAPEL TESOURA"},
+                {"SinglePlayer", "Um jogador"},
+                {"MultiPlayer", "Multijogador"},
+                {"GameRules", "Regras do jogo"},
+                {"Exit", "Sair"},
+
+                // Game Choices
+                {"Rock", "Pedra"},
+                {"Paper", "Papel"},
+                {"Scissors", "Tesoura"},
+                {"RockEmoji", "✊"},
+                {"PaperEmoji", "✋"},
+                {"ScissorsEmoji", "✌️"},
+
+                // Single Player
+                {"SinglePlayerTitle", "UM JOGADOR"},
+                {"YourChoice", "Sua escolha"},
+                {"ComputerChoice", "Escolha do computador"},
+                {"GameResult", "Resultado"},
+                {"Reset", "Reiniciar"},
+                {"YouWin", "Você ganhou!"},
+                {"YouLose", "Você perdeu!"},
+                {"Draw", "Empate!"},
+
+                // Multi Player
+                {"MultiPlayerTitle", "MULTIJOGADOR ONLINE"},
+                {"ConnectionInfo", "Informações de conexão:"},
+                {"ServerIPPlaceholder", "IP do servidor (ex: 192.168.1.100)"},
+                {"PortPlaceholder", "Porta"},
+                {"RoomIDPlaceholder", "ID da sala"},
+                {"CreateRoom", "Criar sala"},
+                {"JoinRoom", "Entrar na sala"},
+                {"OpenWireshark", "Abrir Wireshark"},
+                {"WiresharkHelp", "Ajuda do Wireshark"},
+                {"WaitingForConnection", "Aguardando conexão do jogador"},
+                {"Connected", "Conectado! Pronto para jogar."},
+                {"ConnectionLost", "Conexão perdida"},
+                {"WaitingForOpponent", "Aguardando oponente..."},
+                {"ChooseYourMove", "Escolha sua jogada"},
+
+                // Game Rules
+                {"GameRulesTitle", "REGRAS DE PEDRA PAPEL TESOURA"},
+                {"GameRulesContent", @"🎮 COMO JOGAR:
+• Pedra (✊) vence Tesoura (✌️)
+• Tesoura (✌️) vence Papel (✋)
+• Papel (✋) vence Pedra (✊)
+• Mesma escolha = Empate
+
+🎯 UM JOGADOR:
+• Jogar contra o computador
+• Escolher Pedra, Papel ou Tesoura
+• Ver resultados e pontuação
+
+🌐 JOGO ONLINE:
+• Criar ou entrar em uma sala
+• Jogar com amigos online
+• Animações sincronizadas e tela cheia
+
+🔧 WIRESHARK:
+• Monitorar tráfego de rede
+• Analisar pacotes do jogo
+• Filtro: tcp port 7777
+
+⌨️ ATALHOS DO TECLADO:
+• F11: Tela cheia
+• ESC: Sair da tela cheia"},
+
+                // Language Selection
+                {"SelectLanguage", "Selecionar idioma"},
+                {"LanguageChanged", "Idioma alterado para {0}"},
+                {"RestartRequired", "Reiniciar aplicação para aplicar completamente as mudanças"}
+            };
+
+            // Russian
+            translations["ru"] = new Dictionary<string, string>
+            {
+                // Common
+                {"AppTitle", "Камень Ножницы Бумага"},
+                {"Player", "Игрок"},
+                {"Computer", "Компьютер"},
+                {"Opponent", "Противник"},
+                {"Score", "Счёт"},
+                {"Back", "Назад"},
+                {"Close", "Закрыть"},
+                {"Cancel", "Отмена"},
+                {"OK", "ОК"},
+                {"Yes", "Да"},
+                {"No", "Нет"},
+                {"Language", "Язык"},
+                {"Settings", "Настройки"},
+
+                // Login Form
+                {"LoginTitle", "ВХОД"},
+                {"PlayerNameLabel", "Имя игрока:"},
+                {"EnterPlayerName", "Пожалуйста, введите имя игрока!"},
+                {"Login", "Войти"},
+
+                // Main Menu
+                {"MainMenuTitle", "КАМЕНЬ НОЖНИЦЫ БУМАГА"},
+                {"SinglePlayer", "Одиночная игра"},
+                {"MultiPlayer", "Мультиплеер"},
+                {"GameRules", "Правила игры"},
+                {"Exit", "Выход"},
+
+                // Game Choices
+                {"Rock", "Камень"},
+                {"Paper", "Бумага"},
+                {"Scissors", "Ножницы"},
+                {"RockEmoji", "✊"},
+                {"PaperEmoji", "✋"},
+                {"ScissorsEmoji", "✌️"},
+
+                // Single Player
+                {"SinglePlayerTitle", "ОДИНОЧНАЯ ИГРА"},
+                {"YourChoice", "Ваш выбор"},
+                {"ComputerChoice", "Выбор компьютера"},
+                {"GameResult", "Результат"},
+                {"Reset", "Сброс"},
+                {"YouWin", "Вы выиграли!"},
+                {"YouLose", "Вы проиграли!"},
+                {"Draw", "Ничья!"},
+
+                // Multi Player
+                {"MultiPlayerTitle", "МУЛЬТИПЛЕЕР ОНЛАЙН"},
+                {"ConnectionInfo", "Информация о соединении:"},
+                {"ServerIPPlaceholder", "IP сервера (например: 192.168.1.100)"},
+                {"PortPlaceholder", "Порт"},
+                {"RoomIDPlaceholder", "ID комнаты"},
+                {"CreateRoom", "Создать комнату"},
+                {"JoinRoom", "Присоединиться к комнате"},
+                {"OpenWireshark", "Открыть Wireshark"},
+                {"WiresharkHelp", "Справка Wireshark"},
+                {"WaitingForConnection", "Ожидание подключения игрока"},
+                {"Connected", "Подключено! Готов к игре."},
+                {"ConnectionLost", "Соединение потеряно"},
+                {"WaitingForOpponent", "Ожидание противника..."},
+                {"ChooseYourMove", "Выберите ваш ход"},
+
+                // Game Rules
+                {"GameRulesTitle", "ПРАВИЛА КАМЕНЬ НОЖНИЦЫ БУМАГА"},
+                {"GameRulesContent", @"🎮 КАК ИГРАТЬ:
+• Камень (✊) побеждает Ножницы (✌️)
+• Ножницы (✌️) побеждают Бумагу (✋)
+• Бумага (✋) побеждает Камень (✊)
+• Одинаковый выбор = Ничья
+
+🎯 ОДИНОЧНАЯ ИГРА:
+• Играть против компьютера
+• Выбрать Камень, Бумагу или Ножницы
+• Просмотреть результаты и счёт
+
+🌐 ОНЛАЙН ИГРА:
+• Создать или присоединиться к комнате
+• Играть с друзьями онлайн
+• Синхронизированные анимации и полноэкранный режим
+
+🔧 WIRESHARK:
+• Мониторинг сетевого трафика
+• Анализ игровых пакетов
+• Фильтр: tcp port 7777
+
+⌨️ ГОРЯЧИЕ КЛАВИШИ:
+• F11: Полноэкранный режим
+• ESC: Выход из полноэкранного режима"},
+
+                // Language Selection
+                {"SelectLanguage", "Выбрать язык"},
+                {"LanguageChanged", "Язык изменён на {0}"},
+                {"RestartRequired", "Перезапустите приложение для полного применения изменений"}
+            };
+        }
+
+        /// <summary>
+        /// Save language settings to file
+        /// </summary>
+        private static void SaveLanguageSettings()
+        {
+            try
+            {
+                var settings = new { Language = CurrentLanguage };
+                string json = JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true });
+                File.WriteAllText(settingsFile, json);
+            }
+            catch (Exception ex)
+            {
+                // Silent fail for settings save
+                System.Diagnostics.Debug.WriteLine($"Failed to save language settings: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Load language settings from file
+        /// </summary>
+        private static void LoadLanguageSettings()
+        {
+            try
+            {
+                if (File.Exists(settingsFile))
+                {
+                    string json = File.ReadAllText(settingsFile);
+                    var settings = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
+                    
+                    if (settings != null && settings.ContainsKey("Language"))
+                    {
+                        string savedLanguage = settings["Language"].ToString() ?? "vi";
+                        if (SupportedLanguages.ContainsKey(savedLanguage))
+                        {
+                            currentLanguage = savedLanguage;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Silent fail for settings load, use default
+                System.Diagnostics.Debug.WriteLine($"Failed to load language settings: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Get available languages for display in UI
+        /// </summary>
+        public static List<LanguageDisplayItem> GetLanguageList()
+        {
+            var languages = new List<LanguageDisplayItem>();
+            
+            foreach (var lang in SupportedLanguages.Values)
+            {
+                languages.Add(new LanguageDisplayItem
+                {
+                    Code = lang.Code,
+                    DisplayText = $"{lang.Flag} {lang.NativeName} ({lang.EnglishName})",
+                    NativeName = lang.NativeName,
+                    EnglishName = lang.EnglishName,
+                    Flag = lang.Flag
+                });
+            }
+            
+            return languages;
+        }
+
+        /// <summary>
+        /// Check if a translation key exists
+        /// </summary>
+        public static bool HasTranslation(string key)
+        {
+            return translations.ContainsKey(CurrentLanguage) && 
+                   translations[CurrentLanguage].ContainsKey(key);
+        }
+
+        /// <summary>
+        /// Get formatted text with parameters
+        /// </summary>
+        public static string GetFormattedText(string key, params object[] args)
+        {
+            string text = GetText(key);
+            try
+            {
+                return string.Format(text, args);
+            }
+            catch
+            {
+                return text;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Language information structure
+    /// </summary>
+    public class LanguageInfo
+    {
+        public string Code { get; set; }
+        public string NativeName { get; set; }
+        public string EnglishName { get; set; }
+        public string Flag { get; set; }
+
+        public LanguageInfo(string code, string nativeName, string englishName, string flag)
+        {
+            Code = code;
+            NativeName = nativeName;
+            EnglishName = englishName;
+            Flag = flag;
+        }
+    }
+
+    /// <summary>
+    /// Language display item for UI controls
+    /// </summary>
+    public class LanguageDisplayItem
+    {
+        public string Code { get; set; } = "";
+        public string DisplayText { get; set; } = "";
+        public string NativeName { get; set; } = "";
+        public string EnglishName { get; set; } = "";
+        public string Flag { get; set; } = "";
+
+        public override string ToString() => DisplayText;
+    }
+}

@@ -89,6 +89,22 @@
     {
       "AbsoluteMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|c:\\users\\nitro\\source\\repos\\baitapgk\\baitapgk\\baitapgk\\baitapgk\\fullscreen_improvements.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
       "RelativeMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|solutionrelative:baitapgk\\fullscreen_improvements.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|c:\\users\\nitro\\source\\repos\\baitapgk\\baitapgk\\baitapgk\\baitapgk\\languagemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|solutionrelative:baitapgk\\languagemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|c:\\users\\nitro\\source\\repos\\baitapgk\\baitapgk\\baitapgk\\baitapgk\\languageselectionform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|solutionrelative:baitapgk\\languageselectionform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|c:\\users\\nitro\\source\\repos\\baitapgk\\baitapgk\\baitapgk\\baitapgk\\languagehelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|solutionrelative:baitapgk\\languagehelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|c:\\users\\nitro\\source\\repos\\baitapgk\\baitapgk\\baitapgk\\baitapgk\\language_system.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{50E7538B-3614-4B42-A6E4-8AF405DF7564}|BaiTapGK\\BaiTapGK.csproj|solutionrelative:baitapgk\\language_system.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
     }
   ],
   "DocumentGroupContainers": [
@@ -98,31 +114,85 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 5,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 21,
-              "Title": "FULLSCREEN_IMPROVEMENTS.md",
-              "DocumentMoniker": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\BaiTapGK\\BaiTapGK\\FULLSCREEN_IMPROVEMENTS.md",
-              "RelativeDocumentMoniker": "BaiTapGK\\FULLSCREEN_IMPROVEMENTS.md",
-              "ToolTip": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\BaiTapGK\\BaiTapGK\\FULLSCREEN_IMPROVEMENTS.md",
-              "RelativeToolTip": "BaiTapGK\\FULLSCREEN_IMPROVEMENTS.md",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAPIAAABCAAAAAAAAAA==",
+              "DocumentIndex": 25,
+              "Title": "LANGUAGE_SYSTEM.md",
+              "DocumentMoniker": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\BaiTapGK\\BaiTapGK\\LANGUAGE_SYSTEM.md",
+              "RelativeDocumentMoniker": "BaiTapGK\\LANGUAGE_SYSTEM.md",
+              "ToolTip": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\BaiTapGK\\BaiTapGK\\LANGUAGE_SYSTEM.md",
+              "RelativeToolTip": "BaiTapGK\\LANGUAGE_SYSTEM.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAANEAAACqAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
-              "WhenOpened": "2025-08-09T13:29:33.017Z"
+              "WhenOpened": "2025-08-11T14:42:04.511Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 20,
-              "Title": "FullscreenManager.cs",
-              "DocumentMoniker": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\BaiTapGK\\BaiTapGK\\FullscreenManager.cs",
-              "RelativeDocumentMoniker": "BaiTapGK\\FullscreenManager.cs",
-              "ToolTip": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\BaiTapGK\\BaiTapGK\\FullscreenManager.cs",
-              "RelativeToolTip": "BaiTapGK\\FullscreenManager.cs",
-              "ViewState": "AgIAAKcBAAAAAAAAAEBVwAAAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 24,
+              "Title": "LanguageHelper.cs",
+              "DocumentMoniker": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\BaiTapGK\\BaiTapGK\\LanguageHelper.cs",
+              "RelativeDocumentMoniker": "BaiTapGK\\LanguageHelper.cs",
+              "ToolTip": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\BaiTapGK\\BaiTapGK\\LanguageHelper.cs",
+              "RelativeToolTip": "BaiTapGK\\LanguageHelper.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAP0BAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-09T13:26:51.483Z"
+              "WhenOpened": "2025-08-11T14:35:26.73Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "LanguageSelectionForm.cs",
+              "DocumentMoniker": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\BaiTapGK\\BaiTapGK\\LanguageSelectionForm.cs",
+              "RelativeDocumentMoniker": "BaiTapGK\\LanguageSelectionForm.cs",
+              "ToolTip": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\BaiTapGK\\BaiTapGK\\LanguageSelectionForm.cs",
+              "RelativeToolTip": "BaiTapGK\\LanguageSelectionForm.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACUBAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-11T14:34:16.527Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "LanguageManager.cs",
+              "DocumentMoniker": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\BaiTapGK\\BaiTapGK\\LanguageManager.cs",
+              "RelativeDocumentMoniker": "BaiTapGK\\LanguageManager.cs",
+              "ToolTip": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\BaiTapGK\\BaiTapGK\\LanguageManager.cs",
+              "RelativeToolTip": "BaiTapGK\\LanguageManager.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAO0EAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-11T14:33:28.552Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "SinglePlayerForm.cs",
+              "DocumentMoniker": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\BaiTapGK\\BaiTapGK\\SinglePlayerForm.cs",
+              "RelativeDocumentMoniker": "BaiTapGK\\SinglePlayerForm.cs",
+              "ToolTip": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\BaiTapGK\\BaiTapGK\\SinglePlayerForm.cs",
+              "RelativeToolTip": "BaiTapGK\\SinglePlayerForm.cs",
+              "ViewState": "AgIAAFsAAAAAAAAAAIA3wGsAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-21T16:38:50.599Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "MultiPlayerForm.cs",
+              "DocumentMoniker": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\BaiTapGK\\BaiTapGK\\MultiPlayerForm.cs",
+              "RelativeDocumentMoniker": "BaiTapGK\\MultiPlayerForm.cs",
+              "ToolTip": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\BaiTapGK\\BaiTapGK\\MultiPlayerForm.cs",
+              "RelativeToolTip": "BaiTapGK\\MultiPlayerForm.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-21T16:39:53.482Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -138,28 +208,27 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "SinglePlayerForm.cs",
-              "DocumentMoniker": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\BaiTapGK\\BaiTapGK\\SinglePlayerForm.cs",
-              "RelativeDocumentMoniker": "BaiTapGK\\SinglePlayerForm.cs",
-              "ToolTip": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\BaiTapGK\\BaiTapGK\\SinglePlayerForm.cs",
-              "RelativeToolTip": "BaiTapGK\\SinglePlayerForm.cs",
-              "ViewState": "AgIAAFsAAAAAAAAAAIA3wGsAAAABAAAAAAAAAA==",
+              "DocumentIndex": 20,
+              "Title": "FullscreenManager.cs",
+              "DocumentMoniker": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\BaiTapGK\\BaiTapGK\\FullscreenManager.cs",
+              "RelativeDocumentMoniker": "BaiTapGK\\FullscreenManager.cs",
+              "ToolTip": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\BaiTapGK\\BaiTapGK\\FullscreenManager.cs",
+              "RelativeToolTip": "BaiTapGK\\FullscreenManager.cs",
+              "ViewState": "AgIAAKcBAAAAAAAAAEBVwAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-21T16:38:50.599Z"
+              "WhenOpened": "2025-08-09T13:26:51.483Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "MultiPlayerForm.cs",
-              "DocumentMoniker": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\BaiTapGK\\BaiTapGK\\MultiPlayerForm.cs",
-              "RelativeDocumentMoniker": "BaiTapGK\\MultiPlayerForm.cs",
-              "ToolTip": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\BaiTapGK\\BaiTapGK\\MultiPlayerForm.cs",
-              "RelativeToolTip": "BaiTapGK\\MultiPlayerForm.cs",
-              "ViewState": "AgIAAJAAAAAAAAAAAAAowAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-21T16:39:53.482Z",
-              "EditorCaption": ""
+              "DocumentIndex": 21,
+              "Title": "FULLSCREEN_IMPROVEMENTS.md",
+              "DocumentMoniker": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\BaiTapGK\\BaiTapGK\\FULLSCREEN_IMPROVEMENTS.md",
+              "RelativeDocumentMoniker": "BaiTapGK\\FULLSCREEN_IMPROVEMENTS.md",
+              "ToolTip": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\BaiTapGK\\BaiTapGK\\FULLSCREEN_IMPROVEMENTS.md",
+              "RelativeToolTip": "BaiTapGK\\FULLSCREEN_IMPROVEMENTS.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAPIAAABCAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-08-09T13:29:33.017Z"
             },
             {
               "$type": "Document",
@@ -183,7 +252,8 @@
               "RelativeToolTip": "BaiTapGK\\WiresharkIntegration.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAPcAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-05T16:20:02.302Z"
+              "WhenOpened": "2025-08-05T16:20:02.302Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -219,7 +289,8 @@
               "RelativeToolTip": "BaiTapGK\\MultiPlayerForm.Designer.cs",
               "ViewState": "AgIAAAUBAAAAAAAAAAAuwCIBAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-21T16:40:32.465Z"
+              "WhenOpened": "2025-07-21T16:40:32.465Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -229,9 +300,10 @@
               "RelativeDocumentMoniker": "BaiTapGK\\README.md",
               "ToolTip": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\BaiTapGK\\BaiTapGK\\README.md",
               "RelativeToolTip": "BaiTapGK\\README.md",
-              "ViewState": "AgIAANEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAgBAAAAAAAAAABRwAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
-              "WhenOpened": "2025-07-21T16:43:20.399Z"
+              "WhenOpened": "2025-07-21T16:43:20.399Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -279,7 +351,8 @@
               "RelativeToolTip": "BaiTapGK\\GameIntroForm.cs",
               "ViewState": "AgIAAHwAAAAAAAAAAEBVwIAAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-21T16:38:04.857Z"
+              "WhenOpened": "2025-07-21T16:38:04.857Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -303,7 +376,8 @@
               "RelativeToolTip": "BaiTapGK\\LoginForm.cs",
               "ViewState": "AgIAALkAAAAAAAAAAEBVwL0AAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-21T16:37:34.246Z"
+              "WhenOpened": "2025-07-21T16:37:34.246Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -313,7 +387,7 @@
               "RelativeDocumentMoniker": "BaiTapGK\\Form1.cs",
               "ToolTip": "C:\\Users\\NITRO\\source\\repos\\BaiTapGK\\BaiTapGK\\BaiTapGK\\BaiTapGK\\Form1.cs",
               "RelativeToolTip": "BaiTapGK\\Form1.cs",
-              "ViewState": "AgIAAEsBAAAAAAAAAABRwGEAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAACcCAAAAAAAAAEBVwH0AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-07-21T16:33:20.452Z",
               "EditorCaption": ""
@@ -340,7 +414,8 @@
               "RelativeToolTip": "BaiTapGK\\Form1.Designer.cs",
               "ViewState": "AgIAAJwAAAAAAAAAAIBZwAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-21T16:33:07.237Z"
+              "WhenOpened": "2025-07-21T16:33:07.237Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
